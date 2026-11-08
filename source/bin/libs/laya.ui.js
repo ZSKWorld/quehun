@@ -703,11 +703,10 @@
         }
         changeClips() {
             let width = 0, height = 0;
-            let img = Laya.Loader.getRes(this._skin);
-            if (!img) {
-                console.log(`lose skin ${this._skin}`);
+            let url = this._skinBaseUrl ? Laya.URL.formatURL(this._skin, this._skinBaseUrl) : this._skin;
+            let img = Laya.Loader.getRes(url);
+            if (!img)
                 return;
-            }
             width = img.sourceWidth;
             height = img.sourceHeight / (img._stateNum || this._stateNum);
             if (this._autoSize) {

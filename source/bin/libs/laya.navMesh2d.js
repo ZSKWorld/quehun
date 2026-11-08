@@ -143,11 +143,11 @@
             geometry.indexFormat = ibFormat;
             geometryArray.push(geometry);
             mesh2d._setSubMeshes(geometryArray);
-            mesh2d._vertices = [vbdata];
+            mesh2d._vertices = [vbdata.buffer];
             mesh2d._indices = ib;
             mesh2d._vertexCount = vbdata.length / 9;
             if (canRead) {
-                mesh2d._vertices = [vbdata];
+                mesh2d._vertices = [vbdata.buffer];
                 mesh2d._indices = ib;
             }
             return mesh2d;
@@ -268,7 +268,6 @@
             this._baseOffset = 0;
             this._radius = 10;
             this._speed = 100;
-            this._Acceleration = 300;
         }
         onAwake() {
             super.onAwake();
@@ -389,6 +388,12 @@
             this._navMeshLink.forEach((link) => {
                 link._bindSurface(this);
             });
+        }
+        _onDestroy() {
+            this._navMeshAreas.forEach(area => area._destroy());
+            this._navMeshObstacles.forEach(obstacle => obstacle._destroy());
+            this._navMeshLink.forEach(link => link.destroy());
+            super._onDestroy();
         }
         _getManager() {
             return Navigation2DManage._getNavManager(this);

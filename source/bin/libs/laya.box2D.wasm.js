@@ -41,9 +41,14 @@
             return jsDraw;
         }
         shiftOrigin(world, newOrigin) {
-            if (!world)
-                console.warn("shiftOrigin world is null");
-            world.ShiftOrigin({ x: newOrigin.x, y: newOrigin.y });
+            if (!world || world.destroyed)
+                return;
+            if (typeof world.ShiftOrigin !== "function") {
+                console.warn("Physics2D.shiftOrigin is not supported by the current Box2D binding; the world is unchanged.");
+                return;
+            }
+            this._tempVe21.Set(newOrigin.x, newOrigin.y);
+            world.ShiftOrigin(this._tempVe21);
         }
         appendFlags(jsDraw, flags) {
             if (jsDraw)
@@ -134,11 +139,29 @@
                     continue;
                 let velocityIterations = world.getVelocityIterations();
                 let positionIterations = world.getPositionIterations();
-                world.box2DWorld.Step(delta, velocityIterations, positionIterations);
-                if (world.enableDebugDraw) {
-                    world.box2DWorld.DebugDraw();
+                const nativeWorld = world.box2DWorld;
+                const substeps = delta > 0 ? (world._subStepCount || 1) : 1;
+                const autoClear = substeps > 1 && nativeWorld.GetAutoClearForces();
+                if (autoClear)
+                    nativeWorld.SetAutoClearForces(false);
+                try {
+                    for (let step = 0; step < substeps; step++) {
+                        nativeWorld.Step(delta / substeps, velocityIterations, positionIterations);
+                        if (nativeWorld.destroyed)
+                            break;
+                    }
                 }
-                world.sendEvent();
+                finally {
+                    if (autoClear && !nativeWorld.destroyed) {
+                        nativeWorld.ClearForces();
+                        nativeWorld.SetAutoClearForces(true);
+                    }
+                }
+                if (!nativeWorld.destroyed) {
+                    if (world.enableDebugDraw)
+                        nativeWorld.DebugDraw();
+                    world.sendEvent();
+                }
             }
         }
         createJointDef(world, type, def) {
@@ -310,8 +333,10 @@
             return joint;
         }
         removeJoint(world, joint) {
-            if (joint && world && !world.destroyed && !joint.bodyA.destroyed && !joint.bodyB.destroyed)
+            if (world && this.isValidJoint(joint)) {
                 world.DestroyJoint(joint);
+                joint.destroyed = true;
+            }
         }
         _createBox2DJoint(world, def, cls) {
             if (!world)
@@ -321,6 +346,7 @@
                 joint = this.castObject(joint, cls);
             }
             joint.m_userData = {};
+            joint.destroyed = false;
             joint.world = world;
             return joint;
         }
@@ -341,15 +367,24 @@
         set_Joint_SetMaxMotorTorque(joint, maxTorque) {
             joint.SetMaxMotorTorque(maxTorque);
         }
+        set_Joint_SetMaxMotorForce(joint, maxForce) {
+            joint.SetMaxMotorForce(maxForce);
+        }
         set_Joint_EnableLimit(joint, enableLimit) {
             joint.EnableLimit(enableLimit);
         }
         set_Joint_SetLimits(joint, lowerAngle, upperAngle) {
             joint.SetLimits(lowerAngle, upperAngle);
         }
-        set_Joint_frequencyAndDampingRatio(joint, frequency, dampingRatio, isdamping) {
+        set_Joint_SetTranslationLimits(joint, lower, upper) {
+            joint.SetLimits(this.convertLayaValueToPhysics(joint.world, lower), this.convertLayaValueToPhysics(joint.world, upper));
+        }
+        set_Joint_frequencyAndDampingRatio(joint, frequency, dampingRatio, isdamping, isAngular = true) {
             let out = {};
-            this.box2d.b2AngularStiffness(out, frequency, dampingRatio, joint.GetBodyA(), joint.GetBodyB());
+            if (isAngular)
+                this.b2AngularStiffness(out, frequency, dampingRatio, joint.GetBodyA(), joint.GetBodyB());
+            else
+                this.b2LinearStiffness(out, frequency, dampingRatio, joint.GetBodyA(), joint.GetBodyB());
             if (!isdamping) {
                 joint.SetStiffness(out.stiffness);
             }
@@ -362,8 +397,7 @@
         get_DistanceJoint_length(joint) {
             let world = joint.world;
             let len = joint.GetLength();
-            this.convertPhysicsValueToLaya(world, len);
-            return len;
+            return this.convertPhysicsValueToLaya(world, len);
         }
         set_DistanceJoint_MaxLength(joint, length) {
             let world = joint.world;
@@ -389,6 +423,9 @@
             this._tempVe21.x = this.convertLayaValueToPhysics(world, x);
             this._tempVe21.y = this.convertLayaValueToPhysics(world, y);
             joint.SetTarget(this._tempVe21);
+        }
+        set_MouseJoint_MaxForce(joint, maxForce) {
+            joint.SetMaxForce(maxForce * joint.GetBodyB().GetMass());
         }
         set_MouseJoint_frequencyAndDampingRatio(Joint, frequency, dampingRatio) {
             this.set_DistanceJointStiffnessDamping(Joint, frequency, dampingRatio);
@@ -419,8 +456,8 @@
             return torque;
         }
         isValidJoint(joint) {
-            let isConnected = joint.GetCollideConnected();
-            return isConnected;
+            return !!(joint && !joint.destroyed && joint.world && !joint.world.destroyed
+                && joint.bodyA && !joint.bodyA.destroyed && joint.bodyB && !joint.bodyB.destroyed);
         }
         createShapeDef(world, shapeDef, filter) {
             let def = new this.box2d.b2FixtureDef();
@@ -472,6 +509,7 @@
             shapdeDef.shapeType = shapeType;
             data = this.castObject(data, this.box2d.b2Fixture);
             data.world = world;
+            data.destroyed = false;
             data.shape = this.get_fixtureshape(data.GetShape(), shapeType);
             data.shape.world = world;
             data.filter = data.GetFilterData();
@@ -524,12 +562,29 @@
         destroyShape(world, body, shape) {
             if (!shape || !body)
                 return;
+            shape.destroyed = true;
             if (shape.shape)
                 this._cleanCache(shape.shape);
             if (shape.filter)
                 this._cleanCache(shape.filter);
             body.DestroyFixture(shape);
             this._cleanCache(shape);
+        }
+        synchronizeShape(body, shape) {
+            body.SetTransform(body.GetPosition(), body.GetAngle());
+            body.SetAwake(true);
+            let edge = body.GetContactList();
+            while (this._box2d.getPointer(edge)) {
+                const next = edge.get_next();
+                const contact = edge.get_contact();
+                const a = contact.GetFixtureA();
+                const b = contact.GetFixtureB();
+                if ((a === shape || b === shape) && !a.IsSensor() && !b.IsSensor()) {
+                    edge.get_other().SetAwake(true);
+                }
+                this._cleanCache(edge);
+                edge = next;
+            }
         }
         set_shapeDef_GroupIndex(def, groupIndex) {
             def.filter.groupIndex = groupIndex;
@@ -687,34 +742,34 @@
                 y: this.convertPhysicsValueToLaya(world, data.y)
             };
         }
-        rigidBody_applyForce(body, force, position) {
+        rigidBody_applyForce(body, force, position, wake = true) {
             let world = body.world;
             this._tempVe21.x = this.convertLayaValueToPhysics(world, position.x);
             this._tempVe21.y = this.convertLayaValueToPhysics(world, position.y);
             this._tempVe22.x = force.x;
             this._tempVe22.y = force.y;
-            body.ApplyForce(this._tempVe22, this._tempVe21, false);
+            body.ApplyForce(this._tempVe22, this._tempVe21, wake);
         }
-        rigidBody_applyForceToCenter(body, force) {
+        rigidBody_applyForceToCenter(body, force, wake = true) {
             this._tempVe21.x = force.x;
             this._tempVe21.y = force.y;
-            body.ApplyForceToCenter(this._tempVe21);
+            body.ApplyForceToCenter(this._tempVe21, wake);
         }
-        rigidbody_ApplyLinearImpulse(body, impulse, position) {
+        rigidbody_ApplyLinearImpulse(body, impulse, position, wake = true) {
             let world = body.world;
             this._tempVe21.x = impulse.x;
             this._tempVe21.y = impulse.y;
             this._tempVe22.x = this.convertLayaValueToPhysics(world, position.x);
             this._tempVe22.y = this.convertLayaValueToPhysics(world, position.y);
-            body.ApplyLinearImpulse(this._tempVe21, this._tempVe22);
+            body.ApplyLinearImpulse(this._tempVe21, this._tempVe22, wake);
         }
-        rigidbody_ApplyLinearImpulseToCenter(body, impulse) {
+        rigidbody_ApplyLinearImpulseToCenter(body, impulse, wake = true) {
             this._tempVe21.x = impulse.x;
             this._tempVe21.y = impulse.y;
-            body.ApplyLinearImpulseToCenter(this._tempVe21);
+            body.ApplyLinearImpulseToCenter(this._tempVe21, wake);
         }
-        rigidbody_applyTorque(body, torque) {
-            body.ApplyTorque(torque);
+        rigidbody_applyTorque(body, torque, wake = true) {
+            body.ApplyTorque(torque, wake);
         }
         set_rigidbody_Velocity(body, velocity) {
             let world = body.world;
@@ -825,8 +880,8 @@
         get_rigidBody_LocalVector(body, value) {
             return body.GetLocalVector(value);
         }
-        rigidbody_ApplyAngularImpulse(body, impulse) {
-            body.ApplyAngularImpulse(impulse, true);
+        rigidbody_ApplyAngularImpulse(body, impulse, wake = true) {
+            body.ApplyAngularImpulse(impulse, wake);
         }
         set_rigidBody_Awake(body, awake) {
             body.SetAwake(awake);
@@ -868,7 +923,7 @@
             let world = body.world;
             this._tempVe21.x = this.convertLayaValueToPhysics(world, worldPoint.x);
             this._tempVe21.y = this.convertLayaValueToPhysics(world, worldPoint.y);
-            let velocity = body.GetLinearVelocityFromWorldPoint(worldPoint);
+            let velocity = body.GetLinearVelocityFromWorldPoint(this._tempVe21);
             velocity.x = this.convertPhysicsValueToLaya(world, velocity.x);
             velocity.y = this.convertPhysicsValueToLaya(world, velocity.y);
             return velocity;
@@ -877,7 +932,7 @@
             let world = body.world;
             this._tempVe21.x = this.convertLayaValueToPhysics(world, localPoint.x);
             this._tempVe21.y = this.convertLayaValueToPhysics(world, localPoint.y);
-            let velocity = body.GetLinearVelocityFromLocalPoint(localPoint);
+            let velocity = body.GetLinearVelocityFromLocalPoint(this._tempVe21);
             velocity.x = this.convertPhysicsValueToLaya(world, velocity.x);
             velocity.y = this.convertPhysicsValueToLaya(world, velocity.y);
             return velocity;

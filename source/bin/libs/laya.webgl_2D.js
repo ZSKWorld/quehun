@@ -1048,23 +1048,60 @@
     }
 
     BatchManager.registerProvider(Laya.BaseRender2DType.graphics, WebGraphicsBatch);
+    class ReusableStructList extends Laya.FastSinglelist {
+        constructor() {
+            super(...arguments);
+            this.previousLength = 0;
+            this.generation = -1;
+        }
+    }
     class SortedStructs {
         constructor() {
             this.lists = new Map();
             this._indice = new Set;
             this._sortedIndice = [];
+            this._generation = 0;
         }
         add(struct, zIndex) {
             let list = this.lists.get(zIndex);
             if (!list)
-                this.lists.set(zIndex, list = new Laya.FastSinglelist());
+                this.lists.set(zIndex, list = new ReusableStructList());
+            if (list.generation !== this._generation) {
+                list.previousLength = list.length;
+                list.length = 0;
+                list.generation = this._generation;
+            }
             list.add(struct);
             if (list.length === 1)
                 this._indice.add(zIndex);
             return list;
         }
         reset() {
-            this._indice.forEach(i => this.lists.get(i).length = 0);
+            this._generation++;
+            this._sortedIndice.length = 0;
+        }
+        releaseUnused() {
+            this._indice.forEach(i => {
+                let list = this.lists.get(i);
+                if (list.generation !== this._generation) {
+                    list.elements.fill(null, 0, list.length);
+                    list.length = 0;
+                }
+                else if (list.length < list.previousLength) {
+                    list.elements.fill(null, list.length, list.previousLength);
+                }
+                list.previousLength = 0;
+                if (list.length === 0)
+                    this._indice.delete(i);
+            });
+        }
+        clear() {
+            this._indice.forEach(i => {
+                let list = this.lists.get(i);
+                list.elements.fill(null, 0, Math.max(list.length, list.previousLength));
+                list.length = 0;
+                list.previousLength = 0;
+            });
             this._indice.clear();
             this._sortedIndice.length = 0;
         }
@@ -1115,7 +1152,7 @@
             this._renderElements = new Laya.FastSinglelist();
             this._elementGroups = new Laya.FastSinglelist();
             this._structs = new SortedStructs();
-            this._structsPool = Laya.Pool.createPool(SortedStructs, null, obj => obj.reset());
+            this._structsPool = Laya.Pool.createPool(SortedStructs, null, obj => obj.clear());
             this._batchProviders = [];
             this._stencilClip2D = new WebStencilClip2D();
             this._priority = 0;
@@ -1201,6 +1238,9 @@
                 if (this.root) {
                     this._pStructs = this._structs;
                     this.cullAndSort(context, this.root);
+                }
+                this._structs.releaseUnused();
+                if (this.root) {
                     this.fillRenderElements();
                     this._enableBatch && Laya.LayaEnv.isPlaying && this.batch();
                 }
@@ -2197,6 +2237,10 @@
             if (WebGraphicsRenderUnitPool._count >= WebGraphicsRenderUnitPool._maxCount) {
                 unit.destroy();
                 return;
+            }
+            if (unit.primitiveShaderData) {
+                unit.primitiveShaderData.setTexture(Laya.ShaderDefines2D.UNIFORM_SPRITETEXTURE, null);
+                unit.primitiveShaderData.setTexture(Laya.ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, null);
             }
             let vertexBlockCount = unit.vertexBlockCapacity;
             let indexCount = unit.indexCapacity;
@@ -5246,6 +5290,7 @@
             this.children.length = 0;
             this.children = null;
             this._pass = null;
+            this.owner = null;
         }
     }
 
@@ -5490,12 +5535,16 @@
             Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_RenderTexture, -this._gpuMemory + value);
             Laya.LayaGL.statAgent.recordMemoryData(Laya.StatElement.M_AllTexture, -this._gpuMemory + value);
         }
-        constructor(engine, colorFormat, depthStencilFormat, isCube, generateMipmap, samples) {
+        constructor(engine, colorFormat, depthStencilFormat, isCube, generateMipmap, samples, colorFormats) {
             super(engine);
-            this._texturesOwnsResources = true;
+            this._owner = null;
+            this._color0Target = null;
+            this._disposed = false;
             this._arrayLayerIndex = -1;
             this._gpuMemory = 0;
             this.colorFormat = colorFormat;
+            if (colorFormats)
+                this.colorFormats = Object.freeze(colorFormats.slice());
             this.depthStencilFormat = depthStencilFormat;
             this._isCube = isCube;
             this._generateMipmap = generateMipmap;
@@ -5512,23 +5561,31 @@
             return this._textures[0].resource;
         }
         dispose() {
+            var _a, _b;
+            if (this._disposed)
+                return;
+            this._disposed = true;
+            this._destroyed = true;
+            (_a = this._color0Target) === null || _a === void 0 ? void 0 : _a.dispose();
+            this._color0Target = null;
             if (this._textures) {
-                if (this._texturesOwnsResources) {
+                if (!this._owner) {
                     for (let i = this._textures.length - 1; i > -1; i--)
-                        this._textures[i].dispose();
+                        (_b = this._textures[i]) === null || _b === void 0 ? void 0 : _b.dispose();
                 }
             }
             this._textures = null;
-            this._depthTexture && this._depthTexture.dispose();
+            !this._owner && this._depthTexture && this._depthTexture.dispose();
             this._depthTexture = null;
             this._framebuffer && this._gl.deleteFramebuffer(this._framebuffer);
             this._framebuffer = null;
-            this._depthbuffer && this._gl.deleteRenderbuffer(this._depthbuffer);
+            !this._owner && this._depthbuffer && this._gl.deleteRenderbuffer(this._depthbuffer);
             this._depthbuffer = null;
             this._msaaFramebuffer && this._gl.deleteFramebuffer(this._msaaFramebuffer);
             this._msaaFramebuffer = null;
             this._msaaRenderbuffer && this._gl.deleteRenderbuffer(this._msaaRenderbuffer);
             this._msaaRenderbuffer = null;
+            this._owner = null;
             this._changeTexMemory(0);
             this._gpuMemory = 0;
             Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_RenderTexture, -1);
@@ -5587,8 +5644,9 @@
                     this._statistics_RC_Texture = Laya.StatElement.C_Texture2DArray;
                     break;
             }
-            this._mipmap = mipmap && this.isPotSize;
-            this._mipmapCount = this._mipmap ? Math.max(Math.ceil(Math.log2(width)) + 1, Math.ceil(Math.log2(height)) + 1) : 1;
+            this._mipmap = mipmap && (this.isPotSize || engine.getCapable(Laya.RenderCapable.Texture_NPOTFull));
+            const maxSize = Math.max(width, height, dimension === Laya.TextureDimension.Tex3D ? depth : 1);
+            this._mipmapCount = this._mipmap ? Math.floor(Math.log2(maxSize)) + 1 : 1;
             this._maxMipmapLevel = this._mipmapCount - 1;
             this._baseMipmapLevel = 0;
             this.useSRGBLoad = useSRGBLoader;
@@ -5747,7 +5805,7 @@
         }
         _setWrapMode(pname, param) {
             let gl = this._gl;
-            if (!this.isPotSize) {
+            if (!this.isPotSize && !this._engine.getCapable(Laya.RenderCapable.Texture_NPOTFull)) {
                 param = gl.CLAMP_TO_EDGE;
             }
             this._setTexParameteri(pname, param);
@@ -6385,7 +6443,7 @@
             let dataOffset = ddsInfo.dataOffset;
             let bpp = ddsInfo.bpp;
             let blockBytes = ddsInfo.blockBytes;
-            let mipmapCount = ddsInfo.mipmapCount;
+            let mipmapCount = Math.min(ddsInfo.mipmapCount, texture.mipmapCount);
             let compressed = ddsInfo.compressed;
             texture.maxMipmapLevel = mipmapCount - 1;
             let fourSize = width % 4 == 0 && height % 4 == 0;
@@ -6400,7 +6458,7 @@
             let memory = 0;
             for (let index = 0; index < mipmapCount; index++) {
                 if (compressed) {
-                    let dataLength = (((Math.max(4, mipmapWidth) / 4) * Math.max(4, mipmapHeight)) / 4) * blockBytes;
+                    let dataLength = Math.ceil(mipmapWidth / 4) * Math.ceil(mipmapHeight / 4) * blockBytes;
                     let sourceData = new Uint8Array(source, dataOffset, dataLength);
                     gl.compressedTexImage2D(target, index, internalFormat, mipmapWidth, mipmapHeight, 0, sourceData);
                     memory += sourceData.byteLength;
@@ -6413,10 +6471,8 @@
                     gl.texImage2D(target, index, internalFormat, mipmapWidth, mipmapHeight, 0, format, type, sourceData);
                     dataOffset += dataLength * channelsByte;
                 }
-                mipmapWidth *= 0.5;
-                mipmapHeight *= 0.5;
-                mipmapWidth = Math.max(1.0, mipmapWidth);
-                mipmapHeight = Math.max(1.0, mipmapHeight);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             texture.gpuMemory = memory;
             this._engine._bindTexture(texture.target, null);
@@ -6622,10 +6678,8 @@
                         gl.texImage2D(target, index, internalFormat, mipmapWidth, mipmapHeight, 0, format, type, sourceData);
                         memory += sourceData.byteLength;
                         dataOffset += dataLength * channelsByte;
-                        mipmapWidth *= 0.5;
-                        mipmapHeight *= 0.5;
-                        mipmapWidth = Math.max(1.0, mipmapWidth);
-                        mipmapHeight = Math.max(1.0, mipmapHeight);
+                        mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                        mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
                     }
                 }
             }
@@ -6635,15 +6689,13 @@
                     let mipmapWidth = width;
                     let mipmapHeight = height;
                     for (let index = 0; index < mipmapCount; index++) {
-                        let dataLength = Math.max(4, mipmapWidth) / 4 * Math.max(4, mipmapHeight) / 4 * blockBytes;
+                        let dataLength = Math.ceil(mipmapWidth / 4) * Math.ceil(mipmapHeight / 4) * blockBytes;
                         let sourceData = new Uint8Array(source, dataOffset, dataLength);
                         (texture.mipmap || index == 0) && gl.compressedTexImage2D(target, index, internalFormat, mipmapWidth, mipmapHeight, 0, sourceData);
                         memory += sourceData.byteLength;
                         dataOffset += bpp ? (mipmapWidth * mipmapHeight * (bpp / 8)) : dataLength;
-                        mipmapWidth *= 0.5;
-                        mipmapHeight *= 0.5;
-                        mipmapWidth = Math.max(1.0, mipmapWidth);
-                        mipmapHeight = Math.max(1.0, mipmapHeight);
+                        mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                        mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
                     }
                 }
             }
@@ -6697,8 +6749,8 @@
                     dataOffset += imageSize;
                     dataOffset += 3 - ((imageSize + 3) % 4);
                 }
-                mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             for (let index = ktxInfo.mipmapCount; index < texture.mipmapCount; index++) {
                 for (let face = 0; face < 6; face++) {
@@ -6708,8 +6760,8 @@
                         gl.texImage2D(target, index, internalFormat, mipmapWidth, mipmapHeight, 0, format, type, null);
                     }
                 }
-                mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             this._engine._bindTexture(texture.target, null);
             texture.gpuMemory = memory;
@@ -6738,6 +6790,8 @@
             let gl = renderTarget._gl;
             if (renderTarget && renderTarget._generateMipmap) {
                 renderTarget._textures.forEach(tex => {
+                    if (!tex)
+                        return;
                     let target = tex.target;
                     this._engine._bindTexture(target, tex.resource);
                     gl.generateMipmap(target);
@@ -6779,6 +6833,9 @@
                 internalTex.filterMode = Laya.FilterMode.Point;
             }
             return internalTex;
+        }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat, color0SRGB = false) {
+            throw new Error("WebGL createMultiRenderTargetInternal is not implemented.");
         }
         createRenderTargetInternal(width, height, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
             multiSamples = 1;
@@ -6857,6 +6914,10 @@
             return internalTex;
         }
         createRenderTargetDepthTexture(renderTarget, dimension, width, height) {
+            if (renderTarget._owner)
+                throw new Error("Cannot replace the borrowed depth/stencil attachment of an MRT color-0 target.");
+            if (renderTarget.colorFormats)
+                return this._createMRTDepthTexture(renderTarget, dimension, width, height);
             let gl = renderTarget._gl;
             if (renderTarget.depthStencilFormat == Laya.RenderTargetFormat.None) {
                 return null;
@@ -6877,6 +6938,77 @@
             gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
             gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.resource, 0);
             gl.bindFramebuffer(gl.FRAMEBUFFER, WebGLEngine._lastFrameBuffer_WebGLOBJ);
+            return texture;
+        }
+        _createMRTDepthTexture(renderTarget, dimension, width, height) {
+            var _a;
+            const format = renderTarget.depthStencilFormat;
+            if (format === Laya.RenderTargetFormat.None)
+                return null;
+            if (format !== Laya.RenderTargetFormat.DEPTH_16 && format !== Laya.RenderTargetFormat.DEPTH_32 && format !== Laya.RenderTargetFormat.DEPTHSTENCIL_24_8)
+                throw new Error("MRT sampleable depth requires a supported depth texture format.");
+            const color = (_a = renderTarget._textures) === null || _a === void 0 ? void 0 : _a[0];
+            const color0 = renderTarget._color0Target;
+            if (renderTarget.destroyed || !renderTarget._framebuffer || !(color0 === null || color0 === void 0 ? void 0 : color0._framebuffer))
+                throw new Error("Cannot create depth storage for a missing or destroyed MRT.");
+            if (dimension !== Laya.TextureDimension.Tex2D || width !== (color === null || color === void 0 ? void 0 : color.width) || height !== (color === null || color === void 0 ? void 0 : color.height))
+                throw new RangeError("MRT depth texture must match the color attachment dimensions.");
+            const params = Object.assign({}, this.glRenderTextureParam(format, false));
+            const attachment = this.glRenderTargetAttachment(format);
+            const gl = renderTarget._gl;
+            const previousDraw = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+            const previousTexture = gl.getParameter(gl.TEXTURE_BINDING_2D);
+            const textureUnit = this._engine._activedTextureID - gl.TEXTURE0;
+            const previousCachedTexture = this._engine._activeTextures[textureUnit];
+            const oldTexture = renderTarget._depthTexture;
+            const oldBuffer = renderTarget._depthbuffer;
+            const targets = [renderTarget, color0];
+            const texture = new WebGLInternalTex(this._engine, gl.TEXTURE_2D, width, height, 1, dimension, false, false, 1);
+            let error = null;
+            let attachmentChanged = false;
+            if (!texture.resource)
+                error = "Unable to allocate the MRT depth texture.";
+            else {
+                texture.internalFormat = params.internalFormat;
+                texture.format = params.format;
+                texture.type = params.type;
+                this._engine._bindTexture(gl.TEXTURE_2D, texture.resource);
+                gl.texStorage2D(gl.TEXTURE_2D, 1, texture.internalFormat, width, height);
+                texture.filterMode = Laya.FilterMode.Point;
+                for (const target of targets) {
+                    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target._framebuffer);
+                    gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.resource, 0);
+                    attachmentChanged = true;
+                    const status = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER);
+                    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+                        error = `WebGL2 MRT depth framebuffer is incomplete (0x${status.toString(16)}).`;
+                        break;
+                    }
+                }
+            }
+            if (error && attachmentChanged) {
+                for (const target of targets) {
+                    gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target._framebuffer);
+                    if (oldTexture)
+                        gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, attachment, gl.TEXTURE_2D, oldTexture.resource, 0);
+                    else
+                        gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, attachment, gl.RENDERBUFFER, oldBuffer);
+                }
+            }
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, previousDraw);
+            gl.bindTexture(gl.TEXTURE_2D, previousTexture);
+            this._engine._activeTextures[textureUnit] = previousCachedTexture;
+            if (error) {
+                texture.dispose();
+                throw new Error(error);
+            }
+            for (const target of targets) {
+                target._depthTexture = texture;
+                target._depthbuffer = null;
+            }
+            oldTexture === null || oldTexture === void 0 ? void 0 : oldTexture.dispose();
+            if (oldBuffer)
+                gl.deleteRenderbuffer(oldBuffer);
             return texture;
         }
         readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out) {
@@ -6910,7 +7042,9 @@
             this.unbindRenderTarget(renderTarget);
             return out;
         }
-        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out) {
+        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if (attachmentIndex !== 0)
+                return Promise.reject(new Error("WebGL readRenderTargetPixelDataAsync currently only supports color attachment 0."));
             return Promise.resolve(this.readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out));
         }
         updateVideoTexture(texture, video, premultiplyAlpha, invertY) {
@@ -7562,8 +7696,8 @@
                     dataOffset += imageSize;
                     dataOffset += 3 - ((imageSize + 3) % 4);
                 }
-                mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             texture.gpuMemory = memory;
             this._engine._bindTexture(texture.target, null);
@@ -7697,6 +7831,138 @@
             }
             return internalTex;
         }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat, color0SRGB = false) {
+            const gl = this._gl;
+            if (!this._engine.getCapable(Laya.RenderCapable.MRT))
+                throw new Error("WebGL2 MRT is not supported by this engine.");
+            const maxSize = this._engine.getParams(Laya.RenderParams.MAX_Texture_Size);
+            if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0 || width > maxSize || height > maxSize)
+                throw new RangeError(`MRT dimensions must be positive integers no greater than ${maxSize}.`);
+            const maxCount = this._engine.getParams(Laya.RenderParams.Max_Color_Attachment_Count);
+            if (!Array.isArray(colorFormats) || colorFormats.length < 1 || colorFormats.length > maxCount)
+                throw new RangeError(`MRT requires between 1 and ${maxCount} color attachments.`);
+            const formats = Array.from(colorFormats, format => format !== null && format !== void 0 ? format : null);
+            if (formats[0] == null)
+                throw new Error("MRT color attachment 0 cannot be empty.");
+            const colorParams = formats.map((format, index) => {
+                if (format === null)
+                    return null;
+                const useSRGB = index === 0 && (this.isSRGBFormat(format) || (color0SRGB && this.supportSRGB(format, false)));
+                const params = this.glRenderTextureParam(format, useSRGB);
+                if (params.format !== gl.RGB && params.format !== gl.RGBA)
+                    throw new Error(`Invalid WebGL2 MRT color format: ${format}.`);
+                return Object.assign(Object.assign({}, params), { useSRGB });
+            });
+            switch (depthStencilFormat) {
+                case Laya.RenderTargetFormat.None:
+                case Laya.RenderTargetFormat.DEPTH_16:
+                case Laya.RenderTargetFormat.DEPTH_32:
+                case Laya.RenderTargetFormat.DEPTHSTENCIL_24_8:
+                case Laya.RenderTargetFormat.STENCIL_8:
+                    break;
+                default:
+                    throw new Error(`Unsupported WebGL2 MRT depth/stencil format: ${depthStencilFormat}.`);
+            }
+            const depthParams = this.glRenderBufferParam(depthStencilFormat, false);
+            if (depthParams) {
+                const maxRenderbufferSize = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE);
+                if (width > maxRenderbufferSize || height > maxRenderbufferSize)
+                    throw new RangeError(`MRT depth/stencil dimensions exceed ${maxRenderbufferSize}.`);
+            }
+            let memory = this.getGLRTTexMemory(width, height, Laya.RenderTargetFormat.None, depthStencilFormat, false, 1, false);
+            for (const format of formats)
+                if (format !== null)
+                    memory += this.getGLRTTexMemory(width, height, format, Laya.RenderTargetFormat.None, false, 1, false);
+            const previousDraw = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+            const previousRenderbuffer = gl.getParameter(gl.RENDERBUFFER_BINDING);
+            const previousTexture = gl.getParameter(gl.TEXTURE_BINDING_2D);
+            const textureUnit = this._engine._activedTextureID - gl.TEXTURE0;
+            const previousCachedTexture = this._engine._activeTextures[textureUnit];
+            const renderTarget = new WebGLInternalRT(this._engine, formats[0], depthStencilFormat, false, false, 1, formats);
+            renderTarget.isSRGB = colorParams[0].useSRGB;
+            let error = null;
+            if (!renderTarget._framebuffer)
+                error = "Unable to allocate the MRT framebuffer.";
+            else {
+                gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, renderTarget._framebuffer);
+                const drawBuffers = [];
+                for (let i = 0; i < formats.length; i++) {
+                    const params = colorParams[i];
+                    if (!params) {
+                        renderTarget._textures.push(null);
+                        drawBuffers.push(gl.NONE);
+                        continue;
+                    }
+                    const texture = new WebGLInternalTex(this._engine, gl.TEXTURE_2D, width, height, 1, Laya.TextureDimension.Tex2D, false, params.useSRGB, 1);
+                    renderTarget._textures.push(texture);
+                    if (!texture.resource) {
+                        error = `Unable to allocate MRT color attachment ${i}.`;
+                        break;
+                    }
+                    texture.internalFormat = params.internalFormat;
+                    texture.format = params.format;
+                    texture.type = params.type;
+                    this._engine._bindTexture(gl.TEXTURE_2D, texture.resource);
+                    gl.texStorage2D(gl.TEXTURE_2D, 1, texture.internalFormat, width, height);
+                    const attachment = gl.COLOR_ATTACHMENT0 + i;
+                    gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, attachment, gl.TEXTURE_2D, texture.resource, 0);
+                    drawBuffers.push(attachment);
+                }
+                if (!error && depthParams) {
+                    renderTarget._depthbuffer = gl.createRenderbuffer();
+                    if (!renderTarget._depthbuffer)
+                        error = "Unable to allocate MRT depth/stencil storage.";
+                    else {
+                        gl.bindRenderbuffer(gl.RENDERBUFFER, renderTarget._depthbuffer);
+                        gl.renderbufferStorage(gl.RENDERBUFFER, depthParams.internalFormat, width, height);
+                        gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, depthParams.attachment, gl.RENDERBUFFER, renderTarget._depthbuffer);
+                    }
+                }
+                if (!error) {
+                    gl.drawBuffers(drawBuffers);
+                    const status = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER);
+                    if (status !== gl.FRAMEBUFFER_COMPLETE)
+                        error = `WebGL2 MRT framebuffer is incomplete (0x${status.toString(16)}).`;
+                    else
+                        error = this._createMRTColor0Target(renderTarget);
+                }
+            }
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, previousDraw);
+            gl.bindRenderbuffer(gl.RENDERBUFFER, previousRenderbuffer);
+            gl.bindTexture(gl.TEXTURE_2D, previousTexture);
+            this._engine._activeTextures[textureUnit] = previousCachedTexture;
+            if (error) {
+                renderTarget.dispose();
+                throw new Error(error);
+            }
+            renderTarget.gpuMemory = memory;
+            return renderTarget;
+        }
+        _createMRTColor0Target(owner) {
+            const gl = this._gl;
+            const target = new WebGLInternalRT(this._engine, owner.colorFormat, owner.depthStencilFormat, false, false, 1);
+            owner._color0Target = target;
+            target._owner = owner;
+            target._textures.push(owner._textures[0]);
+            target._depthTexture = owner._depthTexture;
+            target._depthbuffer = owner._depthbuffer;
+            target.isSRGB = owner.isSRGB;
+            if (!target._framebuffer)
+                return "Unable to allocate the MRT color-0 framebuffer.";
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, target._framebuffer);
+            gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, target._textures[0].resource, 0);
+            if (owner.depthStencilFormat !== Laya.RenderTargetFormat.None) {
+                const attachment = this.glRenderTargetAttachment(owner.depthStencilFormat);
+                if (owner._depthTexture)
+                    gl.framebufferTexture2D(gl.DRAW_FRAMEBUFFER, attachment, gl.TEXTURE_2D, owner._depthTexture.resource, 0);
+                else
+                    gl.framebufferRenderbuffer(gl.DRAW_FRAMEBUFFER, attachment, gl.RENDERBUFFER, owner._depthbuffer);
+            }
+            gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+            const status = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER);
+            return status === gl.FRAMEBUFFER_COMPLETE ? null
+                : `WebGL2 MRT color-0 framebuffer is incomplete (0x${status.toString(16)}).`;
+        }
         createRenderTargetInternal(width, height, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
             let texture = this.createRenderTextureInternal(Laya.TextureDimension.Tex2D, width, height, colorFormat, generateMipmap, sRGB);
             let renderTarget = new WebGLInternalRT(this._engine, colorFormat, depthStencilFormat, false, texture.mipmap, multiSamples);
@@ -7817,6 +8083,10 @@
             return renderTarget;
         }
         bindRenderTarget(renderTarget, slice = 0) {
+            if (!renderTarget || renderTarget.destroyed || !renderTarget._framebuffer)
+                throw new Error("Cannot bind a missing or destroyed WebGL render target.");
+            if (renderTarget.colorFormats && slice !== 0)
+                throw new RangeError("WebGL2 MRT only supports 2D attachments at mip level 0.");
             this.currentActiveRT && this.unbindRenderTarget(this.currentActiveRT);
             let gl = this._gl;
             let head = renderTarget._textures[0];
@@ -7826,6 +8096,10 @@
                 let bufs = [];
                 for (let i = 0; i < renderTarget._textures.length; i++) {
                     let tex = renderTarget._textures[i];
+                    if (!tex) {
+                        bufs.push(gl.NONE);
+                        continue;
+                    }
                     let attach = gl.COLOR_ATTACHMENT0 + i;
                     if (renderTarget._isCube)
                         gl.framebufferTexture2D(gl.FRAMEBUFFER, attach, gl.TEXTURE_CUBE_MAP_POSITIVE_X + slice, tex.resource, 0);
@@ -7846,6 +8120,70 @@
             }
             this.currentActiveRT = renderTarget;
         }
+        async readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if (!Number.isInteger(attachmentIndex) || attachmentIndex < 0)
+                throw new RangeError("Color attachment index must be a non-negative integer.");
+            if (!renderTarget || renderTarget.destroyed)
+                throw new Error("Cannot read a missing or destroyed WebGL render target.");
+            if (!renderTarget.colorFormats)
+                return super.readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex);
+            const gl = this._gl;
+            if (renderTarget._gl !== gl || !renderTarget._framebuffer)
+                throw new Error("MRT does not belong to this WebGL context or has no framebuffer.");
+            if (attachmentIndex >= renderTarget.colorFormats.length)
+                throw new RangeError(`MRT color attachment index out of range: ${attachmentIndex}.`);
+            const texture = renderTarget._textures[attachmentIndex];
+            if (!texture)
+                throw new Error(`MRT color attachment ${attachmentIndex} is empty.`);
+            if (!texture.resource || renderTarget._samples !== 1)
+                throw new Error("MRT readback requires a valid single-sampled color attachment.");
+            if (!Number.isInteger(xOffset) || !Number.isInteger(yOffset) || !Number.isInteger(width) || !Number.isInteger(height)
+                || xOffset < 0 || yOffset < 0 || width <= 0 || height <= 0 || xOffset + width > texture.width || yOffset + height > texture.height)
+                throw new RangeError("MRT readback rectangle must be positive-sized and within the attachment.");
+            const textureType = texture.type;
+            let type;
+            let byteLength;
+            if (textureType === gl.UNSIGNED_BYTE) {
+                if (!(out instanceof Uint8Array) && !(out instanceof Uint8ClampedArray))
+                    throw new TypeError("RGBA8 MRT readback requires Uint8Array or Uint8ClampedArray.");
+                type = gl.UNSIGNED_BYTE;
+                byteLength = width * height * 4;
+            }
+            else if (textureType === gl.HALF_FLOAT || textureType === gl.FLOAT) {
+                if (!(out instanceof Float32Array))
+                    throw new TypeError("Floating-point MRT readback requires Float32Array.");
+                type = gl.FLOAT;
+                byteLength = width * height * 16;
+            }
+            else {
+                throw new Error(`Unsupported MRT readback texture type: ${textureType}.`);
+            }
+            if (out.byteLength < byteLength)
+                throw new RangeError(`MRT readback output requires at least ${byteLength} bytes.`);
+            const previousRead = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, renderTarget._framebuffer);
+            if (gl.checkFramebufferStatus(gl.READ_FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previousRead);
+                throw new Error("Cannot read an incomplete MRT framebuffer.");
+            }
+            const previousReadBuffer = gl.getParameter(gl.READ_BUFFER);
+            const previousPackBuffer = gl.getParameter(gl.PIXEL_PACK_BUFFER_BINDING);
+            const packParams = [gl.PACK_ALIGNMENT, gl.PACK_ROW_LENGTH, gl.PACK_SKIP_PIXELS, gl.PACK_SKIP_ROWS];
+            const packValues = packParams.map(param => gl.getParameter(param));
+            gl.readBuffer(gl.COLOR_ATTACHMENT0 + attachmentIndex);
+            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, null);
+            gl.pixelStorei(gl.PACK_ALIGNMENT, 1);
+            gl.pixelStorei(gl.PACK_ROW_LENGTH, 0);
+            gl.pixelStorei(gl.PACK_SKIP_PIXELS, 0);
+            gl.pixelStorei(gl.PACK_SKIP_ROWS, 0);
+            gl.readPixels(xOffset, yOffset, width, height, gl.RGBA, type, out);
+            gl.readBuffer(previousReadBuffer);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, previousRead);
+            gl.bindBuffer(gl.PIXEL_PACK_BUFFER, previousPackBuffer);
+            for (let i = 0; i < packParams.length; i++)
+                gl.pixelStorei(packParams[i], packValues[i]);
+            return out;
+        }
         unbindRenderTarget(renderTarget) {
             let gl = this._gl;
             if (renderTarget && renderTarget._samples > 1) {
@@ -7860,6 +8198,8 @@
             }
             if (renderTarget && renderTarget._generateMipmap) {
                 renderTarget._textures.forEach(tex => {
+                    if (!tex)
+                        return;
                     let target = tex.target;
                     this._engine._bindTexture(target, tex.resource);
                     gl.generateMipmap(target);
@@ -8056,6 +8396,13 @@
             this._glParamsData.set(Laya.RenderParams.UNSIGNED_BYTE, gl.UNSIGNED_BYTE);
             this._glParamsData.set(Laya.RenderParams.UNSIGNED_SHORT, gl.UNSIGNED_SHORT);
             this._glParamsData.set(Laya.RenderParams.BYTE, gl.BYTE);
+            let maxColorAttachments = 1;
+            if (this._engine.isWebGL2) {
+                const gl2 = gl;
+                maxColorAttachments = Math.min(gl2.getParameter(gl2.MAX_COLOR_ATTACHMENTS), gl2.getParameter(gl2.MAX_DRAW_BUFFERS));
+            }
+            this._glParamsData.set(Laya.RenderParams.Max_Color_Attachment_Count, maxColorAttachments);
+            this._glParamsData.set(Laya.RenderParams.Max_Color_Attachment_Bytes_Per_Sample, 0);
         }
         getParams(params) {
             return this._glParamsData.get(params);
@@ -8462,7 +8809,7 @@
     class GLShaderInstance extends GLObject {
         constructor(engine, vs, ps, attributeMap) {
             super(engine);
-            this._defaultTextureWarnings = new Set();
+            this._defaultTextureWarnings = new WeakMap();
             this._vs = vs;
             this._ps = ps;
             this._attributeMap = attributeMap;
@@ -8778,39 +9125,55 @@
             return 1;
         }
         _uniform_sampler2D(one, texture) {
-            var value = this._getTextureSource(one, texture, Laya.Texture2D.errorTexture, "2D");
             var gl = this._gl;
+            var value = this._getTextureSource(one, texture, Laya.Texture2D.errorTexture, "2D", gl.TEXTURE_2D);
             this._bindTexture(one.textureID, gl.TEXTURE_2D, value);
             return 0;
         }
         _uniform_sampler2DArray(one, texture) {
-            var value = this._getTextureSource(one, texture, Laya.Texture2DArray.defaultTexture, "2D array");
             var gl = this._gl;
+            var value = this._getTextureSource(one, texture, Laya.Texture2DArray.defaultTexture, "2D array", gl.TEXTURE_2D_ARRAY);
             this._bindTexture(one.textureID, gl.TEXTURE_2D_ARRAY, value);
             return 0;
         }
         _uniform_sampler3D(one, texture) {
-            var value = this._getTextureSource(one, texture, Laya.Texture3D.defaultTexture, "3D");
             var gl = this._gl;
+            var value = this._getTextureSource(one, texture, Laya.Texture3D.defaultTexture, "3D", gl.TEXTURE_3D);
             this._bindTexture(one.textureID, gl.TEXTURE_3D, value);
             return 0;
         }
         _uniform_samplerCube(one, texture) {
-            var value = this._getTextureSource(one, texture, Laya.TextureCube.errorTexture, "cube");
             var gl = this._gl;
+            var value = this._getTextureSource(one, texture, Laya.TextureCube.errorTexture, "cube", gl.TEXTURE_CUBE_MAP);
             this._bindTexture(one.textureID, gl.TEXTURE_CUBE_MAP, value);
             return 0;
         }
-        _getTextureSource(one, texture, defaultTexture, textureType) {
+        _getTextureSource(one, texture, defaultTexture, textureType, expectedTarget) {
+            var _a, _b, _c;
             const source = texture && texture._getSource();
-            if (source)
+            const asset = texture;
+            const actualTarget = (_a = asset === null || asset === void 0 ? void 0 : asset._texture) === null || _a === void 0 ? void 0 : _a.target;
+            if (source && (actualTarget == null || actualTarget === expectedTarget))
                 return source;
-            if (!this._defaultTextureWarnings.has(one.onID)) {
-                const reason = texture ? "has no valid GPU resource" : "is not set";
-                console.warn(`[LayaAir] Texture uniform \"${one.name}\" ${reason}; binding the default ${textureType} texture.`);
-                this._defaultTextureWarnings.add(one.onID);
+            if (texture) {
+                const warningKey = `${one.onID}:${expectedTarget}:${source ? actualTarget : "missing"}`;
+                let warnings = this._defaultTextureWarnings.get(texture);
+                if (!warnings) {
+                    warnings = new Set();
+                    this._defaultTextureWarnings.set(texture, warnings);
+                }
+                if (!warnings.has(warningKey)) {
+                    const actualType = (_b = Laya.TextureDimension[asset.dimension]) !== null && _b !== void 0 ? _b : actualTarget;
+                    const resource = asset.url || asset.name || (asset.id != null ? `#${asset.id}` : "internal texture");
+                    const reason = source
+                        ? `expects ${textureType}, but texture "${resource}" has target ${actualType}`
+                        : `texture "${resource}" has no valid GPU resource`;
+                    console.warn(`Texture uniform "${one.name}": ${reason}.`);
+                    warnings.add(warningKey);
+                }
             }
-            return defaultTexture && defaultTexture._getSource();
+            return ((_c = defaultTexture === null || defaultTexture === void 0 ? void 0 : defaultTexture._texture) === null || _c === void 0 ? void 0 : _c.target) === expectedTarget
+                ? defaultTexture._getSource() : null;
         }
         _uniform_UniformBuffer(one, value) {
             value.bind(one.location);
@@ -8830,7 +9193,7 @@
         }
         destroy() {
             super.destroy();
-            this._defaultTextureWarnings.clear();
+            this._defaultTextureWarnings = new WeakMap();
             const gl = this._gl;
             gl.deleteShader(this._vshader);
             gl.deleteShader(this._pshader);
@@ -9284,8 +9647,10 @@
             this._capabilityMap.set(Laya.RenderCapable.MSAA, value);
             this._capabilityMap.set(Laya.RenderCapable.UnifromBufferObject, value);
             this._capabilityMap.set(Laya.RenderCapable.Texture3D, value);
+            this._capabilityMap.set(Laya.RenderCapable.Texture_NPOTFull, isWebgl2);
             this._capabilityMap.set(Laya.RenderCapable.ComputeShader, false);
             this._capabilityMap.set(Laya.RenderCapable.StorageBuffer, false);
+            this._capabilityMap.set(Laya.RenderCapable.MRT, isWebgl2);
         }
         initExtension(isWebgl2) {
             this._extensionMap = new Map();
@@ -9464,6 +9829,7 @@
             this._isShaderDebugMode = true;
             this._lastClearColor = new Laya.Color;
             this._lastClearDepth = -1;
+            this._attachmentClearColor = new Float32Array(4);
             this._remapZ = true;
             this._screenInvertY = false;
             this._lodTextureSample = true;
@@ -9619,14 +9985,34 @@
             else
                 this._context.disable(this._context.SCISSOR_TEST);
         }
-        clearRenderTexture(clearFlag, clearcolor = null, clearDepth = 1, clearStencilValue = 0) {
+        clearRenderTexture(clearFlag, clearcolor = null, clearDepth = 1, clearStencilValue = 0, clearColorValues) {
+            var _a;
             var flag;
             if (clearFlag & Laya.RenderClearFlag.Color) {
-                if (clearcolor && !this._lastClearColor.equal(clearcolor)) {
-                    this._context.clearColor(clearcolor.r, clearcolor.g, clearcolor.b, clearcolor.a);
-                    clearcolor.cloneTo(this._lastClearColor);
+                if (clearColorValues) {
+                    if (!this._isWebGL2)
+                        throw new Error("Per-attachment clear colors require WebGL2.");
+                    const gl = this._context;
+                    const values = this._attachmentClearColor;
+                    const colorFormats = (_a = this._GLTextureContext.currentActiveRT) === null || _a === void 0 ? void 0 : _a.colorFormats;
+                    for (let i = 0; i < clearColorValues.length; i++) {
+                        const color = clearColorValues[i];
+                        if (!color || (colorFormats && colorFormats[i] == null))
+                            continue;
+                        values[0] = color.r;
+                        values[1] = color.g;
+                        values[2] = color.b;
+                        values[3] = color.a;
+                        gl.clearBufferfv(gl.COLOR, i, values);
+                    }
                 }
-                flag |= this.gl.COLOR_BUFFER_BIT;
+                else {
+                    if (clearcolor && !this._lastClearColor.equal(clearcolor)) {
+                        this._context.clearColor(clearcolor.r, clearcolor.g, clearcolor.b, clearcolor.a);
+                        clearcolor.cloneTo(this._lastClearColor);
+                    }
+                    flag |= this.gl.COLOR_BUFFER_BIT;
+                }
             }
             if (clearFlag & Laya.RenderClearFlag.Depth) {
                 if (this._lastClearDepth != clearDepth) {
@@ -11807,6 +12193,8 @@
         }
         updateRenderState(renderState) {
             var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0;
+            if (!this._renderShaderInstance._complete)
+                return;
             if (this._shaderPass.statefirst) {
                 if (this.matRenderStateCache === renderState.hash) {
                     return;

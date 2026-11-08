@@ -13,6 +13,8 @@ declare global {
     export namespace IEditorEnv {
         /** GPU-assisted helper for snapping a screen-space pointer to the nearest mesh vertex. */
         export interface IVertexPicker {
+            /** Async counterpart used by WebGPU; writes into request-owned output. */
+            pickAsync(camera: Laya.Camera, sprite: Laya.Sprite3D, x: number, y: number, range: number, out: Laya.Vector3): Promise<boolean>;
             /**
              * Find the world-space coordinates of the nearest mesh vertex within a screen-space range.
              * @param camera Camera used to project the mesh and pointer coordinates.
@@ -101,6 +103,16 @@ declare global {
             alphaChannel?: boolean;
 
             /**
+             * Whether to extend RGB from pixels with alpha > 0 into fully transparent pixels for Default 2D textures. Defaults to false.
+             * Runs before resizing, mipmap generation and compression, without changing alpha.
+             * Applies to decodable LDR sources with alpha output; skips HDR, KTX/DDS inputs and RGB-only outputs.
+             * Set false to skip this extension and preserve hidden RGB for independent channel data.
+             * Sharp resizes RGB and alpha independently in both modes; TGA retains its KTX/native pipeline.
+             * Does not affect the explicit premultiplyAlpha setting.
+             */
+            alphaIsTransparency?: boolean;
+
+            /**
              * If true, mipmaps will be generated. The purpose of mipmaps is to create a series of texture versions with different resolutions. 
              * This allows for the selection of an appropriate texture to sample based on the size of the object on the screen during the rendering process. It effectively improves rendering efficiency, reduces computational overhead, and eliminates visual artifacts such as aliasing and blurring, thereby enhancing the visual quality of the rendering. 
              * However, it should be noted that generating mipmaps will increase the memory usage.
@@ -131,9 +143,12 @@ declare global {
             premultiplyAlpha?: boolean;
 
             /**
-             * 0: repeat, 1: clamp, 2: mirrored
+             * U-axis wrapping (all axes for cubes). 0: repeat, 1: clamp, 2: mirrored.
              */
             wrapMode?: number;
+
+            /** V-axis wrapping for 2D textures. -1 or absent: follow wrapMode; 0: repeat, 1: clamp, 2: mirrored. */
+            wrapModeV?: number;
 
             /**
              * 0: nearest, 1: linear, 2: cubic
@@ -260,6 +275,9 @@ declare global {
              * 0: repeat, 1: clamp, 2: mirrored
              */
             wrapMode: number;
+
+            /** Optional V-axis override for 2D textures; absent inherits wrapMode. Never -1. */
+            wrapModeV?: number;
 
             /**
              * 0: nearest, 1: linear, 2: cubic
@@ -503,8 +521,14 @@ declare global {
             function decodeObj(data: any, receiver?: any, type?: string, options?: IDecodeObjOptions): any;
         }
 
-        /** Build-time JavaScript minification and compatibility-transformation utilities. */
+        /** Script processing and project diagnostics utilities. */
         export interface IScriptTool {
+            /** Check the current project's TypeScript sources and return diagnostics without writing to the console. Rejects if the check cannot be started. */
+            checkProjectSyntax(): Promise<IProjectSyntaxCheckResult>;
+
+            /** Check the current project's runtime imports and return circular chains and unresolved imports without writing to the console. Rejects if the check cannot be started. */
+            checkProjectCircularReferences(): Promise<IProjectCircularReferenceCheckResult>;
+
             /**
              * Compress a JavaScript file. The result is cached in `library/minifiedJsCache` for future use.
              * @param filePath The path of the file to compress.
@@ -520,6 +544,48 @@ declare global {
              * @param presets The presets to use. Default is "@babel/preset-env".
              */
             babelTransform(filePath: string, presets?: string): Promise<void>;
+        }
+
+        /** A TypeScript compiler diagnostic, with plain text and an optional source location. */
+        export interface IProjectSyntaxDiagnostic {
+            /** Diagnostic severity; message is used for compiler output without a diagnostic code. */
+            category: "error" | "warning" | "message";
+            /** TypeScript diagnostic number, when available. */
+            code?: number;
+            /** Plain diagnostic text, including any multiline explanation. */
+            message: string;
+            /** Absolute source file path, when available. */
+            filePath?: string;
+            /** One-based source line number, when available. */
+            line?: number;
+            /** One-based source column number, when available. */
+            column?: number;
+        }
+
+        /** Result of checking the current project's TypeScript sources. */
+        export interface IProjectSyntaxCheckResult {
+            /** Individual diagnostics in compiler output order. */
+            diagnostics: IProjectSyntaxDiagnostic[];
+            /** Total number of error diagnostics. */
+            errorCount: number;
+            /** Compiler exit code; a nonzero value indicates an unsuccessful check. */
+            exitCode: number;
+            /** Check duration in milliseconds. */
+            duration: number;
+        }
+
+        /** Result of checking the current project's runtime import graph. */
+        export interface IProjectCircularReferenceCheckResult {
+            /** Circular chains of project-relative file paths; the starting file is not repeated at the end. */
+            circular: string[][];
+            /** Unresolved imports; issuer is a project-relative file path. The graph may be incomplete when this list is nonempty. */
+            unresolved: Array<{ issuer: string; request: string }>;
+            /** Plain configuration errors that prevented graph analysis. */
+            errors: string[];
+            /** Number of analyzed source files. */
+            fileCount: number;
+            /** Check duration in milliseconds. */
+            duration: number;
         }
 
         export type ParticleActionCommand = "play" | "pause" | "stop" | "restart" | "seek";
@@ -1270,6 +1336,15 @@ declare global {
 
         /** GPU-based scene picking for object IDs, nodes and world positions. */
         export interface IPickManager {
+            /** Async readback entry points. Existing synchronous methods retain their WebGL behavior. */
+            pickIdsAsync(x: number, y: number, range: number, camera: Laya.Camera, addCmds: (cmdBuffer: Laya.CommandBuffer) => void): Promise<number[]>;
+            pickIds2DAsync(x: number, y: number, range: number, size: { width: number, height: number }, addCmds: (cmdBuffer: Laya.CommandBuffer2D) => void): Promise<number[]>;
+            pickPosAsync(x: number, y: number, ignoreSelected?: boolean): Promise<Readonly<Laya.Vector4> | null>;
+            pickSprite3DAsync(x: number, y: number, range: number, ignoreSelected?: boolean): Promise<Laya.Sprite3D | null>;
+            pickSprite3DAsync(x: number, y: number, range: number, addCmds: (cmdBuffer: Laya.CommandBuffer) => void): Promise<Laya.Sprite3D | null>;
+            pickSpriteAsync(x: number, y: number, range: number, addCmds: (cmdBuffer: Laya.CommandBuffer2D) => void): Promise<Laya.Sprite | null>;
+            pickSpriteAsync(x: number, y: number, range: number, root: Laya.Sprite): Promise<Laya.Node | null>;
+
             /**
              * Pick object id list through pixel coordinates
              * @param x pixel coordinate x
@@ -1552,6 +1627,8 @@ declare global {
              * @param y The y coordinate of the mouse cursor. 
              */
             getSpriteUnderMouse(x: number, y: number): Laya.Node | null;
+            /** Uses synchronous picking on WebGL and asynchronous readback on WebGPU. */
+            getSpriteUnderMouseAsync(x: number, y: number): Promise<Laya.Node | null>;
 
             /**
              * Prevent the context menu from appearing. It is usually called when the mouse is down.
@@ -2075,6 +2152,8 @@ declare global {
             get rects(): T[];
         }
 
+        export type LivePreviewTarget = "editor" | "browser" | "emulator";
+
         /** Local HTTP/HTTPS server used for project preview and plugin-provided file routes. */
         export interface ILiveServer {
             /**
@@ -2101,6 +2180,15 @@ declare global {
              * The instance of the express application.
              */
             readonly expressApp: express.Express;
+
+            /** Injects response headers when serving the preview index. */
+            readonly onInjectHeaders: IDelegate<(request: express.Request, response: express.Response) => void>;
+
+            /** Injects helper code into the preview's editor-client script. */
+            readonly onInjectHelper: IDelegate<(request: express.Request, appendCode: (code: string) => void) => void>;
+
+            /** Returns the preview target represented by a LiveServer request. */
+            getPreviewTarget(request: Pick<express.Request, "query" | "headers" | "header">): LivePreviewTarget;
 
             /**
              * Serve a local file at the specified URL path.
@@ -2655,6 +2743,11 @@ declare global {
         export namespace IHandleUtils {
 
             /**
+             * Whether picking uses WebGPU asynchronous readback.
+             */
+            function isWebGPUPicking(): boolean;
+
+            /**
              * Get current mouse position. It is the result of the screen mouse position multiplied by EditorEnv.hostPixelRatio.
              */
             const mousePosition: Readonly<Laya.Vector2>;
@@ -2769,6 +2862,8 @@ declare global {
             addHandle<T extends HandleBase>(handleClass: (new () => T) | T, ...args: Parameters<T['execute']>): T;
             /** Pick a gizmo node at screen coordinates, or return `null` when nothing is hit. */
             pickGizmo(x: number, y: number): Laya.Node | null;
+            /** WebGPU readback; the synchronous entry point remains unchanged. */
+            pickGizmoAsync(x: number, y: number): Promise<Laya.Node | null>;
             /** Append selectable scene nodes inside a screen-selection frustum to `result`. */
             getSprite3DsInRect(frustum: Laya.BoundFrustum, result: Laya.Node[]): void;
         }
@@ -3414,6 +3509,8 @@ declare global {
         });
 
         export enum AssetExportConfigType {
+            /** Per-asset runtime metadata, read by the asset's loader. */
+            Metadata = 0,
             Texture = 0,
             Atlas = 1,
             Shader = 2,
@@ -4411,11 +4508,11 @@ declare global {
             function createTexture(tex: Laya.Texture | Laya.BaseTexture, path: string, textureImporter?: Record<string, any>): Promise<IAssetInfo>;
 
             /**
-             * Unpack a model asset. A model asset is a FBX, glTF, or other model file.
-             * @param modelAsset The model asset.
-             * @param outputPath The output path of the unpacked model.
+             * Unpack a model asset or a local GLB, glTF, FBX or OBJ file.
+             * @param modelAsset A model asset, asset id or path, or absolute local model path. Strings are resolved as assets first.
+             * @param outputPath Absolute output directory. For local models, it must not already exist; dependencies must be local.
              */
-            function unpackModel(modelAsset: IAssetInfo, outputPath: string): Promise<void>;
+            function unpackModel(modelAsset: IAssetInfo | string, outputPath: string): Promise<void>;
 
             /**
              * Serialize a animation clip object to a binary buffer.
@@ -4594,6 +4691,13 @@ declare global {
             sourcesContent?: boolean,
 
             /**
+             * Remove Laya property, classInfo and runInEditor decorators, including their arguments.
+             * buildRelease defaults to the project's compiler setting (disabled by default).
+             * buildScriptBundle defaults to false and always retains decorators in editor outputs.
+             */
+            stripEditorDecorators?: boolean;
+
+            /**
              * By default, the class id of the script bundle is the compressed version of the asset id. You can provide a custom transformer to change the class id.
              */
             classIdTransformer?: IClassIdTransformer;
@@ -4628,6 +4732,7 @@ declare global {
              */
             buildScriptBundle(defAsset: IAssetInfo, outDir: string, options?: ICodeBuildOptions): Promise<Array<string>>;
         }
+
         /**
          * Public types for the built-in Clipper2 polygon library.
          *
@@ -6535,6 +6640,7 @@ declare global {
              * - curve : Curve editor.
              * - matrix3 : 3x3 matrix inputs.
              * - matrix4 : 4x4 matrix inputs.
+             * - json : Display a read-only JSON summary and edit any JSON-compatible value in a code editor dialog.
              * - TabBar : Tab control. Display properties grouped in different Tab pages.
              * - Group : Make a group of properties with an indent and collapsible.
              * - RadioGroup : Display the captions of multiple properties using a dropdown box and select the property whose current value is true. The property value is converted to a boolean using `!!`.
@@ -8117,8 +8223,10 @@ declare global {
             /**
              * Opens the code editor.
              * @param filePath The file path.
+             * @param line Optional one-based line number.
+             * @param column Optional one-based column number; defaults to 1 when a line is provided.
              */
-            openCodeEditor(filePath: string): void;
+            openCodeEditor(filePath: string, line?: number, column?: number): void;
 
             /**
              * Opens the browser.
@@ -8145,6 +8253,7 @@ declare global {
              */
             runCommandInTerminal(command: string, workingDirectory?: string): Promise<void>;
         }
+
         export interface IFetchResponseTypeMap {
             "text": string;
             "json": any;
@@ -8858,6 +8967,10 @@ declare global {
 
         /** General file-system, path, timing, string and process helpers exposed by the editor. */
         export interface IUtils {
+            /** Resolve a native save-dialog path back into assets, using filesystem IO.
+             * Returns null for locations outside assets or ambiguous directory links.
+             */
+            resolveAssetSavePath(filePath: string, defaultPath?: string): Promise<string | null>;
             /**
              * Parse string content from a file to a JSON object.
              * @param filePath The path of the file. 

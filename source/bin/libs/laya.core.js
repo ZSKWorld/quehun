@@ -800,7 +800,7 @@ window.Laya = (function (exports) {
 
     class LayaEnv {
     }
-    LayaEnv.version = "3.4.1";
+    LayaEnv.version = "3.4.2";
     LayaEnv.isPlaying = true;
     LayaEnv.isPreview = false;
     LayaEnv.isConch = window ? (window.conch != null) : false;
@@ -1208,25 +1208,9 @@ window.Laya = (function (exports) {
         RenderTargetFormat[RenderTargetFormat["DEPTHSTENCIL_24_8"] = 37] = "DEPTHSTENCIL_24_8";
         RenderTargetFormat[RenderTargetFormat["DEPTH_32"] = 38] = "DEPTH_32";
         RenderTargetFormat[RenderTargetFormat["DEPTHSTENCIL_24_Plus"] = 39] = "DEPTHSTENCIL_24_Plus";
+        RenderTargetFormat[RenderTargetFormat["R16"] = 40] = "R16";
+        RenderTargetFormat[RenderTargetFormat["R16G16"] = 41] = "R16G16";
     })(exports.RenderTargetFormat || (exports.RenderTargetFormat = {}));
-
-    exports.TextureDimension = void 0;
-    (function (TextureDimension) {
-        TextureDimension[TextureDimension["Tex2D"] = 0] = "Tex2D";
-        TextureDimension[TextureDimension["Cube"] = 1] = "Cube";
-        TextureDimension[TextureDimension["Tex3D"] = 2] = "Tex3D";
-        TextureDimension[TextureDimension["Texture2DArray"] = 3] = "Texture2DArray";
-        TextureDimension[TextureDimension["CubeArray"] = 4] = "CubeArray";
-        TextureDimension[TextureDimension["Unkonw"] = 5] = "Unkonw";
-        TextureDimension[TextureDimension["None"] = 6] = "None";
-    })(exports.TextureDimension || (exports.TextureDimension = {}));
-
-    exports.HDREncodeFormat = void 0;
-    (function (HDREncodeFormat) {
-        HDREncodeFormat[HDREncodeFormat["NONE"] = 0] = "NONE";
-        HDREncodeFormat[HDREncodeFormat["RGBM"] = 1] = "RGBM";
-        HDREncodeFormat[HDREncodeFormat["RGBD"] = 2] = "RGBD";
-    })(exports.HDREncodeFormat || (exports.HDREncodeFormat = {}));
 
     exports.RenderCapable = void 0;
     (function (RenderCapable) {
@@ -1257,7 +1241,29 @@ window.Laya = (function (exports) {
         RenderCapable[RenderCapable["StorageBuffer"] = 24] = "StorageBuffer";
         RenderCapable[RenderCapable["ComputeShader"] = 25] = "ComputeShader";
         RenderCapable[RenderCapable["IndirectDraw"] = 26] = "IndirectDraw";
+        RenderCapable[RenderCapable["Texture_NPOTFull"] = 27] = "Texture_NPOTFull";
+        RenderCapable[RenderCapable["MRT"] = 28] = "MRT";
+        RenderCapable[RenderCapable["RenderTextureFormat_R16"] = 29] = "RenderTextureFormat_R16";
+        RenderCapable[RenderCapable["RenderTextureFormat_R16G16"] = 30] = "RenderTextureFormat_R16G16";
     })(exports.RenderCapable || (exports.RenderCapable = {}));
+
+    exports.TextureDimension = void 0;
+    (function (TextureDimension) {
+        TextureDimension[TextureDimension["Tex2D"] = 0] = "Tex2D";
+        TextureDimension[TextureDimension["Cube"] = 1] = "Cube";
+        TextureDimension[TextureDimension["Tex3D"] = 2] = "Tex3D";
+        TextureDimension[TextureDimension["Texture2DArray"] = 3] = "Texture2DArray";
+        TextureDimension[TextureDimension["CubeArray"] = 4] = "CubeArray";
+        TextureDimension[TextureDimension["Unkonw"] = 5] = "Unkonw";
+        TextureDimension[TextureDimension["None"] = 6] = "None";
+    })(exports.TextureDimension || (exports.TextureDimension = {}));
+
+    exports.HDREncodeFormat = void 0;
+    (function (HDREncodeFormat) {
+        HDREncodeFormat[HDREncodeFormat["NONE"] = 0] = "NONE";
+        HDREncodeFormat[HDREncodeFormat["RGBM"] = 1] = "RGBM";
+        HDREncodeFormat[HDREncodeFormat["RGBD"] = 2] = "RGBD";
+    })(exports.HDREncodeFormat || (exports.HDREncodeFormat = {}));
 
     exports.TextureFormat = void 0;
     (function (TextureFormat) {
@@ -1497,14 +1503,14 @@ window.Laya = (function (exports) {
             let ret = listeners.count > 0;
             if (Array.isArray(data))
                 listeners.invoke(...data);
-            else if (data !== undefined)
-                listeners.invoke(data);
             else if (data === Event.EMPTY) {
                 let ev = eventPool.length > 0 ? eventPool.pop() : new Event();
                 listeners.invoke(ev.setTo(type, this, this));
                 ev.target = ev.currentTarget = null;
                 eventPool.push(ev);
             }
+            else if (data !== undefined)
+                listeners.invoke(data);
             else
                 listeners.invoke();
             return ret;
@@ -1915,12 +1921,28 @@ window.Laya = (function (exports) {
         DepthTextureMode[DepthTextureMode["MotionVectors"] = 4] = "MotionVectors";
     })(exports.DepthTextureMode || (exports.DepthTextureMode = {}));
     class RenderTexture extends BaseTexture {
+        static _getCompatibleColorFormat(format) {
+            if (format !== exports.RenderTargetFormat.R16G16B16 && format !== exports.RenderTargetFormat.R16G16B16A16)
+                return format;
+            if (LayaGL.renderEngine.getCapable(exports.RenderCapable.RenderTextureFormat_R16G16B16A16))
+                return format;
+            const supportFloat32 = LayaGL.renderEngine.getCapable(exports.RenderCapable.RenderTextureFormat_R32G32B32A32);
+            let fallbackFormat;
+            if (format === exports.RenderTargetFormat.R16G16B16)
+                fallbackFormat = supportFloat32 ? exports.RenderTargetFormat.R32G32B32 : exports.RenderTargetFormat.R8G8B8;
+            else
+                fallbackFormat = supportFloat32 ? exports.RenderTargetFormat.R32G32B32A32 : exports.RenderTargetFormat.R8G8B8A8;
+            console.warn(`RenderTexture: ${exports.RenderTargetFormat[format]} is not supported, falling back to ${exports.RenderTargetFormat[fallbackFormat]}.`);
+            return fallbackFormat;
+        }
         static createFromPool(width, height, colorFormat, depthFormat, mipmap = false, multiSamples = 1, depthTexture = false, sRGB = false, storage = false) {
-            mipmap = mipmap && (width & (width - 1)) === 0 && (height & (height - 1)) === 0;
+            mipmap = mipmap && (LayaGL.renderEngine.getCapable(exports.RenderCapable.Texture_NPOTFull)
+                || ((width & (width - 1)) === 0 && (height & (height - 1)) === 0));
+            colorFormat = RenderTexture._getCompatibleColorFormat(colorFormat);
             let n = RenderTexture._pool.length;
             for (let index = 0; index < n; index++) {
                 let rt = RenderTexture._pool[index];
-                if (rt.width == width && rt.height == height && rt.colorFormat == colorFormat && rt.depthStencilFormat == depthFormat && rt._generateMipmap == mipmap && rt.multiSamples == multiSamples && rt._gammaSpace == sRGB && rt._storage == storage) {
+                if (!rt.destroyed && !rt.isMRT && rt.width == width && rt.height == height && rt.colorFormat == colorFormat && rt.depthStencilFormat == depthFormat && rt._generateMipmap == mipmap && rt.multiSamples == multiSamples && rt._gammaSpace == sRGB && rt._storage == storage) {
                     rt._inPool = false;
                     let end = RenderTexture._pool[n - 1];
                     RenderTexture._pool[index] = end;
@@ -1957,6 +1979,10 @@ window.Laya = (function (exports) {
         static set bindCanvasRender(value) {
             if (value != this._bindCanvasRender)
                 this._bindCanvasRender = value;
+        }
+        get isMRT() { return false; }
+        _getRenderTarget(_colorAttachment0Only = false) {
+            return this._renderTarget;
         }
         get generateDepthTexture() {
             return this._generateDepthTexture;
@@ -1995,7 +2021,7 @@ window.Laya = (function (exports) {
             return this._renderTarget._generateMipmap;
         }
         constructor(width, height, colorFormat, depthFormat, generateMipmap = false, multiSamples = 1, generateDepthTexture = false, sRGB = false, stroage = false) {
-            super(width, height, colorFormat);
+            super(width, height, RenderTexture._getCompatibleColorFormat(colorFormat));
             this._inPool = false;
             this._isCameraTarget = false;
             this._generateDepthTexture = false;
@@ -2021,6 +2047,7 @@ window.Laya = (function (exports) {
         recreate(width, height, colorFormat, depthFormat, generateMipmap = false, multiSamples = 1, generateDepthTexture = false, sRGB = false, storage = false) {
             this._width = width;
             this._height = height;
+            colorFormat = RenderTexture._getCompatibleColorFormat(colorFormat);
             this._format = colorFormat;
             this._gammaSpace = sRGB;
             this._depthStencilFormat = (depthFormat == null ? exports.RenderTargetFormat.None : depthFormat);
@@ -2241,16 +2268,17 @@ window.Laya = (function (exports) {
             return path;
         }
         static getFileExtension(path) {
+            let suffixIndex = path.search(/[?#]/);
+            if (suffixIndex != -1)
+                path = path.substring(0, suffixIndex);
+            let separatorIndex = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
             let i = path.lastIndexOf(".");
-            if (i != -1) {
+            if (i > separatorIndex) {
                 let ext = path.substring(i + 1).toLowerCase();
-                let j = ext.indexOf("?");
-                if (j != -1)
-                    ext = ext.substring(0, j);
                 if (ext === "ls") {
                     let k = path.lastIndexOf(".", i - 1);
-                    if (k != -1) {
-                        let ext2 = path.substring(k + 1, i + 1) + ext;
+                    if (k > separatorIndex) {
+                        let ext2 = path.substring(k + 1).toLowerCase();
                         if (ext2 === "lanit.ls" || ext2 === "ltcb.ls")
                             return ext2;
                     }
@@ -2263,18 +2291,16 @@ window.Laya = (function (exports) {
         static replaceFileExtension(path, newExt, excludeDot) {
             if (!path)
                 return path;
+            let suffixIndex = path.search(/[?#]/);
+            let suffix = suffixIndex != -1 ? path.substring(suffixIndex) : "";
+            if (suffixIndex != -1)
+                path = path.substring(0, suffixIndex);
             let i = path.lastIndexOf(".");
+            if (i > Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\")))
+                path = path.substring(0, i);
             if (newExt.length > 0 && !excludeDot)
                 newExt = "." + newExt;
-            if (i != -1) {
-                let j = path.indexOf("?", i);
-                if (j != -1)
-                    return path.substring(0, i) + newExt + path.substring(j);
-                else
-                    return path.substring(0, i) + newExt;
-            }
-            else
-                return path + newExt;
+            return path + newExt + suffix;
         }
         static isUUID(str) {
             return str && str.length >= 36 && str.charCodeAt(8) === 45 && str.charCodeAt(13) === 45;
@@ -4898,7 +4924,7 @@ window.Laya = (function (exports) {
                                 resolve(false);
                                 return;
                             }
-                            this._loadFileConfig(path, (_a = data === null || data === void 0 ? void 0 : data.loadScript) !== null && _a !== void 0 ? _a : true, progress).then(() => resolve(true));
+                            this._loadFileConfig(path, (_a = data === null || data === void 0 ? void 0 : data.loadScript) !== null && _a !== void 0 ? _a : true, progress).then(resolve, () => resolve(false));
                         });
                     });
             }
@@ -5102,6 +5128,7 @@ window.Laya = (function (exports) {
     NodeFlags.AWAKED = 0x4;
     NodeFlags.DISPLAY = 0x10;
     NodeFlags.HAS_ZORDER = 0x20;
+    NodeFlags.RENDERERS_CACHE = 0x40;
     NodeFlags.DISPLAYED_INSTAGE = 0x80;
     NodeFlags.CHECK_INPUT = 0x200;
     NodeFlags.DEMAND_TRANS_EVENT = 0x400;
@@ -7781,6 +7808,172 @@ window.Laya = (function (exports) {
         }
     }
 
+    class ShaderMRT {
+        static getTargetCount(defines) {
+            let count = 0;
+            for (const define of defines) {
+                if (!define.startsWith(this.targetDefinePrefix))
+                    continue;
+                const value = Number(define.substring(this.targetDefinePrefix.length));
+                if (!Number.isSafeInteger(value) || value < 1 || (count && count !== value))
+                    throw new Error("Invalid MRT shader target count.");
+                count = value;
+            }
+            return count;
+        }
+        static prepare(source, count) {
+            if (!Number.isSafeInteger(count) || count < 1)
+                throw new Error("Invalid MRT shader target count.");
+            const code = source.replace(/\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/g, comment => comment.replace(/[^\r\n]/g, " "));
+            let prefix = "laya_MRT_";
+            while (code.indexOf(prefix) !== -1)
+                prefix += "x";
+            const edits = [];
+            const tokens = /^[ \t]*#(?:\\\r?\n|[^\r\n])*|[A-Za-z_]\w*|\d+|[^\s]/gm;
+            let braces = 0, parentheses = 0, start = 0, output = false;
+            let token;
+            const legacy = `\n#define ${prefix}LEGACY\n`;
+            while ((token = tokens.exec(code))) {
+                const word = token[0].trim();
+                if (word[0] === "#") {
+                    if (/^#\s*define\b/.test(word) && /\b(gl_FragColor|pc_fragColor)\b/.test(word))
+                        edits.push({ position: token.index, text: legacy });
+                    if (braces === 0 && !output)
+                        start = tokens.lastIndex;
+                    continue;
+                }
+                if (!output && (word === "gl_FragColor" || word === "pc_fragColor"))
+                    edits.push({ position: token.index, text: legacy });
+                if (word === "gl_FragData")
+                    edits.push({ position: token.index, text: "\n#error LAYA_MRT does not support gl_FragData\n" });
+                if (word === "out" && braces === 0 && parentheses === 0)
+                    output = true;
+                if (word === "(")
+                    parentheses++;
+                else if (word === ")")
+                    parentheses--;
+                else if (word === "{") {
+                    if (output)
+                        throw new Error("LAYA_MRT output blocks are not supported.");
+                    braces++;
+                }
+                else if (word === "}") {
+                    braces--;
+                    if (braces === 0)
+                        start = tokens.lastIndex;
+                }
+                else if (word === ";" && braces === 0 && parentheses === 0) {
+                    if (output) {
+                        const declaration = code.slice(start, tokens.lastIndex);
+                        const match = /^\s*layout\s*\(\s*location\s*=\s*(\d+|[A-Za-z_]\w*)\s*\)\s*out\s+(?:(?:highp|mediump|lowp)\s+)?vec4\s+([A-Za-z_]\w*)\s*;\s*$/.exec(declaration);
+                        let marker = "\n";
+                        if (!match || match[2] === "pc_fragColor") {
+                            marker += "#error LAYA_MRT requires explicitly located vec4 outputs with non-reserved names\n";
+                        }
+                        else {
+                            const location = match[1];
+                            for (let i = 0; i < count; i++) {
+                                const flag = `${prefix}HAS_${i}`;
+                                marker += `#if (${location}) == ${i}\n#ifdef ${flag}\n#error Duplicate MRT output location\n#endif\n#define ${flag}\n#endif\n`;
+                            }
+                        }
+                        edits.push({ position: tokens.lastIndex, text: marker });
+                    }
+                    start = tokens.lastIndex;
+                    output = false;
+                }
+            }
+            let body = source;
+            for (let i = edits.length - 1; i >= 0; i--) {
+                const edit = edits[i];
+                body = body.slice(0, edit.position) + edit.text + body.slice(edit.position);
+            }
+            let tail = `\n#undef main\n#if defined(${prefix}LEGACY) && defined(${prefix}HAS_0)\n#error LAYA_MRT legacy output conflicts with explicit location 0\n#endif\n`;
+            for (let i = 0; i < count; i++)
+                tail += `#ifndef ${prefix}HAS_${i}\nlayout(location = ${i}) out highp vec4 ${prefix}color${i};\n#endif\n`;
+            tail += "void main() {\npc_fragColor = vec4(0.0);\n";
+            for (let i = 1; i < count; i++)
+                tail += `#ifndef ${prefix}HAS_${i}\n${prefix}color${i} = vec4(0.0);\n#endif\n`;
+            tail += `${prefix}main();\n#ifdef LAYA_MRT_POST_MAIN_HOOK\nLAYA_MRT_POST_MAIN_HOOK();\n#endif\n#ifndef ${prefix}HAS_0\n${prefix}color0 = pc_fragColor;\n#endif\n}\n`;
+            return `highp vec4 pc_fragColor;\n#define gl_FragColor pc_fragColor\n#define main ${prefix}main\n${body}${tail}`;
+        }
+        static extract(source, prepared = false) {
+            const code = source.replace(/\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/g, comment => comment.replace(/[^\r\n]/g, " "));
+            const tokens = /^[ \t]*#(?:\\\r?\n|[^\r\n])*|[A-Za-z_]\w*|\d+|[^\s]/gm;
+            const locations = new Set();
+            const names = new Set();
+            const declarations = [];
+            const spans = [];
+            let braces = 0, parentheses = 0, conditional = 0, start = 0;
+            let output = false, conditionalOutput = false;
+            let token;
+            while ((token = tokens.exec(code))) {
+                const word = token[0].trim();
+                if (word[0] === "#") {
+                    if (/^#\s*(if|ifdef|ifndef)\b/.test(word))
+                        conditional++;
+                    else if (/^#\s*endif\b/.test(word))
+                        conditional--;
+                    if (braces === 0 && !output)
+                        start = tokens.lastIndex;
+                    continue;
+                }
+                if (word === "gl_FragData" || (!prepared && (word === "gl_FragColor" || word === "pc_fragColor")))
+                    throw new Error("LAYA_MRT cannot use legacy/default fragment outputs; declare layout(location = N) out vec4 outputs.");
+                if (word === "out" && braces === 0 && parentheses === 0) {
+                    output = true;
+                    conditionalOutput = conditional !== 0;
+                }
+                if (word === "(")
+                    parentheses++;
+                else if (word === ")")
+                    parentheses--;
+                else if (word === "{") {
+                    if (output)
+                        throw new Error("LAYA_MRT output blocks are not supported.");
+                    braces++;
+                }
+                else if (word === "}") {
+                    braces--;
+                    if (braces === 0)
+                        start = tokens.lastIndex;
+                }
+                else if (word === ";" && braces === 0 && parentheses === 0) {
+                    if (output) {
+                        if (conditionalOutput)
+                            throw new Error("LAYA_MRT output extraction requires preprocessed GLSL; found an unresolved #if branch.");
+                        const declaration = code.slice(start, tokens.lastIndex);
+                        const match = /^\s*layout\s*\(\s*location\s*=\s*(\d+)\s*\)\s*out\s+(?:(highp|mediump|lowp)\s+)?vec4\s+([A-Za-z_]\w*)\s*;\s*$/.exec(declaration);
+                        if (!match)
+                            throw new Error("LAYA_MRT requires 'layout(location = N) out [precision] vec4 name;' with a literal non-negative integer location.");
+                        const location = Number(match[1]), name = match[3];
+                        if (!Number.isSafeInteger(location) || locations.has(location))
+                            throw new Error(`LAYA_MRT has an invalid or duplicate output location ${match[1]}.`);
+                        if (names.has(name))
+                            throw new Error(`LAYA_MRT has a duplicate output name '${name}'.`);
+                        locations.add(location);
+                        names.add(name);
+                        declarations.push(`layout(location = ${location}) out ${match[2] ? match[2] + " " : ""}vec4 ${name};`);
+                        spans.push([start, tokens.lastIndex]);
+                    }
+                    start = tokens.lastIndex;
+                    output = false;
+                    conditionalOutput = false;
+                }
+            }
+            if (!declarations.length || output)
+                throw new Error("LAYA_MRT requires explicit fragment output declarations.");
+            let stripped = source;
+            for (let i = spans.length - 1; i >= 0; i--) {
+                const [begin, end] = spans[i];
+                stripped = stripped.slice(0, begin) + stripped.slice(begin, end).replace(/[^\r\n]/g, " ") + stripped.slice(end);
+            }
+            return { declarations: declarations.join("\n"), source: stripped };
+        }
+    }
+    ShaderMRT.defineName = "LAYA_MRT";
+    ShaderMRT.targetDefinePrefix = "LAYA_MRT_TARGET_";
+
     class ShaderCompileDefineBase {
         constructor(owner, name, compiledObj) {
             this._owner = owner;
@@ -7793,6 +7986,7 @@ window.Laya = (function (exports) {
                 this._validDefine.add(Shader3D.getDefineByName(k));
             this._validDefine.add(Shader3D.getDefineByName("VBONEW"));
             this._validDefine.add(Shader3D.getDefineByName("VBONEI"));
+            this._validDefine.add(Shader3D.getDefineByName(ShaderMRT.defineName));
         }
         withCompile(compileDefine) {
             return null;
@@ -7863,7 +8057,33 @@ window.Laya = (function (exports) {
             let shader = LayaGL.renderDeviceFactory.createShaderInstance(shaderProcessInfo, shaderpass);
             return shader;
         }
-        withCompile(compileDefine, is2D = false) {
+        withCompile(compileDefine, is2D = false, mrtTargetCount) {
+            if (mrtTargetCount !== undefined) {
+                const mrtDefine = Shader3D.getDefineByName(ShaderMRT.defineName);
+                if (mrtTargetCount > 0)
+                    compileDefine.add(mrtDefine);
+                else
+                    compileDefine.remove(mrtDefine);
+            }
+            else {
+                const defineNames = [];
+                Shader3D._getNamesByDefineData(compileDefine, defineNames);
+                mrtTargetCount = ShaderMRT.getTargetCount(defineNames);
+            }
+            if (this._mrtTargetDefines) {
+                for (const define of this._mrtTargetDefines.values())
+                    compileDefine.remove(define);
+            }
+            if (mrtTargetCount > 0) {
+                this._mrtTargetDefines || (this._mrtTargetDefines = new Map());
+                let define = this._mrtTargetDefines.get(mrtTargetCount);
+                if (!define) {
+                    define = Shader3D.getDefineByName(ShaderMRT.targetDefinePrefix + mrtTargetCount);
+                    this._mrtTargetDefines.set(mrtTargetCount, define);
+                    this._validDefine.add(define);
+                }
+                compileDefine.add(define);
+            }
             var shader = this.moduleData.getCacheShader(compileDefine);
             if (shader)
                 return shader;
@@ -7911,6 +8131,8 @@ window.Laya = (function (exports) {
         RenderParams[RenderParams["BYTE"] = 8] = "BYTE";
         RenderParams[RenderParams["UNSIGNED_SHORT"] = 9] = "UNSIGNED_SHORT";
         RenderParams[RenderParams["MaxComputeElement"] = 10] = "MaxComputeElement";
+        RenderParams[RenderParams["Max_Color_Attachment_Count"] = 11] = "Max_Color_Attachment_Count";
+        RenderParams[RenderParams["Max_Color_Attachment_Bytes_Per_Sample"] = 12] = "Max_Color_Attachment_Bytes_Per_Sample";
     })(exports.RenderParams || (exports.RenderParams = {}));
 
     class VertexElementFormat {
@@ -11115,15 +11337,6 @@ window.Laya = (function (exports) {
             this.color = 0xffffffff;
             this.percent = true;
         }
-        get texture() {
-            return this._texture;
-        }
-        set texture(val) {
-            var _a;
-            !!val && val._addReference();
-            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
-            this._texture = val;
-        }
         static create(texture, x, y, width, height, sizeGrid, percent, color) {
             let cmd = Pool.getItemByClass(className$l, Draw9GridTextureCmd);
             cmd.texture = texture;
@@ -11141,6 +11354,15 @@ window.Laya = (function (exports) {
             (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
             this._texture = null;
             Pool.recover(className$l, this);
+        }
+        get texture() {
+            return this._texture;
+        }
+        set texture(val) {
+            var _a;
+            !!val && val._addReference();
+            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._texture = val;
         }
         run(runner, gx, gy) {
             if (this._texture) {
@@ -11761,15 +11983,6 @@ window.Laya = (function (exports) {
             this.color = 0xffffffff;
             this.uv = null;
         }
-        get texture() {
-            return this._texture;
-        }
-        set texture(val) {
-            var _a;
-            !!val && val._addReference();
-            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
-            this._texture = val;
-        }
         static create(texture, x, y, width, height, matrix, alpha, color, blendMode, uv, percent) {
             let cmd = Pool.getItemByClass(className$b, DrawTextureCmd);
             cmd.texture = texture;
@@ -11791,6 +12004,15 @@ window.Laya = (function (exports) {
             this.matrix = null;
             this._cacheData = null;
             Pool.recover(className$b, this);
+        }
+        get texture() {
+            return this._texture;
+        }
+        set texture(val) {
+            var _a;
+            !!val && val._addReference();
+            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._texture = val;
         }
         run(runner, gx, gy) {
             let tex = this._texture;
@@ -11877,6 +12099,7 @@ window.Laya = (function (exports) {
     const className$9 = "DrawTrianglesCmd";
     class DrawTrianglesCmd {
         constructor() {
+            this._texture = null;
             this.x = 0;
             this.y = 0;
             this._dynamic = null;
@@ -11886,7 +12109,6 @@ window.Laya = (function (exports) {
             var _a;
             var cmd = Pool.getItemByClass(className$9, DrawTrianglesCmd);
             cmd.texture = texture;
-            texture === null || texture === void 0 ? void 0 : texture._addReference();
             cmd.x = x;
             cmd.y = y;
             cmd.vertices = vertices;
@@ -11903,7 +12125,6 @@ window.Laya = (function (exports) {
             var _a;
             var cmd = Pool.getItemByClass(className$9, DrawTrianglesCmd);
             cmd.texture = texture;
-            texture === null || texture === void 0 ? void 0 : texture._addReference();
             cmd.x = 0;
             cmd.y = 0;
             cmd.mesh = mesh;
@@ -11913,8 +12134,8 @@ window.Laya = (function (exports) {
         }
         recover() {
             var _a;
-            (_a = this.texture) === null || _a === void 0 ? void 0 : _a._removeReference();
-            this.texture = null;
+            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._texture = null;
             this.vertices = null;
             this.uvs = null;
             this.indices = null;
@@ -11925,6 +12146,15 @@ window.Laya = (function (exports) {
             this._dynamic = null;
             this._tempUVs = null;
             Pool.recover(className$9, this);
+        }
+        get texture() {
+            return this._texture;
+        }
+        set texture(val) {
+            var _a;
+            !!val && val._addReference();
+            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._texture = val;
         }
         run(runner, gx, gy) {
             var _a;
@@ -12569,6 +12799,7 @@ window.Laya = (function (exports) {
     const className$6 = "FillTextureCmd";
     class FillTextureCmd {
         constructor() {
+            this._texture = null;
             this.x = 0;
             this.y = 0;
             this.width = 1;
@@ -12584,7 +12815,6 @@ window.Laya = (function (exports) {
                 height = texture.height;
             var cmd = Pool.getItemByClass(className$6, FillTextureCmd);
             cmd.texture = texture;
-            texture._addReference();
             cmd.x = x;
             cmd.y = y;
             cmd.width = width;
@@ -12596,10 +12826,19 @@ window.Laya = (function (exports) {
             return cmd;
         }
         recover() {
-            this.texture && this.texture._removeReference();
-            this.texture = null;
+            this._texture && this._texture._removeReference();
+            this._texture = null;
             this.offset = null;
             Pool.recover(className$6, this);
+        }
+        get texture() {
+            return this._texture;
+        }
+        set texture(val) {
+            var _a;
+            !!val && val._addReference();
+            (_a = this._texture) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._texture = val;
         }
         run(runner, gx, gy) {
             if (!this.texture)
@@ -14205,11 +14444,12 @@ window.Laya = (function (exports) {
             return texture;
         }
         static _parseKTX(data, propertyParams = null, constructParams = null) {
-            var _a;
+            var _a, _b;
             let ktxInfo = KTXTextureInfo.getKTXTextureInfo(data);
             let mipmapRequested = (_a = constructParams === null || constructParams === void 0 ? void 0 : constructParams[3]) !== null && _a !== void 0 ? _a : true;
             let mipmap = mipmapRequested && ktxInfo.mipmapCount > 1;
-            let texture = new Texture2D(ktxInfo.width, ktxInfo.height, ktxInfo.format, mipmap, false, ktxInfo.sRGB);
+            let sRGB = (_b = constructParams === null || constructParams === void 0 ? void 0 : constructParams[5]) !== null && _b !== void 0 ? _b : ktxInfo.sRGB;
+            let texture = new Texture2D(ktxInfo.width, ktxInfo.height, ktxInfo.format, mipmap, false, sRGB);
             texture.setKTXData(ktxInfo);
             if (propertyParams) {
                 texture.setProperties(propertyParams);
@@ -14976,6 +15216,8 @@ window.Laya = (function (exports) {
             let correctionW = height * (FONT_OVERHANG_RATIO$1 + (italic ? ITALIC_SKEW_RATIO$1 : 0));
             let rectW = Math.ceil((width + fontSizeOffX + lineWidth * 2 + offsetLeft + offsetRight + correctionW) * fontScale) + blockGap * 2;
             let rectH = Math.ceil((fontSizeH + lineWidth * 2 + offsetTop + offsetBottom + 1) * fontScale) + blockGap * 2;
+            rectW = Math.min(rectW, TextRenderConfig.maxCanvasWidth);
+            rectH = Math.min(rectH, TextRenderConfig.maxCanvasWidth);
             let needCanvW = Math.min(rectW + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             let needCanvH = Math.min(rectH + Math.ceil(margin * 2 * fontScale), TextRenderConfig.maxCanvasWidth);
             if (needCanvW > this.canvas.width || needCanvH > this.canvas.height)
@@ -15021,8 +15263,8 @@ window.Laya = (function (exports) {
             return ri;
         }
         resizeCanvas(ctx, newWidth, newHeight) {
-            newWidth = 512 * Math.ceil(newWidth / 512);
-            newHeight = 512 * Math.ceil(newHeight / 512);
+            newWidth = Math.min(512 * Math.ceil(newWidth / 512), TextRenderConfig.maxCanvasWidth);
+            newHeight = Math.min(512 * Math.ceil(newHeight / 512), TextRenderConfig.maxCanvasWidth);
             let fontStr = ctx.font;
             let fillStyle = ctx.fillStyle;
             let strokeStyle = ctx.strokeStyle;
@@ -19892,7 +20134,7 @@ window.Laya = (function (exports) {
                 }
                 this._materials[0] = value;
                 this._changeMaterialReference(lastValue, value);
-                this._renderElements[0] && BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], value);
+                this._renderElements[0] && BaseRenderNode2D._setRenderElement2DMaterial(this._renderElements[0], this._getElementMaterial(0));
             }
         }
         _getRenderElements() {
@@ -21965,7 +22207,7 @@ window.Laya = (function (exports) {
 
     var GlowEffect2DVS = "#define SHADER_NAME glow2D\nvarying vec2 v_Texcoord0;void main(){gl_Position=vec4((a_PositionTexcoord.x)*u_centerScale.x,(a_PositionTexcoord.y)*u_centerScale.y,0.0,1.0);v_Texcoord0=a_PositionTexcoord.zw;\n#ifdef INVERTY\ngl_Position.y=-gl_Position.y;\n#endif\n}";
 
-    var GlowEffect2DFS = "#define SHADER_NAME glow2D\n#include \"OutputTransform.glsl\";\nvarying vec2 v_Texcoord0;void main(){const float c_IterationTime=10.0;float floatIterationTotalTime=c_IterationTime*c_IterationTime;vec4 vec4Color=vec4(0.0,0.0,0.0,0.0);vec2 vec2FilterDir=vec2(-u_blurInfo1.z/u_blurInfo2.x,-u_blurInfo1.w/u_blurInfo2.y);vec2 vec2FilterOff=vec2(u_blurInfo1.x/u_blurInfo2.x/c_IterationTime*2.0,u_blurInfo1.y/u_blurInfo2.y/c_IterationTime*2.0);float maxNum=u_blurInfo1.x*u_blurInfo1.y;vec2 vec2Off=vec2(0.0,0.0);float floatOff=c_IterationTime/2.0;for(float i=0.0;i<=c_IterationTime;++i){for(float j=0.0;j<=c_IterationTime;++j){vec2Off=vec2(vec2FilterOff.x*(i-floatOff),vec2FilterOff.y*(j-floatOff));vec4Color+=texture2D(u_MainTex,v_Texcoord0.xy+vec2FilterDir+vec2Off);}}vec4Color/=floatIterationTotalTime;gl_FragColor=vec4(u_color.rgb,vec4Color.a*u_blurInfo2.z);gl_FragColor.rgb*=gl_FragColor.a;}";
+    var GlowEffect2DFS = "#define SHADER_NAME glow2D\n#include \"OutputTransform.glsl\";\nvarying vec2 v_Texcoord0;void main(){const float c_BlurRadius=12.0;const float c_PairedRadius=6.0;const float c_KernelWeight=25.0*25.0;const float c_LegacyIntensity=1.21;vec2 textureSize=u_blurInfo2.xy;vec2 filterOffset=-u_blurInfo1.zw/textureSize;vec2 filterScale=u_blurInfo1.xy/textureSize/c_BlurRadius;float alpha=0.0;for(float y=-c_PairedRadius;y<=c_PairedRadius;++y){float sampleY=y==0.0 ? 0.0 : sign(y)*(abs(y)*2.0-0.5);float weightY=y==0.0 ? 1.0 : 2.0;for(float x=-c_PairedRadius;x<=c_PairedRadius;++x){float sampleX=x==0.0 ? 0.0 : sign(x)*(abs(x)*2.0-0.5);float weightX=x==0.0 ? 1.0 : 2.0;vec2 sampleOffset=vec2(sampleX,sampleY)*filterScale;alpha+=texture2D(u_MainTex,v_Texcoord0.xy+filterOffset+sampleOffset).a*weightX*weightY;}}alpha=alpha/c_KernelWeight*u_blurInfo2.z*c_LegacyIntensity;gl_FragColor=vec4(u_color.rgb,alpha);gl_FragColor.rgb*=gl_FragColor.a;}";
 
     class Effect2DShaderInit {
         static colorEffect2DShaderInit() {
@@ -22766,6 +23008,7 @@ window.Laya = (function (exports) {
             indexBuffer._setIndexData(ib, 0);
             indexBuffer.indexCount = ib.length;
             indexBuffer.indexType = ibFormat;
+            mesh2d._vertexCount = vbs.length > 0 ? vbs[0].byteLength / vbDeclaration[0].vertexStride : 0;
             mesh2d._setBuffers(vbArray, indexBuffer);
             let geometryArray = [];
             for (var i = 0; i < submeshInfo.length; i++) {
@@ -24008,6 +24251,12 @@ window.Laya = (function (exports) {
             this._struct.isRenderStruct = true;
         }
         destroy(destroyChild = true) {
+            if (this._destroyed)
+                return;
+            if (this._mask)
+                this.mask = null;
+            if (this._maskParent)
+                this._maskParent.mask = null;
             super.destroy(destroyChild);
             if (this._texture) {
                 this._texture._removeReference();
@@ -24406,12 +24655,14 @@ window.Laya = (function (exports) {
             if (value && this._manualRender)
                 this._setManualRender(false);
             let oldMask = this._mask;
-            if (oldMask) {
+            if (oldMask && oldMask._maskParent === this) {
                 oldMask.cacheAs = "none";
                 oldMask._maskParent = null;
             }
             this._mask = value;
             if (value) {
+                if (value._maskParent && value._maskParent !== this)
+                    value._maskParent.mask = null;
                 value._maskParent = this;
                 value.cacheAs = "bitmap";
                 this._renderType |= SpriteConst.MASK;
@@ -25388,10 +25639,10 @@ window.Laya = (function (exports) {
                 }
             }
             else if (!enable && this._oriRenderPass && this._oriRenderPass.enable) {
-                this._struct.pass = null;
                 this._subStruct.enabled = false;
                 this._subStruct.blendMode = this._blendMode;
                 this._struct.subStruct = null;
+                this._struct.pass = null;
                 this._struct.setRepaint();
             }
             this._oriRenderPass.enable = enable;
@@ -25414,15 +25665,12 @@ window.Laya = (function (exports) {
                 this.setDemandTransEventUp();
         }
         _syncTransParent() {
-            const slot = this._globalTrans.slot;
+            var _a, _b, _c, _d;
+            const slot = (_b = (_a = this._globalTrans) === null || _a === void 0 ? void 0 : _a.slot) !== null && _b !== void 0 ? _b : -1;
             if (slot === -1)
                 return;
-            let ps = -1;
-            const p = this._parent;
-            if (p instanceof Sprite)
-                ps = p._globalTrans.slot;
-            else if (this._maskParent)
-                ps = this._maskParent._globalTrans.slot;
+            const p = this._parent instanceof Sprite ? this._parent : this._maskParent;
+            const ps = (_d = (_c = p === null || p === void 0 ? void 0 : p._globalTrans) === null || _c === void 0 ? void 0 : _c.slot) !== null && _d !== void 0 ? _d : -1;
             Transform2DStore.instance.setParent(slot, ps);
         }
         _checkSubRenderPass() {
@@ -26454,7 +26702,7 @@ window.Laya = (function (exports) {
                     handler.caller = caller;
                     handler.method = method;
                     handler.args = args;
-                    handler.exeTime = delay + (useFrame ? this.currFrame : this.currTimer + performance.now() - this._lastTimer);
+                    handler.exeTime = delay + (useFrame ? this.currFrame : this.currTimer + (performance.now() - this._lastTimer) * this.scale);
                     return handler;
                 }
             }
@@ -26466,7 +26714,7 @@ window.Laya = (function (exports) {
             handler.caller = caller;
             handler.method = method;
             handler.args = args;
-            handler.exeTime = delay + (useFrame ? this.currFrame : this.currTimer + performance.now() - this._lastTimer);
+            handler.exeTime = delay + (useFrame ? this.currFrame : this.currTimer + (performance.now() - this._lastTimer) * this.scale);
             this._map[key] = handler;
             this._handlers.push(handler);
             return handler;
@@ -26702,6 +26950,10 @@ window.Laya = (function (exports) {
             let pixelRatio = Browser.pixelRatio;
             screenWidth /= pixelRatio;
             screenHeight /= pixelRatio;
+            if (pixelRatio <= 0 || !Number.isFinite(screenWidth) || !Number.isFinite(screenHeight)
+                || screenWidth <= 1 || screenHeight <= 1) {
+                return;
+            }
             if (this._screenMode !== Stage.SCREEN_NONE) {
                 let screenType = screenWidth / screenHeight < 1 ? Stage.SCREEN_VERTICAL : Stage.SCREEN_HORIZONTAL;
                 this.canvasRotation = screenType !== this._screenMode;
@@ -27092,6 +27344,9 @@ window.Laya = (function (exports) {
         }
         setResolution(width, height, fullscreen = false) {
             return PAL.browser.setResolution(width, height, fullscreen);
+        }
+        setWindowedFullscreen(enabled) {
+            return PAL.browser.setWindowedFullscreen(enabled);
         }
         exitFullscreen() {
             PAL.browser.exitFullscreen();
@@ -27862,6 +28117,8 @@ window.Laya = (function (exports) {
         }
         onEnable() {
             this._ensureInstanceID();
+            if (!LayaEnv.isPlaying)
+                this._setInstanceActive(true);
             if (LayaEnv.isPlaying && this._playOnAwake)
                 this.play(true);
             else
@@ -29673,6 +29930,7 @@ window.Laya = (function (exports) {
         constructor() {
             super();
             this.repeatDelay = 0;
+            this.frameDelaysLoop = false;
             this.timeScale = 1;
             this._wrapMode = 0;
             this._loop = true;
@@ -29681,7 +29939,10 @@ window.Laya = (function (exports) {
             this._stretchMode = 0;
             this._source = "";
             this._playing = false;
+            this._activeStart = 0;
             this._count = 0;
+            this._rangeStart = 0;
+            this._rangeEnd = -1;
             this._index = 0;
             this._elapsed = 0;
             this._loadId = 0;
@@ -29699,10 +29960,38 @@ window.Laya = (function (exports) {
         }
         set frame(value) {
             var _a;
+            value = Math.floor(value);
+            if (!Number.isFinite(value))
+                value = 0;
+            if (this._count > 0)
+                value = Math.max(0, Math.min(value, this._count - 1));
             this._index = this._frame = value;
             this.drawFrame();
             if ((_a = this._labels) === null || _a === void 0 ? void 0 : _a[value])
                 this.owner.event(Event.LABEL, this._labels[value]);
+        }
+        get rangeStart() {
+            return this._rangeStart;
+        }
+        set rangeStart(value) {
+            value = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+            if (this._rangeStart === value)
+                return;
+            this._rangeStart = value;
+            this.updateActiveRange(true);
+        }
+        get rangeEnd() {
+            return this._rangeEnd;
+        }
+        set rangeEnd(value) {
+            value = Number.isFinite(value) ? Math.max(-1, Math.floor(value)) : -1;
+            if (this._rangeEnd === value)
+                return;
+            this._rangeEnd = value;
+            this.updateActiveRange(true);
+        }
+        get count() {
+            return this._count;
         }
         get frames() {
             return this._frames;
@@ -29734,7 +30023,7 @@ window.Laya = (function (exports) {
                     cmd.lock = true;
                     this._drawCmds.push(cmd);
                 }
-                this._count = this._frames.length;
+                this.updateActiveRange(false);
                 this._elapsed = 0;
                 if (this._wrapMode === exports.AnimationWrapMode.Reverse)
                     this._frame = this._count - 1;
@@ -29742,18 +30031,12 @@ window.Laya = (function (exports) {
                     this._reversed = false;
                     this._frame = (this._index > 0 && this._index < this._count) ? this._index : 0;
                 }
-                if (this._stretchMode === exports.AnimationStretchMode.ResizeToFit) {
-                    let w = this.width, h = this.height;
-                    if (w > 0 && h > 0 || LayaEnv.isPlaying) {
-                        this._changingSize = true;
-                        this.owner.size(w, h);
-                        this._changingSize = false;
-                    }
-                }
+                this.updateSizeToFit();
                 this.drawFrame();
                 this.owner.graphics.preRegisterFrameAnimationCmds(this._drawCmds);
             }
             else {
+                this._activeStart = 0;
                 this._count = 0;
             }
         }
@@ -29837,10 +30120,46 @@ window.Laya = (function (exports) {
             this.drawFrame();
         }
         get width() {
-            return this._count > 0 ? this._frames[0].sourceWidth : 0;
+            return this._count > 0 ? this._frames[this._activeStart].sourceWidth : 0;
         }
         get height() {
-            return this._count > 0 ? this._frames[0].sourceHeight : 0;
+            return this._count > 0 ? this._frames[this._activeStart].sourceHeight : 0;
+        }
+        updateActiveRange(reset) {
+            let totalCount = this._frames.length;
+            if (totalCount === 0) {
+                this._activeStart = 0;
+                this._count = 0;
+            }
+            else {
+                let start = Math.min(this._rangeStart, totalCount - 1);
+                let end = this._rangeEnd === -1 ? totalCount - 1 : Math.min(Math.max(this._rangeEnd, start), totalCount - 1);
+                this._activeStart = start;
+                this._count = end - start + 1;
+            }
+            if (reset) {
+                this._reversed = this._wrapMode === exports.AnimationWrapMode.Reverse;
+                this._index = this._frame = this._reversed && this._count > 0 ? this._count - 1 : 0;
+                this._elapsed = 0;
+                if (this.owner) {
+                    this.updateSizeToFit();
+                    this.drawFrame();
+                }
+            }
+            else if (this._count > 0) {
+                this._frame = Math.max(0, Math.min(this._frame, this._count - 1));
+                this._index = Math.max(0, Math.min(this._index, this._count - 1));
+            }
+        }
+        updateSizeToFit() {
+            if (this._stretchMode !== exports.AnimationStretchMode.ResizeToFit)
+                return;
+            let w = this.width, h = this.height;
+            if (w > 0 && h > 0 || LayaEnv.isPlaying) {
+                this._changingSize = true;
+                this.owner.size(w, h);
+                this._changingSize = false;
+            }
         }
         applyStretchMode() {
             if (this._stretchMode === exports.AnimationStretchMode.Fill) {
@@ -29895,7 +30214,7 @@ window.Laya = (function (exports) {
             }
         }
         onUpdate() {
-            var _a;
+            var _a, _b;
             if (!this._playing || this._count == 0)
                 return;
             let dt = ILaya.timer.delta;
@@ -29904,16 +30223,17 @@ window.Laya = (function (exports) {
             if (this.timeScale != 1)
                 dt *= this.timeScale;
             let frame = this._frame;
+            let delayIndex = this._activeStart + frame;
             this._elapsed += dt;
             let tt = this.interval;
             if (this._reversed) {
                 if (frame > 0)
-                    tt += this._delays[frame - 1] || 0;
+                    tt += this.getFrameDelay(delayIndex - 1);
                 else
                     tt += this.repeatDelay;
             }
             else {
-                tt += this._delays[frame] || 0;
+                tt += this.getFrameDelay(delayIndex);
                 if (frame === this._count - 1)
                     tt += this.repeatDelay;
             }
@@ -29923,6 +30243,17 @@ window.Laya = (function (exports) {
             if (this._elapsed > this.interval)
                 this._elapsed = this.interval;
             let emit = false;
+            if (this._count === 1) {
+                if (!this._loop)
+                    this._playing = false;
+                else {
+                    this.drawFrame();
+                    if ((_a = this._labels) === null || _a === void 0 ? void 0 : _a[0])
+                        this.owner.event(Event.LABEL, this._labels[0]);
+                }
+                this.owner.event(Event.COMPLETE);
+                return;
+            }
             if (this._reversed) {
                 frame--;
                 if (frame < 0) {
@@ -29964,14 +30295,21 @@ window.Laya = (function (exports) {
             this._frame = frame;
             if (this._playing) {
                 this.drawFrame();
-                if ((_a = this._labels) === null || _a === void 0 ? void 0 : _a[frame])
+                if ((_b = this._labels) === null || _b === void 0 ? void 0 : _b[frame])
                     this.owner.event(Event.LABEL, this._labels[frame]);
             }
             if (emit)
                 this.owner.event(Event.COMPLETE);
         }
+        getFrameDelay(index) {
+            if (this._delays.length === 0)
+                return 0;
+            if (this.frameDelaysLoop)
+                index %= this._delays.length;
+            return this._delays[index] || 0;
+        }
         drawFrame() {
-            let cmd = this._drawCmds[this._frame];
+            let cmd = this._drawCmds[this._activeStart + this._frame];
             if (cmd)
                 cmd.color = this._color.getABGR();
             let graphics = this.owner.graphics;
@@ -30044,7 +30382,7 @@ window.Laya = (function (exports) {
             this.onLoaded(res, ++this._loadId);
         }
         onLoaded(atlas, loadId) {
-            var _a, _b;
+            var _a, _b, _c;
             if (loadId != this._loadId || this.destroyed)
                 return;
             this._atlas = atlas;
@@ -30055,7 +30393,8 @@ window.Laya = (function (exports) {
                 if (ani) {
                     this.interval = ani.interval;
                     this.repeatDelay = (_a = ani.repeatDelay) !== null && _a !== void 0 ? _a : 0;
-                    this.wrapMode = (_b = ani.wrapMode) !== null && _b !== void 0 ? _b : 0;
+                    this.frameDelaysLoop = (_b = ani.frameDelaysLoop) !== null && _b !== void 0 ? _b : false;
+                    this.wrapMode = (_c = ani.wrapMode) !== null && _c !== void 0 ? _c : 0;
                     this._delays.length = 0;
                     if (ani.frameDelays)
                         this._delays.push(...ani.frameDelays);
@@ -30096,6 +30435,18 @@ window.Laya = (function (exports) {
         set interval(value) {
             this._comp.interval = value;
         }
+        get rangeStart() {
+            return this._comp.rangeStart;
+        }
+        set rangeStart(value) {
+            this._comp.rangeStart = value;
+        }
+        get rangeEnd() {
+            return this._comp.rangeEnd;
+        }
+        set rangeEnd(value) {
+            this._comp.rangeEnd = value;
+        }
         get index() {
             return this._comp.frame;
         }
@@ -30103,7 +30454,7 @@ window.Laya = (function (exports) {
             this._comp.frame = value;
         }
         get count() {
-            return this._comp.frames.length;
+            return this._comp.count;
         }
         get source() {
             return this._comp.source;
@@ -30156,6 +30507,11 @@ window.Laya = (function (exports) {
             this._labels[index] = label;
         }
         removeLabel(label) {
+            if (!label) {
+                this._labels = null;
+                this._comp._labels = null;
+                return;
+            }
             if (!this._labels)
                 return;
             for (let i = 0, n = this._labels.length; i < n; i++) {
@@ -30494,15 +30850,56 @@ window.Laya = (function (exports) {
         }
     }
 
+    class Mouse {
+        static set cursor(value) {
+            this._cursor = value;
+            if (this._hidden)
+                return;
+            PAL.browser.setCursor(value);
+        }
+        static get cursor() {
+            return this._cursor;
+        }
+        static hide() {
+            this._hidden = true;
+            PAL.browser.setCursor("none");
+        }
+        static show() {
+            this._hidden = false;
+            PAL.browser.setCursor(this._cursor);
+        }
+    }
+    Mouse._cursor = "auto";
+    Mouse._hidden = false;
+
     class HtmlLink {
         constructor() {
+            this._savedCursor = null;
             this._shape = new Sprite();
             this._shape.hitArea = this;
+            this._shape.on(Event.MOUSE_OVER, this, this.onMouseOver);
+            this._shape.on(Event.MOUSE_OUT, this, this.onMouseOut);
+            this._shape.on(Event.UNDISPLAY, this, this.onMouseOut);
             this._shape.on(Event.CLICK, () => {
                 this._owner.bubbleEvent(Event.LINK, this._element.getAttrString("href"));
             });
             this._rects = [];
             this._rectCnt = 0;
+        }
+        onMouseOver(e) {
+            if ((e.nativeEvent && "changedTouches" in e.nativeEvent) || this._savedCursor != null)
+                return;
+            this._savedCursor = Mouse.cursor;
+            Mouse.cursor = "pointer";
+        }
+        onMouseOut(e) {
+            if ((e === null || e === void 0 ? void 0 : e.nativeEvent) && "changedTouches" in e.nativeEvent)
+                return;
+            if (this._savedCursor != null) {
+                if (Mouse.cursor === "pointer")
+                    Mouse.cursor = this._savedCursor;
+                this._savedCursor = null;
+            }
         }
         get element() {
             return this._element;
@@ -30538,11 +30935,13 @@ window.Laya = (function (exports) {
         pos(x, y) {
         }
         release() {
+            this.onMouseOut();
             this._shape.removeSelf();
             this._owner = null;
             this._element = null;
         }
         destroy() {
+            this.onMouseOut();
             this._shape.destroy();
         }
     }
@@ -32270,7 +32669,8 @@ window.Laya = (function (exports) {
     const ellipsisStr = "…";
     const maxWordLength = 20;
     function getReplaceStr(word) {
-        return escapeSequence[word];
+        var _a;
+        return (_a = escapeSequence[word]) !== null && _a !== void 0 ? _a : word;
     }
     function isHighSurrogate(c) {
         return c >= 0xD800 && c <= 0xDBFF;
@@ -32375,12 +32775,10 @@ window.Laya = (function (exports) {
             this.markChanged();
         }
         setSelection(startIndex, endIndex) {
-            this.focus = true;
-            PAL.textInput.setSelection(startIndex, endIndex);
+            PAL.textInput.setSelectionFor(this, startIndex, endIndex);
         }
         select() {
-            this.focus = true;
-            PAL.textInput.setSelection(0, -1);
+            this.setSelection(0, -1);
         }
     }
     Input.TYPE_TEXT = "text";
@@ -32711,6 +33109,8 @@ window.Laya = (function (exports) {
                     this._vtex = vt;
                     this._vtex.on(Event.READY, this, this._vtReady);
                     this._vtex.on("videoUpdate", this.owner, this.owner.reCache);
+                    this._vtex.on("ended", this, this._vtEnded);
+                    this._vtex.on("error", this, this._vtError);
                     if (!this._textureCmd) {
                         this._textureCmd = DrawTextureCmd.create(new Texture(), 0, 0, 1, 1, null, null, null, null, null, true);
                         this._textureCmd.lock = true;
@@ -32739,11 +33139,21 @@ window.Laya = (function (exports) {
             this._textureCmd.texture.setTo(this._vtex);
             (_a = this.owner) === null || _a === void 0 ? void 0 : _a.graphics.repaint();
         }
+        _vtEnded() {
+            var _a;
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.event("ended");
+        }
+        _vtError(err) {
+            var _a;
+            (_a = this.owner) === null || _a === void 0 ? void 0 : _a.event("error", err);
+        }
         _unload() {
             var _a;
             if (this._vtex) {
                 this._vtex.off(Event.READY, this, this._vtReady);
                 this._vtex.off("videoUpdate", this.owner, this.owner.reCache);
+                this._vtex.off("ended", this, this._vtEnded);
+                this._vtex.off("error", this, this._vtError);
                 this._vtex.destroy();
                 this._vtex = null;
                 this.owner.graphics.removeCmd(this._textureCmd, true);
@@ -33294,6 +33704,8 @@ window.Laya = (function (exports) {
             this._finish = false;
             this._startPlayTime = startTime;
             this._elapsedTime = startTime;
+            this._lastElapsedTime = startTime;
+            this._duration = clipDuration;
             this._lastIsFront = true;
             this._parentPlayTime = null;
             this._playNum = 0;
@@ -33306,6 +33718,8 @@ window.Laya = (function (exports) {
             dest._finish = this._finish;
             dest._startPlayTime = this._startPlayTime;
             dest._elapsedTime = this._elapsedTime;
+            dest._lastElapsedTime = this._lastElapsedTime;
+            dest._duration = this._duration;
             dest._playNum = this._playNum;
             dest._parentPlayTime = this._parentPlayTime;
             dest._normalizedPlayTime = this._normalizedPlayTime;
@@ -33321,10 +33735,14 @@ window.Laya = (function (exports) {
             this._playStateInfo = new AnimatorPlayState2D();
             this._crossPlayStateInfo = new AnimatorPlayState2D();
             this._crossMark = 0;
-            this._crossNodesOwnersCount = 0;
-            this._crossNodesOwnersIndicesMap = {};
             this._srcCrossClipNodeIndices = [];
             this._destCrossClipNodeIndices = [];
+            this._crossDuration = 0;
+            this._crossElapsedTime = 0;
+            this._crossNodes = [];
+            this._crossDefaultValues = [];
+            this._crossValues = [];
+            this._crossFixedValues = [];
             this.playOnWake = true;
             this.defaultWeight = 1.0;
             this.blendingMode = AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
@@ -33438,6 +33856,7 @@ window.Laya = (function (exports) {
             destObject.name = this.name;
         }
         destroy() {
+            this._crossNodes.length = this._crossDefaultValues.length = this._crossValues.length = this._crossFixedValues.length = 0;
             this._removeReference();
             for (var i = 0, n = this._states.length; i < n; i++) {
                 this._states[i].destroy();
@@ -33613,535 +34032,6 @@ window.Laya = (function (exports) {
                 }
             }
             return null;
-        }
-    }
-
-    class Animator2D extends Animator2DBase {
-        constructor() {
-            super();
-            this._controllerLayers = [];
-            this._parameters = {};
-        }
-        get controller() {
-            return this._controller;
-        }
-        set controller(val) {
-            if (this._controller)
-                this._controller._removeReference();
-            this._controller = val;
-            if (val) {
-                val._addReference();
-                val.updateTo(this);
-            }
-        }
-        get parameters() {
-            return this._parameters;
-        }
-        set parameters(val) {
-            this._parameters = val;
-        }
-        _switchState(parentState, currentState) {
-            if (parentState) {
-                parentState._eventSwitch(currentState);
-            }
-        }
-        _updatePlayer(animatorState, playState, elapsedTime, loop, layerIndex) {
-            const isReplay = this._updatePlayerTime(animatorState, playState, elapsedTime, loop);
-            this._applyTransition(layerIndex, animatorState._eventtransition(playState._normalizedPlayTime, this.parameters, isReplay));
-        }
-        _applyTransition(layerindex, transition) {
-            if (!transition)
-                return false;
-            return this.crossFade(transition.destState.name, layerindex, transition.transstartoffset, transition.transduration);
-        }
-        gotoAndStopByFrame(name, layerIndex, frame) {
-            var controllerLayer = this._controllerLayers[layerIndex];
-            if (controllerLayer) {
-                var animatorState = controllerLayer.getStateByName(name);
-                if (!animatorState || !animatorState._clip)
-                    return;
-                var allFrame = animatorState._clip._duration * animatorState._clip._frameRate;
-                let normalizedTime = frame / allFrame;
-                if (1 < normalizedTime)
-                    normalizedTime = 1;
-                this.gotoAndStop(name, layerIndex, normalizedTime);
-            }
-        }
-        getControllerLayer(layerIndex = 0) {
-            return this._controllerLayers[layerIndex];
-        }
-        gotoAndStop(name, layerIndex, normalizedTime) {
-            var controllerLayer = this._controllerLayers[layerIndex];
-            if (controllerLayer) {
-                var animatorState = controllerLayer.getStateByName(name);
-                if (!animatorState || !animatorState._clip)
-                    return;
-                var playStateInfo = controllerLayer._playStateInfo;
-                var curPlayState = playStateInfo._currentState;
-                var clipDuration = animatorState._clip._duration;
-                var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
-                this._updateDefVal();
-                playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
-                playStateInfo._normalizedPlayTime = normalizedTime;
-                controllerLayer._playType = 0;
-                if (curPlayState !== animatorState) {
-                    playStateInfo._currentState = animatorState;
-                    this._switchState(curPlayState, animatorState);
-                }
-                animatorState._eventStart(this, layerIndex);
-                let addtive = controllerLayer.blendingMode != AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
-                this._updateClipDatas(animatorState, addtive, playStateInfo);
-                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
-                this.stop();
-            }
-        }
-        play(name, layerIndex = 0, normalizedTime = Number.NEGATIVE_INFINITY) {
-            if (this._checkEnterIndex) {
-                let i = this._checkEnterIndex.indexOf(layerIndex);
-                if (0 <= i) {
-                    this._checkEnterIndex.splice(i, 1);
-                }
-            }
-            this._isPlaying = true;
-            var controllerLayer = this._controllerLayers[layerIndex];
-            if (controllerLayer) {
-                var defaultState = controllerLayer.defaultState;
-                if (!name && !defaultState)
-                    throw new Error("Animator:must have default clip value,please set clip property.");
-                var playStateInfo = controllerLayer._playStateInfo;
-                var curPlayState = playStateInfo._currentState;
-                var animatorState = name ? controllerLayer.getStateByName(name) : defaultState;
-                if (!animatorState._clip)
-                    return;
-                var clipDuration = animatorState._clip._duration;
-                var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
-                this._updateDefVal();
-                if (curPlayState !== animatorState) {
-                    if (normalizedTime !== Number.NEGATIVE_INFINITY)
-                        playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
-                    else
-                        playStateInfo._resetPlayState(0.0, calclipduration);
-                    controllerLayer._playType = 0;
-                    playStateInfo._currentState = animatorState;
-                }
-                else {
-                    if (normalizedTime !== Number.NEGATIVE_INFINITY) {
-                        playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
-                        controllerLayer._playType = 0;
-                    }
-                    else {
-                        playStateInfo._resetPlayState(clipDuration * animatorState.clipStart, calclipduration);
-                    }
-                }
-                this._switchState(curPlayState, animatorState);
-                animatorState._eventStart(this, layerIndex);
-            }
-        }
-        stop() {
-            this._isPlaying = false;
-        }
-        onUpdate() {
-            if (!this._isPlaying)
-                return;
-            if (this._checkEnterIndex) {
-                for (let i = this._checkEnterIndex.length - 1; i >= 0; i--) {
-                    let index = this._checkEnterIndex[i];
-                    let enterTransition = this._controllerLayers[index]._enterTransition;
-                    if (enterTransition.check(0, this.parameters, true)) {
-                        var defaultClip = this.getDefaultState(index);
-                        this.play(null, index, defaultClip.cycleOffset);
-                    }
-                }
-            }
-            var delta = this.owner.timer.delta / 1000.0;
-            delta = this._applyUpdateMode(delta);
-            if (0 == this.speed || 0 == delta) {
-                for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
-                    var controllerLayer = this._controllerLayers[i];
-                    if (!controllerLayer.enable)
-                        continue;
-                    var playStateInfo = controllerLayer._playStateInfo;
-                    if (playStateInfo._finish && controllerLayer._playType == 0) {
-                        var animatorState = playStateInfo._currentState;
-                        this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
-                    }
-                }
-                return;
-            }
-            for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
-                var controllerLayer = this._controllerLayers[i];
-                if (!controllerLayer.enable)
-                    continue;
-                var playStateInfo = controllerLayer._playStateInfo;
-                var addtive = controllerLayer.blendingMode != AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
-                switch (controllerLayer._playType) {
-                    case 0:
-                        var animatorState = playStateInfo._currentState;
-                        var speed = this._speed * animatorState.speed;
-                        var finish = playStateInfo._finish;
-                        var loop = animatorState.loop;
-                        if (-1 >= loop) {
-                            var clip = animatorState._clip;
-                            if (clip.islooping) {
-                                loop = 0;
-                            }
-                            else {
-                                loop = 1;
-                            }
-                        }
-                        let dir = 1;
-                        if (!playStateInfo._frontPlay) {
-                            dir = -1;
-                        }
-                        if (finish) {
-                            this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
-                        }
-                        else {
-                            this._updatePlayer(animatorState, playStateInfo, delta * speed * dir, loop, i);
-                        }
-                        playStateInfo = controllerLayer._playStateInfo;
-                        animatorState = playStateInfo._currentState;
-                        {
-                            this._updateClipDatas(animatorState, addtive, playStateInfo);
-                            if (!finish) {
-                                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
-                                this._updateEventScript(animatorState, playStateInfo);
-                            }
-                        }
-                        finish || this._updateStateFinish(animatorState, playStateInfo);
-                        break;
-                }
-            }
-        }
-        addControllerLayer(controllerLayer) {
-            this._controllerLayers.push(controllerLayer);
-        }
-        crossFade(name, layerIndex = 0, normalizedTime = Number.NEGATIVE_INFINITY, transitionDuration) {
-            var controllerLayer = this._controllerLayers[layerIndex];
-            if (controllerLayer) {
-                var destAnimatorState = controllerLayer.getStateByName(name);
-                if (destAnimatorState) {
-                    this.play(name, layerIndex, normalizedTime);
-                    return true;
-                }
-                else {
-                    console.warn("Invalid layerIndex " + layerIndex + ".");
-                }
-            }
-            return false;
-        }
-        onAfterDeserialize() {
-            let arr = this.controllerLayers;
-            if (!arr || null != this.controller)
-                return;
-            delete this.controllerLayers;
-            this._controllerLayers.length = 0;
-            for (let layer of arr) {
-                this.addControllerLayer(layer);
-            }
-        }
-        onEnable() {
-            if (this._checkEnterIndex)
-                this._checkEnterIndex.length = 0;
-            else
-                this._checkEnterIndex = [];
-            if (this._isPlaying) {
-                for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
-                    if (this._controllerLayers[i].playOnWake) {
-                        var defaultClip = this.getDefaultState(i);
-                        if (defaultClip) {
-                            let enterTransition = this._controllerLayers[i]._enterTransition;
-                            if (enterTransition) {
-                                this._isPlaying = true;
-                                if (enterTransition.check(0, this.parameters, true)) {
-                                    this.play(null, i, defaultClip.cycleOffset);
-                                }
-                                else {
-                                    this._checkEnterIndex.push(i);
-                                }
-                            }
-                            else {
-                                this.play(null, i, defaultClip.cycleOffset);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        getDefaultState(layerIndex = 0) {
-            var controllerLayer = this._controllerLayers[layerIndex];
-            return controllerLayer.defaultState;
-        }
-        setParamsTrigger(name) {
-            const data = this._parameters[name];
-            if (data && data.type === exports.AniParmType.Trigger) {
-                data.value = true;
-            }
-            else {
-                this._parameters[name] = { name: name, type: exports.AniParmType.Trigger, value: true };
-            }
-        }
-        setParamsNumber(name, value) {
-            const data = this._parameters[name];
-            if (data && data.type === exports.AniParmType.Float) {
-                data.value = value;
-            }
-            else {
-                this._parameters[name] = { name: name, type: exports.AniParmType.Float, value: value };
-            }
-        }
-        setParamsBool(name, value) {
-            const data = this._parameters[name];
-            if (data && data.type === exports.AniParmType.Bool) {
-                data.value = value;
-            }
-            else {
-                this._parameters[name] = { name: name, type: exports.AniParmType.Bool, value: value };
-            }
-        }
-        getParamsvalue(name) {
-            let parm = this._parameters[name];
-            if (parm) {
-                return parm.value;
-            }
-            return null;
-        }
-        onDestroy() {
-            if (this._controller) {
-                this._controller._removeReference();
-                this._controller = null;
-            }
-            for (var i = 0, n = this._controllerLayers.length; i < n; i++)
-                this._controllerLayers[i].destroy();
-            this._controllerLayers.length = 0;
-            this._isPlaying = false;
-            this._parameters = null;
-        }
-    }
-
-    class AnimatorState2D extends EventDispatcher {
-        constructor() {
-            super(...arguments);
-            this._referenceCount = 0;
-            this._clip = null;
-            this._currentFrameIndices = null;
-            this.cycleOffset = 0;
-            this.speed = 1.0;
-            this.clipStart = 0.0;
-            this.clipEnd = 1.0;
-            this.loop = -1;
-            this.yoyo = false;
-            this.transitions = [];
-            this.soloTransitions = [];
-            this._scripts = null;
-            this._realtimeDatas = [];
-        }
-        get clip() {
-            return this._clip;
-        }
-        set clip(value) {
-            if (this._clip != value) {
-                if (this._clip)
-                    (this._referenceCount > 0) && (this._clip._removeReference(this._referenceCount));
-                if (value) {
-                    var clipNodes = value._nodes;
-                    var count = clipNodes.count;
-                    this._currentFrameIndices = new Int16Array(count);
-                    this._resetFrameIndices();
-                    (this._referenceCount > 0) && (value._addReference(this._referenceCount));
-                    this._realtimeDatas.length = count;
-                }
-                this._clip = value;
-            }
-        }
-        _eventStateUpdate(value) {
-            this.event(AnimatorState2D.EVENT_OnStateUpdate, value);
-            if (this._scripts) {
-                for (var i = 0, n = this._scripts.length; i < n; i++)
-                    this._scripts[i].onStateUpdate(value);
-            }
-        }
-        _eventStart(animator, layerIndex) {
-            this.event(AnimatorState2D.EVENT_OnStateEnter);
-            if (this._scripts) {
-                for (var i = 0, n = this._scripts.length; i < n; i++) {
-                    this._scripts[i].setPlayScriptInfo(animator, layerIndex, this);
-                    this._scripts[i].onStateEnter();
-                }
-            }
-        }
-        _eventExit() {
-            this.event(AnimatorState2D.EVENT_OnStateExit);
-            if (this._scripts) {
-                for (let i = 0, n = this._scripts.length; i < n; i++) {
-                    this._scripts[i].onStateExit();
-                }
-            }
-        }
-        _eventSwitch(currentState) {
-            this.event(AnimatorState2D.EVENT_OnStateSwitch, currentState);
-            if (this._scripts) {
-                for (let i = 0, n = this._scripts.length; i < n; i++) {
-                    this._scripts[i].onStateSwitch && this._scripts[i].onStateSwitch(currentState);
-                }
-            }
-        }
-        _eventLoop() {
-            this.event(AnimatorState2D.EVENT_OnStateLoop);
-            if (this._scripts) {
-                for (let i = 0, n = this._scripts.length; i < n; i++) {
-                    if (this._scripts[i].onStateLoop)
-                        this._scripts[i].onStateLoop();
-                }
-            }
-        }
-        _eventtransition(normalizeTime, paramsMap, isReplay) {
-            let soloNums = this.soloTransitions.length;
-            if (soloNums > 0) {
-                for (var i = 0; i < soloNums; i++) {
-                    if (this.soloTransitions[i].check(normalizeTime, paramsMap, isReplay))
-                        return this.soloTransitions[i];
-                }
-                return null;
-            }
-            let transNums = this.transitions.length;
-            for (var i = 0; i < transNums; i++) {
-                if (this.transitions[i].check(normalizeTime, paramsMap, isReplay))
-                    return this.transitions[i];
-            }
-            return null;
-        }
-        _resetFrameIndices() {
-            for (var i = 0, n = this._currentFrameIndices.length; i < n; i++)
-                this._currentFrameIndices[i] = -1;
-        }
-        _getReferenceCount() {
-            return this._referenceCount;
-        }
-        _addReference(count) {
-            (this._clip) && (this._clip._addReference(count));
-            this._referenceCount += count;
-        }
-        _removeReference(count) {
-            (this._clip) && (this._clip._removeReference(count));
-            this._referenceCount -= count;
-        }
-        _clearReference() {
-            this._removeReference(-this._referenceCount);
-        }
-        addScript(type) {
-            var script = new type();
-            this._scripts = this._scripts || [];
-            this._scripts.push(script);
-            return script;
-        }
-        getScript(type) {
-            if (this._scripts) {
-                for (var i = 0, n = this._scripts.length; i < n; i++) {
-                    var script = this._scripts[i];
-                    if (script instanceof type)
-                        return script;
-                }
-            }
-            return null;
-        }
-        getScripts(type) {
-            var coms = null;
-            if (this._scripts) {
-                for (var i = 0, n = this._scripts.length; i < n; i++) {
-                    var script = this._scripts[i];
-                    if (script instanceof type) {
-                        coms = coms || [];
-                        coms.push(script);
-                    }
-                }
-            }
-            return coms;
-        }
-        clone() {
-            var dest = new AnimatorState2D();
-            this.cloneTo(dest);
-            return dest;
-        }
-        cloneTo(destObject) {
-            destObject.name = this.name;
-            destObject.speed = this.speed;
-            destObject.clip = this._clip;
-        }
-        destroy() {
-            this._clip = null;
-            this._currentFrameIndices = null;
-            this._scripts = null;
-            this._realtimeDatas.length = 0;
-        }
-    }
-    AnimatorState2D.EVENT_OnStateEnter = "OnStartEnter";
-    AnimatorState2D.EVENT_OnStateUpdate = "OnStateUpdate";
-    AnimatorState2D.EVENT_OnStateExit = "OnStateExit";
-    AnimatorState2D.EVENT_OnStateSwitch = "OnStateSwitch";
-    AnimatorState2D.EVENT_OnStateLoop = 'OnStateLoop';
-
-    class KeyframeNode2D {
-        constructor() {
-            this._ownerPath = [];
-            this._propertys = [];
-            this._keyFrames = [];
-        }
-        get keyFramesCount() {
-            return this._keyFrames.length;
-        }
-        _setOwnerPathCount(value) {
-            this._ownerPath.length = value;
-        }
-        _setOwnerPathByIndex(index, value) {
-            this._ownerPath[index] = value;
-        }
-        _setPropertyCount(value) {
-            this._propertys.length = value;
-        }
-        _setPropertyByIndex(index, value) {
-            this._propertys[index] = value;
-        }
-        _setKeyframeCount(value) {
-            this._keyFrames.length = value;
-        }
-        _joinOwnerPath(sep) {
-            return this._ownerPath.join(sep);
-        }
-        _joinProperty(sep) {
-            return this._propertys.join(sep);
-        }
-        getKeyframeByIndex(index) {
-            return this._keyFrames[index];
-        }
-        get ownerPathCount() {
-            return this._ownerPath.length;
-        }
-        get propertyCount() {
-            return this._propertys.length;
-        }
-        getOwnerPathByIndex(index) {
-            return this._ownerPath[index];
-        }
-        getPropertyByIndex(index) {
-            return this._propertys[index];
-        }
-    }
-
-    class Keyframe2D {
-        clone() {
-            var dest = new Keyframe2D();
-            this.cloneTo(dest);
-            return dest;
-        }
-        cloneTo(destObject) {
-            destObject.time = this.time;
-        }
-    }
-    Keyframe2D.defaultWeight = 0.33333;
-
-    class Animation2DEvent {
-        constructor() {
         }
     }
 
@@ -34572,6 +34462,709 @@ window.Laya = (function (exports) {
     const tmpVec31 = new Vector3();
     const tmpVec32 = new Vector3();
     const pool = Pool.createPool(Vector3, null, e => e.set(0, 0, 0));
+
+    class Animator2D extends Animator2DBase {
+        constructor() {
+            super();
+            this._controllerLayers = [];
+            this._parameters = {};
+        }
+        get controller() {
+            return this._controller;
+        }
+        set controller(val) {
+            if (this._controller)
+                this._controller._removeReference();
+            this._controller = val;
+            if (val) {
+                val._addReference();
+                val.updateTo(this);
+            }
+        }
+        get parameters() {
+            return this._parameters;
+        }
+        set parameters(val) {
+            this._parameters = val;
+        }
+        _switchState(parentState, currentState) {
+            if (parentState) {
+                parentState._eventSwitch(currentState);
+            }
+        }
+        _updatePlayer(animatorState, playState, elapsedTime, loop, layerIndex) {
+            const isReplay = this._updatePlayerTime(animatorState, playState, elapsedTime, loop);
+            this._applyTransition(layerIndex, animatorState._eventtransition(playState._normalizedPlayTime, this.parameters, isReplay));
+        }
+        _applyTransition(layerindex, transition) {
+            if (!transition)
+                return false;
+            return this.crossFade(transition.destState.name, layerindex, transition.transstartoffset, transition.transduration);
+        }
+        gotoAndStopByFrame(name, layerIndex, frame) {
+            var controllerLayer = this._controllerLayers[layerIndex];
+            if (controllerLayer) {
+                var animatorState = controllerLayer.getStateByName(name);
+                if (!animatorState || !animatorState._clip)
+                    return;
+                var allFrame = animatorState._clip._duration * animatorState._clip._frameRate;
+                let normalizedTime = frame / allFrame;
+                if (1 < normalizedTime)
+                    normalizedTime = 1;
+                this.gotoAndStop(name, layerIndex, normalizedTime);
+            }
+        }
+        getControllerLayer(layerIndex = 0) {
+            return this._controllerLayers[layerIndex];
+        }
+        gotoAndStop(name, layerIndex, normalizedTime) {
+            var controllerLayer = this._controllerLayers[layerIndex];
+            if (controllerLayer) {
+                var animatorState = controllerLayer.getStateByName(name);
+                if (!animatorState || !animatorState._clip)
+                    return;
+                var playStateInfo = controllerLayer._playStateInfo;
+                var curPlayState = playStateInfo._currentState;
+                var clipDuration = animatorState._clip._duration;
+                var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
+                this._clearCrossFade(controllerLayer);
+                this._updateDefVal();
+                playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
+                playStateInfo._normalizedPlayTime = normalizedTime;
+                controllerLayer._playType = 0;
+                if (curPlayState !== animatorState) {
+                    playStateInfo._currentState = animatorState;
+                    this._switchState(curPlayState, animatorState);
+                }
+                animatorState._eventStart(this, layerIndex);
+                let addtive = controllerLayer.blendingMode != AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
+                this._updateClipDatas(animatorState, addtive, playStateInfo);
+                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
+                this.stop();
+            }
+        }
+        play(name, layerIndex = 0, normalizedTime = Number.NEGATIVE_INFINITY) {
+            if (this._checkEnterIndex) {
+                let i = this._checkEnterIndex.indexOf(layerIndex);
+                if (0 <= i) {
+                    this._checkEnterIndex.splice(i, 1);
+                }
+            }
+            this._isPlaying = true;
+            var controllerLayer = this._controllerLayers[layerIndex];
+            if (controllerLayer) {
+                var defaultState = controllerLayer.defaultState;
+                if (!name && !defaultState)
+                    throw new Error("Animator:must have default clip value,please set clip property.");
+                var playStateInfo = controllerLayer._playStateInfo;
+                var curPlayState = playStateInfo._currentState;
+                var animatorState = name ? controllerLayer.getStateByName(name) : defaultState;
+                if (!animatorState._clip)
+                    return;
+                var clipDuration = animatorState._clip._duration;
+                var calclipduration = animatorState._clip._duration * (animatorState.clipEnd - animatorState.clipStart);
+                this._clearCrossFade(controllerLayer);
+                this._updateDefVal();
+                if (curPlayState !== animatorState) {
+                    if (normalizedTime !== Number.NEGATIVE_INFINITY)
+                        playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
+                    else
+                        playStateInfo._resetPlayState(0.0, calclipduration);
+                    controllerLayer._playType = 0;
+                    playStateInfo._currentState = animatorState;
+                }
+                else {
+                    if (normalizedTime !== Number.NEGATIVE_INFINITY) {
+                        playStateInfo._resetPlayState(clipDuration * normalizedTime, calclipduration);
+                        controllerLayer._playType = 0;
+                    }
+                    else {
+                        playStateInfo._resetPlayState(clipDuration * animatorState.clipStart, calclipduration);
+                    }
+                }
+                controllerLayer._playType = 0;
+                this._switchState(curPlayState, animatorState);
+                animatorState._eventStart(this, layerIndex);
+            }
+        }
+        stop() {
+            this._isPlaying = false;
+        }
+        onUpdate() {
+            if (!this._isPlaying)
+                return;
+            if (this._checkEnterIndex) {
+                for (let i = this._checkEnterIndex.length - 1; i >= 0; i--) {
+                    let index = this._checkEnterIndex[i];
+                    let enterTransition = this._controllerLayers[index]._enterTransition;
+                    if (enterTransition.check(0, this.parameters, true)) {
+                        var defaultClip = this.getDefaultState(index);
+                        this.play(null, index, defaultClip.cycleOffset);
+                    }
+                }
+            }
+            var delta = this.owner.timer.delta / 1000.0;
+            delta = this._applyUpdateMode(delta);
+            if (0 == this.speed || 0 == delta) {
+                for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
+                    var controllerLayer = this._controllerLayers[i];
+                    if (!controllerLayer.enable)
+                        continue;
+                    var playStateInfo = controllerLayer._playStateInfo;
+                    if (playStateInfo._finish && controllerLayer._playType == 0) {
+                        var animatorState = playStateInfo._currentState;
+                        this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
+                    }
+                }
+                return;
+            }
+            for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
+                var controllerLayer = this._controllerLayers[i];
+                if (!controllerLayer.enable)
+                    continue;
+                var playStateInfo = controllerLayer._playStateInfo;
+                var addtive = controllerLayer.blendingMode != AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
+                switch (controllerLayer._playType) {
+                    case 0:
+                        var animatorState = playStateInfo._currentState;
+                        var speed = this._speed * animatorState.speed;
+                        var finish = playStateInfo._finish;
+                        var loop = animatorState.loop;
+                        if (-1 >= loop) {
+                            var clip = animatorState._clip;
+                            if (clip.islooping) {
+                                loop = 0;
+                            }
+                            else {
+                                loop = 1;
+                            }
+                        }
+                        let dir = 1;
+                        if (!playStateInfo._frontPlay) {
+                            dir = -1;
+                        }
+                        if (finish) {
+                            this._applyTransition(i, animatorState._eventtransition(playStateInfo._normalizedPlayTime, this.parameters, false));
+                        }
+                        else {
+                            this._updatePlayer(animatorState, playStateInfo, delta * speed * dir, loop, i);
+                        }
+                        if (controllerLayer._playType !== 0) {
+                            if (!finish) {
+                                this._updateEventScript(animatorState, playStateInfo);
+                                this._updateStateFinish(animatorState, playStateInfo);
+                            }
+                            if (controllerLayer._playType === 1 || controllerLayer._playType === 2)
+                                this._updateCrossFade(controllerLayer, i, 0);
+                            break;
+                        }
+                        playStateInfo = controllerLayer._playStateInfo;
+                        animatorState = playStateInfo._currentState;
+                        {
+                            this._updateClipDatas(animatorState, addtive, playStateInfo);
+                            if (!finish) {
+                                this._setClipDatasToNode(animatorState, addtive, controllerLayer.defaultWeight);
+                                this._updateEventScript(animatorState, playStateInfo);
+                            }
+                        }
+                        finish || this._updateStateFinish(animatorState, playStateInfo);
+                        break;
+                    case 1:
+                    case 2:
+                        this._updateCrossFade(controllerLayer, i, delta);
+                        break;
+                }
+            }
+        }
+        _clearCrossFade(layer) {
+            layer._crossMark++;
+            layer._crossNodes.length = layer._crossDefaultValues.length = layer._crossValues.length = layer._crossFixedValues.length = 0;
+            layer._srcCrossClipNodeIndices.length = layer._destCrossClipNodeIndices.length = 0;
+            layer._crossPlayStateInfo._currentState = null;
+        }
+        _blendValue(source, target, weight) {
+            if (typeof source === "number" && typeof target === "number")
+                return source + (target - source) * weight;
+            if (source && target && typeof source === "object" && typeof target === "object") {
+                const blendVector = (a, b) => {
+                    if (!a || !b)
+                        return weight < 1 ? a : b;
+                    return new Vector3(a.x + (b.x - a.x) * weight, a.y + (b.y - a.y) * weight, a.z + (b.z - a.z) * weight);
+                };
+                return { pos: blendVector(source.pos, target.pos), rotation: blendVector(source.rotation, target.rotation) };
+            }
+            return weight < 1 ? source : target;
+        }
+        _advanceCrossState(layer, info, delta, additive) {
+            const mark = layer._crossMark;
+            const state = info._currentState;
+            const finished = info._finish;
+            if (!finished && delta !== 0) {
+                const loop = state.loop <= -1 ? (state._clip.islooping ? 0 : 1) : state.loop;
+                this._updatePlayerTime(state, info, delta * this._speed * state.speed * (info._frontPlay ? 1 : -1), loop);
+                if (mark !== layer._crossMark)
+                    return false;
+            }
+            this._updateClipDatas(state, additive, info);
+            if (!finished && delta !== 0) {
+                this._updateEventScript(state, info);
+                if (mark !== layer._crossMark)
+                    return false;
+                this._updateStateFinish(state, info);
+            }
+            return mark === layer._crossMark;
+        }
+        _updateCrossFade(layer, layerIndex, delta) {
+            const mark = layer._crossMark;
+            const sourceInfo = layer._playStateInfo;
+            const targetInfo = layer._crossPlayStateInfo;
+            const source = sourceInfo._currentState;
+            const target = targetInfo._currentState;
+            const additive = layer.blendingMode !== AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
+            if (layer._playType === 1 && !this._advanceCrossState(layer, sourceInfo, delta, additive))
+                return;
+            const previousTime = targetInfo._elapsedTime;
+            if (!this._advanceCrossState(layer, targetInfo, delta, additive))
+                return;
+            layer._crossElapsedTime += Math.abs(delta * this._speed);
+            const weight = Math.min(layer._crossElapsedTime / layer._crossDuration, 1);
+            for (let j = 0; j < layer._crossNodes.length; j++) {
+                const srcIndex = layer._srcCrossClipNodeIndices[j];
+                const dstIndex = layer._destCrossClipNodeIndices[j];
+                const fallback = layer._crossDefaultValues[j];
+                const srcValue = layer._playType === 2 ? layer._crossFixedValues[j] : (srcIndex < 0 ? fallback : source._realtimeDatas[srcIndex]);
+                const dstValue = dstIndex < 0 ? fallback : target._realtimeDatas[dstIndex];
+                const value = this._blendValue(srcValue == null ? fallback : srcValue, dstValue == null ? fallback : dstValue, weight);
+                layer._crossValues[j] = value;
+                const owner = this.getOwner(layer._crossNodes[j]);
+                if (owner && value != null)
+                    this._applyAniData(owner, additive, layer.defaultWeight, value);
+                if (mark !== layer._crossMark)
+                    return;
+            }
+            if (weight === 1) {
+                const sourceFinished = sourceInfo._finish;
+                targetInfo._cloneTo(sourceInfo);
+                sourceInfo._currentState = target;
+                layer._playType = 0;
+                this._clearCrossFade(layer);
+                const completedMark = layer._crossMark;
+                if (!sourceFinished && source !== target)
+                    source._eventExit();
+                if (completedMark !== layer._crossMark)
+                    return;
+            }
+            const duration = targetInfo._duration;
+            const replay = Math.floor(Math.abs(previousTime) / duration) !== Math.floor(Math.abs(targetInfo._elapsedTime) / duration);
+            this._applyTransition(layerIndex, target._eventtransition(targetInfo._normalizedPlayTime, this.parameters, replay));
+        }
+        addControllerLayer(controllerLayer) {
+            this._controllerLayers.push(controllerLayer);
+        }
+        crossFade(name, layerIndex = 0, normalizedTime = Number.NEGATIVE_INFINITY, transitionDuration) {
+            var controllerLayer = this._controllerLayers[layerIndex];
+            if (controllerLayer) {
+                var destAnimatorState = controllerLayer.getStateByName(name);
+                if (destAnimatorState && destAnimatorState._clip) {
+                    const sourceInfo = controllerLayer._playStateInfo;
+                    const source = sourceInfo._currentState;
+                    if (!source || !(transitionDuration > 0) || !Number.isFinite(transitionDuration)) {
+                        this.play(name, layerIndex, normalizedTime);
+                        return true;
+                    }
+                    const duration = source._clip._duration * (source.clipEnd - source.clipStart) * transitionDuration;
+                    if (!(duration > 0)) {
+                        this.play(name, layerIndex, normalizedTime);
+                        return true;
+                    }
+                    const additive = controllerLayer.blendingMode !== AnimatorControllerLayer2D.BLENDINGMODE_OVERRIDE;
+                    const interrupted = controllerLayer._playType === 1 || controllerLayer._playType === 2;
+                    const fixed = interrupted || source === destAnimatorState;
+                    const nodes = interrupted ? controllerLayer._crossNodes.slice() : [];
+                    const values = interrupted ? controllerLayer._crossValues.slice() : [];
+                    const defaults = interrupted ? controllerLayer._crossDefaultValues.slice() : [];
+                    const previousTarget = interrupted ? controllerLayer._crossPlayStateInfo._currentState : source;
+                    const previousTargetFinished = interrupted && controllerLayer._crossPlayStateInfo._finish;
+                    this._updateClipDatas(source, additive, sourceInfo);
+                    const sourceNodes = source._clip._nodes;
+                    const targetNodes = destAnimatorState._clip._nodes;
+                    if (!interrupted) {
+                        for (let j = 0; j < sourceNodes.count; j++)
+                            nodes.push(sourceNodes.getNodeByIndex(j));
+                    }
+                    const known = new Set(nodes.map(node => node.fullPath));
+                    for (let j = 0; j < targetNodes.count; j++) {
+                        const node = targetNodes.getNodeByIndex(j);
+                        if (!known.has(node.fullPath)) {
+                            nodes.push(node);
+                            known.add(node.fullPath);
+                        }
+                    }
+                    this._clearCrossFade(controllerLayer);
+                    controllerLayer._crossNodes = nodes;
+                    for (let j = 0; j < nodes.length; j++) {
+                        const node = nodes[j];
+                        const srcNode = source._clip._nodesDic[node.fullPath];
+                        const dstNode = destAnimatorState._clip._nodesDic[node.fullPath];
+                        const srcIndex = srcNode ? srcNode._indexInList : -1;
+                        const dstIndex = dstNode ? dstNode._indexInList : -1;
+                        const owner = this.getOwner(node);
+                        let fallback = defaults[j];
+                        if (fallback == null && owner && owner.pro) {
+                            const isPath = node.keyFramesCount > 0 && node.getKeyframeByIndex(0).data.val instanceof CurvePath;
+                            const value = isPath ? owner.pro.ower : owner.pro.defVal;
+                            fallback = isPath && value
+                                ? { pos: new Vector3(value.x, value.y, 0), rotation: new Vector3(0, 0, value.rotation || 0) }
+                                : value;
+                            if (additive && typeof fallback === "number")
+                                fallback = 0;
+                        }
+                        const sourceValue = srcIndex < 0 ? fallback : source._realtimeDatas[srcIndex];
+                        controllerLayer._srcCrossClipNodeIndices[j] = srcIndex;
+                        controllerLayer._destCrossClipNodeIndices[j] = dstIndex;
+                        controllerLayer._crossDefaultValues[j] = fallback;
+                        controllerLayer._crossFixedValues[j] = interrupted && j < values.length ? values[j] : sourceValue;
+                        controllerLayer._crossValues[j] = fixed ? controllerLayer._crossFixedValues[j] : sourceValue;
+                    }
+                    const targetInfo = controllerLayer._crossPlayStateInfo;
+                    const clipDuration = destAnimatorState._clip._duration;
+                    targetInfo._resetPlayState(normalizedTime === Number.NEGATIVE_INFINITY ? 0 : clipDuration * normalizedTime, clipDuration * (destAnimatorState.clipEnd - destAnimatorState.clipStart));
+                    targetInfo._currentState = destAnimatorState;
+                    controllerLayer._crossDuration = duration;
+                    controllerLayer._crossElapsedTime = 0;
+                    controllerLayer._playType = fixed ? 2 : 1;
+                    this._isPlaying = true;
+                    if (this._checkEnterIndex) {
+                        const index = this._checkEnterIndex.indexOf(layerIndex);
+                        if (index >= 0)
+                            this._checkEnterIndex.splice(index, 1);
+                    }
+                    if (interrupted && previousTarget !== source && !previousTargetFinished)
+                        previousTarget._eventExit();
+                    this._switchState(previousTarget, destAnimatorState);
+                    destAnimatorState._eventStart(this, layerIndex);
+                    return true;
+                }
+                else {
+                    console.warn("Invalid animation state " + name + ".");
+                }
+            }
+            return false;
+        }
+        onAfterDeserialize() {
+            let arr = this.controllerLayers;
+            if (!arr || null != this.controller)
+                return;
+            delete this.controllerLayers;
+            this._controllerLayers.length = 0;
+            for (let layer of arr) {
+                this.addControllerLayer(layer);
+            }
+        }
+        onEnable() {
+            if (this._checkEnterIndex)
+                this._checkEnterIndex.length = 0;
+            else
+                this._checkEnterIndex = [];
+            if (this._isPlaying) {
+                for (var i = 0, n = this._controllerLayers.length; i < n; i++) {
+                    if (this._controllerLayers[i].playOnWake) {
+                        var defaultClip = this.getDefaultState(i);
+                        if (defaultClip) {
+                            let enterTransition = this._controllerLayers[i]._enterTransition;
+                            if (enterTransition) {
+                                this._isPlaying = true;
+                                if (enterTransition.check(0, this.parameters, true)) {
+                                    this.play(null, i, defaultClip.cycleOffset);
+                                }
+                                else {
+                                    this._checkEnterIndex.push(i);
+                                }
+                            }
+                            else {
+                                this.play(null, i, defaultClip.cycleOffset);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        getDefaultState(layerIndex = 0) {
+            var controllerLayer = this._controllerLayers[layerIndex];
+            return controllerLayer.defaultState;
+        }
+        setParamsTrigger(name) {
+            const data = this._parameters[name];
+            if (data && data.type === exports.AniParmType.Trigger) {
+                data.value = true;
+            }
+            else {
+                this._parameters[name] = { name: name, type: exports.AniParmType.Trigger, value: true };
+            }
+        }
+        setParamsNumber(name, value) {
+            const data = this._parameters[name];
+            if (data && data.type === exports.AniParmType.Float) {
+                data.value = value;
+            }
+            else {
+                this._parameters[name] = { name: name, type: exports.AniParmType.Float, value: value };
+            }
+        }
+        setParamsBool(name, value) {
+            const data = this._parameters[name];
+            if (data && data.type === exports.AniParmType.Bool) {
+                data.value = value;
+            }
+            else {
+                this._parameters[name] = { name: name, type: exports.AniParmType.Bool, value: value };
+            }
+        }
+        getParamsvalue(name) {
+            let parm = this._parameters[name];
+            if (parm) {
+                return parm.value;
+            }
+            return null;
+        }
+        onDestroy() {
+            if (this._controller) {
+                this._controller._removeReference();
+                this._controller = null;
+            }
+            for (var i = 0, n = this._controllerLayers.length; i < n; i++)
+                this._controllerLayers[i].destroy();
+            this._controllerLayers.length = 0;
+            this._isPlaying = false;
+            this._parameters = null;
+        }
+    }
+
+    class AnimatorState2D extends EventDispatcher {
+        constructor() {
+            super(...arguments);
+            this._referenceCount = 0;
+            this._clip = null;
+            this._currentFrameIndices = null;
+            this.cycleOffset = 0;
+            this.speed = 1.0;
+            this.clipStart = 0.0;
+            this.clipEnd = 1.0;
+            this.loop = -1;
+            this.yoyo = false;
+            this.transitions = [];
+            this.soloTransitions = [];
+            this._scripts = null;
+            this._realtimeDatas = [];
+        }
+        get clip() {
+            return this._clip;
+        }
+        set clip(value) {
+            if (this._clip != value) {
+                if (this._clip)
+                    (this._referenceCount > 0) && (this._clip._removeReference(this._referenceCount));
+                if (value) {
+                    var clipNodes = value._nodes;
+                    var count = clipNodes.count;
+                    this._currentFrameIndices = new Int16Array(count);
+                    this._resetFrameIndices();
+                    (this._referenceCount > 0) && (value._addReference(this._referenceCount));
+                    this._realtimeDatas.length = count;
+                }
+                this._clip = value;
+            }
+        }
+        _eventStateUpdate(value) {
+            this.event(AnimatorState2D.EVENT_OnStateUpdate, value);
+            if (this._scripts) {
+                for (var i = 0, n = this._scripts.length; i < n; i++)
+                    this._scripts[i].onStateUpdate(value);
+            }
+        }
+        _eventStart(animator, layerIndex) {
+            this.event(AnimatorState2D.EVENT_OnStateEnter);
+            if (this._scripts) {
+                for (var i = 0, n = this._scripts.length; i < n; i++) {
+                    this._scripts[i].setPlayScriptInfo(animator, layerIndex, this);
+                    this._scripts[i].onStateEnter();
+                }
+            }
+        }
+        _eventExit() {
+            this.event(AnimatorState2D.EVENT_OnStateExit);
+            if (this._scripts) {
+                for (let i = 0, n = this._scripts.length; i < n; i++) {
+                    this._scripts[i].onStateExit();
+                }
+            }
+        }
+        _eventSwitch(currentState) {
+            this.event(AnimatorState2D.EVENT_OnStateSwitch, currentState);
+            if (this._scripts) {
+                for (let i = 0, n = this._scripts.length; i < n; i++) {
+                    this._scripts[i].onStateSwitch && this._scripts[i].onStateSwitch(currentState);
+                }
+            }
+        }
+        _eventLoop() {
+            this.event(AnimatorState2D.EVENT_OnStateLoop);
+            if (this._scripts) {
+                for (let i = 0, n = this._scripts.length; i < n; i++) {
+                    if (this._scripts[i].onStateLoop)
+                        this._scripts[i].onStateLoop();
+                }
+            }
+        }
+        _eventtransition(normalizeTime, paramsMap, isReplay) {
+            let soloNums = this.soloTransitions.length;
+            if (soloNums > 0) {
+                for (var i = 0; i < soloNums; i++) {
+                    if (this.soloTransitions[i].check(normalizeTime, paramsMap, isReplay))
+                        return this.soloTransitions[i];
+                }
+                return null;
+            }
+            let transNums = this.transitions.length;
+            for (var i = 0; i < transNums; i++) {
+                if (this.transitions[i].check(normalizeTime, paramsMap, isReplay))
+                    return this.transitions[i];
+            }
+            return null;
+        }
+        _resetFrameIndices() {
+            for (var i = 0, n = this._currentFrameIndices.length; i < n; i++)
+                this._currentFrameIndices[i] = -1;
+        }
+        _getReferenceCount() {
+            return this._referenceCount;
+        }
+        _addReference(count) {
+            (this._clip) && (this._clip._addReference(count));
+            this._referenceCount += count;
+        }
+        _removeReference(count) {
+            (this._clip) && (this._clip._removeReference(count));
+            this._referenceCount -= count;
+        }
+        _clearReference() {
+            this._removeReference(-this._referenceCount);
+        }
+        addScript(type) {
+            var script = new type();
+            this._scripts = this._scripts || [];
+            this._scripts.push(script);
+            return script;
+        }
+        getScript(type) {
+            if (this._scripts) {
+                for (var i = 0, n = this._scripts.length; i < n; i++) {
+                    var script = this._scripts[i];
+                    if (script instanceof type)
+                        return script;
+                }
+            }
+            return null;
+        }
+        getScripts(type) {
+            var coms = null;
+            if (this._scripts) {
+                for (var i = 0, n = this._scripts.length; i < n; i++) {
+                    var script = this._scripts[i];
+                    if (script instanceof type) {
+                        coms = coms || [];
+                        coms.push(script);
+                    }
+                }
+            }
+            return coms;
+        }
+        clone() {
+            var dest = new AnimatorState2D();
+            this.cloneTo(dest);
+            return dest;
+        }
+        cloneTo(destObject) {
+            destObject.name = this.name;
+            destObject.speed = this.speed;
+            destObject.clip = this._clip;
+        }
+        destroy() {
+            this._clip = null;
+            this._currentFrameIndices = null;
+            this._scripts = null;
+            this._realtimeDatas.length = 0;
+        }
+    }
+    AnimatorState2D.EVENT_OnStateEnter = "OnStartEnter";
+    AnimatorState2D.EVENT_OnStateUpdate = "OnStateUpdate";
+    AnimatorState2D.EVENT_OnStateExit = "OnStateExit";
+    AnimatorState2D.EVENT_OnStateSwitch = "OnStateSwitch";
+    AnimatorState2D.EVENT_OnStateLoop = 'OnStateLoop';
+
+    class KeyframeNode2D {
+        constructor() {
+            this._ownerPath = [];
+            this._propertys = [];
+            this._keyFrames = [];
+        }
+        get keyFramesCount() {
+            return this._keyFrames.length;
+        }
+        _setOwnerPathCount(value) {
+            this._ownerPath.length = value;
+        }
+        _setOwnerPathByIndex(index, value) {
+            this._ownerPath[index] = value;
+        }
+        _setPropertyCount(value) {
+            this._propertys.length = value;
+        }
+        _setPropertyByIndex(index, value) {
+            this._propertys[index] = value;
+        }
+        _setKeyframeCount(value) {
+            this._keyFrames.length = value;
+        }
+        _joinOwnerPath(sep) {
+            return this._ownerPath.join(sep);
+        }
+        _joinProperty(sep) {
+            return this._propertys.join(sep);
+        }
+        getKeyframeByIndex(index) {
+            return this._keyFrames[index];
+        }
+        get ownerPathCount() {
+            return this._ownerPath.length;
+        }
+        get propertyCount() {
+            return this._propertys.length;
+        }
+        getOwnerPathByIndex(index) {
+            return this._ownerPath[index];
+        }
+        getPropertyByIndex(index) {
+            return this._propertys[index];
+        }
+    }
+
+    class Keyframe2D {
+        clone() {
+            var dest = new Keyframe2D();
+            this.cloneTo(dest);
+            return dest;
+        }
+        cloneTo(destObject) {
+            destObject.time = this.time;
+        }
+    }
+    Keyframe2D.defaultWeight = 0.33333;
+
+    class Animation2DEvent {
+        constructor() {
+        }
+    }
 
     class AnimationClip2DParse01 {
         static READ_DATA() {
@@ -35814,6 +36407,7 @@ window.Laya = (function (exports) {
                     toloadPics.push(task.loader.load(Utils.replaceFileExtension(task.url, "png"), null, task.progress.createCallback()));
                 }
                 return Promise.all(toloadPics).then(pics => {
+                    var _a, _b;
                     pics = pics.filter(pic => pic != null);
                     let baseUrl = task.options.baseUrl || "";
                     let frames = data.frames;
@@ -35842,12 +36436,14 @@ window.Laya = (function (exports) {
                         res.update(pics, subTextures);
                         res.dir = directory;
                         res.animation = data.animation;
+                        res.userData = (_a = data.meta) === null || _a === void 0 ? void 0 : _a.userData;
                         res.event("reload");
                         return res;
                     }
                     else {
                         res = new AtlasResource(directory, pics, subTextures);
                         res.animation = data.animation;
+                        res.userData = (_b = data.meta) === null || _b === void 0 ? void 0 : _b.userData;
                         return res;
                     }
                 });
@@ -36458,6 +37054,7 @@ window.Laya = (function (exports) {
             return this.load2(task, meta);
         }
         load2(task, meta) {
+            var _a;
             let constructParams;
             let propertyParams;
             let ext = task.ext;
@@ -36490,7 +37087,7 @@ window.Laya = (function (exports) {
                 constructParams = [0, 0, fileInfo.format, meta.mipmap, meta.readWrite, meta.sRGB];
                 propertyParams = {
                     wrapModeU: meta.wrapMode,
-                    wrapModeV: meta.wrapMode,
+                    wrapModeV: (_a = meta.wrapModeV) !== null && _a !== void 0 ? _a : meta.wrapMode,
                     filterMode: meta.filterMode,
                     anisoLevel: meta.anisoLevel,
                     premultiplyAlpha: !!meta.pma,
@@ -36501,10 +37098,25 @@ window.Laya = (function (exports) {
                 constructParams = task.options.constructParams;
                 propertyParams = task.options.propertyParams;
             }
+            const applyTextureCubeProperties = (texture) => {
+                var _a;
+                if (!propertyParams)
+                    return;
+                if (propertyParams.wrapModeU != null)
+                    texture.wrapModeU = propertyParams.wrapModeU;
+                if (propertyParams.wrapModeV != null)
+                    texture.wrapModeV = propertyParams.wrapModeV;
+                if (propertyParams.wrapModeV != null || propertyParams.wrapModeU != null)
+                    texture.wrapModeW = (_a = propertyParams.wrapModeV) !== null && _a !== void 0 ? _a : propertyParams.wrapModeU;
+                if (propertyParams.filterMode != null)
+                    texture.filterMode = propertyParams.filterMode;
+                if (propertyParams.anisoLevel != null)
+                    texture.anisoLevel = propertyParams.anisoLevel;
+            };
             let compress = compressedFormats.indexOf(ext) != -1 ? ext : null;
             if (compress != null) {
                 return task.loader.fetch(url, "arraybuffer", task.progress.createCallback(), task.options).then(data => {
-                    var _a;
+                    var _a, _b;
                     if (!data)
                         return null;
                     let tex;
@@ -36515,8 +37127,10 @@ window.Laya = (function (exports) {
                                 let cls = ClassUtils.getClass("TextureCube");
                                 if (cls) {
                                     let srgb = constructParams ? !!constructParams[5] : false;
-                                    let tc = new cls(ddsInfo.width, ddsInfo.format, ddsInfo.mipmapCount > 1, srgb);
+                                    let premultiplyAlpha = propertyParams ? propertyParams.premultiplyAlpha : false;
+                                    let tc = new cls(ddsInfo.width, ddsInfo.format, ddsInfo.mipmapCount > 1, srgb, premultiplyAlpha);
                                     tc.setDDSData(ddsInfo);
+                                    applyTextureCubeProperties(tc);
                                     tex = tc;
                                 }
                                 else {
@@ -36534,8 +37148,11 @@ window.Laya = (function (exports) {
                                 if (cls) {
                                     let mipmapRequested = (_a = constructParams === null || constructParams === void 0 ? void 0 : constructParams[3]) !== null && _a !== void 0 ? _a : true;
                                     let mipmap = mipmapRequested && ktxInfo.mipmapCount > 1;
-                                    let tc = new cls(ktxInfo.width, ktxInfo.format, mipmap, ktxInfo.sRGB);
+                                    let sRGB = (_b = constructParams === null || constructParams === void 0 ? void 0 : constructParams[5]) !== null && _b !== void 0 ? _b : ktxInfo.sRGB;
+                                    let premultiplyAlpha = propertyParams ? propertyParams.premultiplyAlpha : false;
+                                    let tc = new cls(ktxInfo.width, ktxInfo.format, mipmap, sRGB, premultiplyAlpha);
                                     tc.setKTXData(ktxInfo);
+                                    applyTextureCubeProperties(tc);
                                     tex = tc;
                                 }
                                 else
@@ -36646,7 +37263,11 @@ window.Laya = (function (exports) {
             return Promise.resolve(inst);
         }
     }
-    const propertyParams2d = { premultiplyAlpha: true };
+    const propertyParams2d = {
+        premultiplyAlpha: true,
+        wrapModeU: exports.WrapMode.Clamp,
+        wrapModeV: exports.WrapMode.Clamp,
+    };
     const constructParams2d = [null, null, exports.TextureFormat.R8G8B8A8, false, false, true];
     class TextureLoader {
         wrapTex2D(task, tex2D) {
@@ -36675,13 +37296,21 @@ window.Laya = (function (exports) {
             return tex;
         }
         load(task) {
+            var _a, _b, _c;
+            var _d, _e, _f;
             let tex2D = task.loader.getRes(task.url, Loader.TEXTURE2D);
             if (!tex2D || tex2D.obsolute) {
                 let url = { url: task.url, type: Loader.TEXTURE2D };
                 if (!task.options.propertyParams)
                     url.propertyParams = propertyParams2d;
-                else if (task.options.propertyParams.premultiplyAlpha == null)
+                else if (task.options.propertyParams.premultiplyAlpha == null
+                    || task.options.propertyParams.wrapModeU == null
+                    || task.options.propertyParams.wrapModeV == null) {
                     url.propertyParams = Object.assign({}, propertyParams2d, task.options.propertyParams);
+                    (_a = (_d = url.propertyParams).premultiplyAlpha) !== null && _a !== void 0 ? _a : (_d.premultiplyAlpha = propertyParams2d.premultiplyAlpha);
+                    (_b = (_e = url.propertyParams).wrapModeU) !== null && _b !== void 0 ? _b : (_e.wrapModeU = propertyParams2d.wrapModeU);
+                    (_c = (_f = url.propertyParams).wrapModeV) !== null && _c !== void 0 ? _c : (_f.wrapModeV = propertyParams2d.wrapModeV);
+                }
                 if (!task.options.constructParams)
                     url.constructParams = constructParams2d;
                 else if (task.options.constructParams[5] == null)
@@ -38267,9 +38896,9 @@ window.Laya = (function (exports) {
                     this._cameraPos.y = curPosPoint.y;
                 }
                 let sceneRect_left = this._cameraPos.x - extendHorizental;
-                let sceneRect_right = sceneRect_left + viewport.x;
+                let sceneRect_right = sceneRect_left + extendHorizental * 2;
                 let sceneRect_top = this._cameraPos.y - extendVertical;
-                let sceneRect_bottom = sceneRect_top + viewport.y;
+                let sceneRect_bottom = sceneRect_top + extendVertical * 2;
                 if (sceneRect_left < this._limit_Left) {
                     this._cameraPos.x -= sceneRect_left - this._limit_Left;
                 }
@@ -38284,12 +38913,13 @@ window.Laya = (function (exports) {
                 }
                 if (this._positionSmooth) {
                     let epsilon = 0.01;
-                    let speed = Math.max(epsilon, Math.min(1.0, this._positionSpeed * 0.16));
+                    let baseSpeed = Math.max(epsilon, Math.min(1.0, this._positionSpeed * 0.16));
+                    let speed = 1 - Math.pow(1 - baseSpeed, Math.max(0, ILaya.timer.delta) / (1000 / 60));
                     let deltaX = this._cameraPos.x - this._cameraSmoothPos.x;
                     let deltaY = this._cameraPos.y - this._cameraSmoothPos.y;
                     let transX = deltaX * speed;
                     let transY = deltaY * speed;
-                    if (Math.abs(transX) < epsilon && Math.abs(transY) < epsilon) {
+                    if (Math.abs(deltaX * baseSpeed) < epsilon && Math.abs(deltaY * baseSpeed) < epsilon) {
                         this._cameraSmoothPos.x = this._cameraPos.x;
                         this._cameraSmoothPos.y = this._cameraPos.y;
                     }
@@ -40046,6 +40676,7 @@ window.Laya = (function (exports) {
             this.clusterMaxBlock = 256;
             this.uploadThreshold = 200;
             this.removeHoleThreshold = 10;
+            this.reduceWriteBufferCalls = false;
             this._useBigBuffer = useBigBuffer;
             this._clustersAll = new Map();
             this._clustersCur = new Map();
@@ -40238,6 +40869,8 @@ window.Laya = (function (exports) {
             this._id = 0;
             this._destroyed = false;
             this._blocks = [];
+            this._dirtyStartIndex = -1;
+            this._dirtyEndIndex = -1;
             this._holeNum = 0;
             this._expand = 16;
             this._id = UniformBufferCluster._idCounter++;
@@ -40293,6 +40926,7 @@ window.Laya = (function (exports) {
         freeBlock(bb) {
             const index = this._blocks.indexOf(bb);
             if (index !== -1) {
+                const wasDirty = this._needUpload[index];
                 if (index === this._blocks.length - 1)
                     this._blocks.length--;
                 else {
@@ -40300,6 +40934,8 @@ window.Laya = (function (exports) {
                     this._holeNum++;
                 }
                 this._needUpload[index] = false;
+                if (wasDirty)
+                    this._rebuildDirtyRange();
                 bb._onFreed();
                 return true;
             }
@@ -40307,6 +40943,10 @@ window.Laya = (function (exports) {
         }
         upload() {
             var _a;
+            if (this.manager.reduceWriteBufferCalls) {
+                this._uploadDirtyRange();
+                return;
+            }
             let next = false;
             let startIndex = -1;
             let endIndex = -1;
@@ -40337,9 +40977,44 @@ window.Laya = (function (exports) {
                 size = (endIndex - startIndex + 1) * this._blockSize;
                 this.manager.writeBuffer(this.buffer, this.data, offset, size);
             }
+            this._dirtyStartIndex = -1;
+            this._dirtyEndIndex = -1;
+        }
+        _uploadDirtyRange() {
+            var _a;
+            const startIndex = this._dirtyStartIndex;
+            const endIndex = this._dirtyEndIndex;
+            if (startIndex === -1)
+                return;
+            for (let i = startIndex; i <= endIndex; i++) {
+                if (!this._needUpload[i])
+                    continue;
+                this._needUpload[i] = false;
+                (_a = this._blocks[i]) === null || _a === void 0 ? void 0 : _a.updateOver();
+            }
+            this._dirtyStartIndex = -1;
+            this._dirtyEndIndex = -1;
+            const offset = startIndex * this._blockSize;
+            const size = (endIndex - startIndex + 1) * this._blockSize;
+            this.manager.writeBuffer(this.buffer, this.data, offset, size);
+        }
+        _rebuildDirtyRange() {
+            this._dirtyStartIndex = -1;
+            this._dirtyEndIndex = -1;
+            for (let i = 0, len = this._blocks.length; i < len; i++) {
+                if (!this._needUpload[i])
+                    continue;
+                if (this._dirtyStartIndex === -1)
+                    this._dirtyStartIndex = i;
+                this._dirtyEndIndex = i;
+            }
         }
         _addUploadBlock(index) {
             this._needUpload[index] = true;
+            if (this._dirtyStartIndex === -1 || index < this._dirtyStartIndex)
+                this._dirtyStartIndex = index;
+            if (index > this._dirtyEndIndex)
+                this._dirtyEndIndex = index;
             if (!this._inManagerUpdateArray)
                 this.manager._addUpdateArray(this);
         }
@@ -40362,6 +41037,8 @@ window.Laya = (function (exports) {
             }
             this._needUpload.length = this._blockNum;
             this._needUpload.fill(false);
+            this._dirtyStartIndex = -1;
+            this._dirtyEndIndex = -1;
         }
         _getBlockWithExpand() {
             for (let i = this._blocks.length - 1; i > -1; i--) {
@@ -40597,6 +41274,10 @@ window.Laya = (function (exports) {
         static GLShaderLanguageProcess3D(defineString, attributeMap, uniformMap, VS, FS) {
             var clusterSlices = Config3D.lightClusterCount;
             var defMap = {};
+            const mrtTargetCount = ShaderMRT.getTargetCount(defineString);
+            const mrt = mrtTargetCount > 0 || defineString.indexOf(ShaderMRT.defineName) !== -1;
+            if (mrt && LayaGL.renderEngine.getParams(exports.RenderParams.SHADER_CAPAILITY_LEVEL) <= 30)
+                throw new Error("LAYA_MRT requires WebGL2 or a supported MRT shader backend.");
             var vertexHead;
             var fragmentHead;
             var defineStr = "";
@@ -40644,8 +41325,7 @@ ${materialUniformGlsl}
 #endif
 layout(std140, column_major) uniform;
 #define varying in
-out highp vec4 pc_fragColor;
-#define gl_FragColor pc_fragColor
+${mrt ? "" : "out highp vec4 pc_fragColor;\n#define gl_FragColor pc_fragColor"}
 #define gl_FragDepthEXT gl_FragDepth
 #define texture2D texture
 #define textureCube texture
@@ -40721,7 +41401,9 @@ ${materialUniformGlsl}`;
                 ps.shift();
             }
             const vertexCode = GLSLCodeGenerator.stripRegisteredUniformDeclarations(vs.join('\n'), uniformMap);
-            const fragmentCode = GLSLCodeGenerator.stripRegisteredUniformDeclarations(ps.join('\n'), uniformMap);
+            let fragmentCode = GLSLCodeGenerator.stripRegisteredUniformDeclarations(ps.join('\n'), uniformMap);
+            if (mrtTargetCount)
+                fragmentCode = ShaderMRT.prepare(fragmentCode, mrtTargetCount);
             let dstVS = vsVersion + vertexHead + defineStr + vertexCode;
             let detFS = psVersion + fragmentHead + defineStr + fragmentCode;
             return { vs: dstVS, fs: detFS };
@@ -41467,8 +42149,8 @@ ${materialUniformGlsl}`;
             context.command.drawRenderElement(this._blitElement, Matrix.EMPTY);
             this._glowMat.setVector2("u_centerScale", Vector2.ONE);
             this._glowMat.setTexture("u_MainTex", this._blitExtendRT);
-            this._sv_blurInfo2.x = width;
-            this._sv_blurInfo2.y = height;
+            this._sv_blurInfo2.x = texwidth;
+            this._sv_blurInfo2.y = texheight;
             this._glowMat.setVector4("u_blurInfo2", this._sv_blurInfo2);
             context.command.setRenderTarget(this._destRT, true, Color.CLEAR);
             context.command.drawRenderElement(this._glowElement, Matrix.EMPTY);
@@ -44476,8 +45158,10 @@ ${materialUniformGlsl}`;
             }
         }
         onPlayAgain() {
-            this._ele.currentTime = this.startTime;
-            this._ele.play().catch(e => { });
+            if (this._ele) {
+                this._ele.currentTime = this.startTime;
+                this._ele.play().catch(e => { });
+            }
         }
         onStop() {
             this._ele.pause();
@@ -44922,7 +45606,7 @@ ${materialUniformGlsl}`;
                 this.stop();
                 return;
             }
-            if (state != null && state !== "running") {
+            if (state === "interrupted") {
                 let resumeTime = isResuming ? this._pauseTime : this.startTime;
                 this._startTime = 0;
                 PAL.media.resumeUntilGotFocus(this);
@@ -44940,7 +45624,14 @@ ${materialUniformGlsl}`;
             sourceNode.loopEnd = this._buffer.duration;
             this._gainNode.gain.value = this._muted ? 0 : this._volume;
             sourceNode.start(0, isResuming ? this._pauseTime : this.startTime);
-            this._startTime = performance.now();
+            if (ctx.state != null && ctx.state !== "running") {
+                let resumeTime = isResuming ? this._pauseTime : this.startTime;
+                this._startTime = 0;
+                PAL.media.resumeUntilGotFocus(this);
+                this._pauseTime = resumeTime;
+            }
+            else
+                this._startTime = performance.now();
         }
         applyPlaybackRate() {
             var _a;
@@ -45054,9 +45745,9 @@ ${materialUniformGlsl}`;
                 this._connected = true;
                 this.event(Event.OPEN);
             };
-            this._socket.onClose = () => {
+            this._socket.onClose = (code, reason) => {
                 this._connected = false;
-                this.event(Event.CLOSE);
+                this.event(Event.CLOSE, [code, reason]);
             };
             this._socket.onError = (e) => {
                 if (this.hasListener(Event.ERROR))
@@ -45131,7 +45822,7 @@ ${materialUniformGlsl}`;
                 this.ws = new Browser.window.WebSocket(url, protocols);
             this.ws.binaryType = "arraybuffer";
             this.ws.onopen = e => this.onOpen({});
-            this.ws.onclose = e => this.onClose();
+            this.ws.onclose = e => this.onClose(e.code, e.reason);
             this.ws.onerror = err => this.onError(err);
             this.ws.onmessage = msg => {
                 if (msg.data)
@@ -45360,6 +46051,9 @@ ${materialUniformGlsl}`;
             return false;
         }
         setResolution(width, height, fullscreen) {
+            return false;
+        }
+        setWindowedFullscreen(enabled) {
             return false;
         }
         getVisibility() {
@@ -45710,6 +46404,8 @@ ${materialUniformGlsl}`;
     class TextInputAdapter {
         constructor() {
             this._beginFlag = 0;
+            this._selectionReady = false;
+            this._selectionSession = 0;
             this._editInline = true;
             this._enterEvent = new Event();
             this._lastTransform = {};
@@ -45722,7 +46418,11 @@ ${materialUniformGlsl}`;
             if (this.target === target || this._beginFlag !== 0)
                 return Promise.resolve();
             this._beginFlag = 1;
-            return (this.target ? this.end(false, this.target.editable) : Promise.resolve()).then(() => {
+            this._selectionReady = false;
+            this._selectionSession++;
+            const ending = this.target ? this.end(false, this.target.editable) : Promise.resolve();
+            this._beginTarget = target;
+            return ending.then(() => {
                 this.target = target;
                 ILaya.stage.focus = target;
                 this.updateRestrictPattern();
@@ -45740,7 +46440,7 @@ ${materialUniformGlsl}`;
             }).then(() => {
                 if (!fromTouchBegin) {
                     this._beginFlag = 0;
-                    return this.onCanShowKeyboard().catch(e => {
+                    return this.showKeyboard().catch(e => {
                         console.error("TextInputAdapter begin error:", e);
                     });
                 }
@@ -45751,6 +46451,10 @@ ${materialUniformGlsl}`;
             });
         }
         end(complete, switching) {
+            this._selectionReady = false;
+            this._selectionSession++;
+            this._beginTarget = null;
+            this._pendingSelection = null;
             let target = this.target;
             if (!target)
                 return Promise.resolve();
@@ -45825,6 +46529,30 @@ ${materialUniformGlsl}`;
                 this._visEle.selectionEnd = endIndex;
             }
         }
+        setSelectionFor(target, startIndex, endIndex) {
+            if (this.target === target && this._selectionReady) {
+                this._pendingSelection = null;
+                this.setSelection(startIndex, endIndex);
+                return;
+            }
+            this.begin(target);
+            if (this.target === target || this._beginTarget === target)
+                this._pendingSelection = { target, start: startIndex, end: endIndex };
+        }
+        showKeyboard() {
+            const target = this.target;
+            const session = this._selectionSession;
+            return this.onCanShowKeyboard().then(() => {
+                if (!target || this.target !== target || this._selectionSession !== session)
+                    return;
+                this._selectionReady = true;
+                this._beginTarget = null;
+                const selection = this._pendingSelection;
+                this._pendingSelection = null;
+                if (selection && selection.target === target)
+                    this.setSelection(selection.start, selection.end);
+            });
+        }
         onTouchBegin() {
             let lastFocus = ILaya.stage.focus;
             let touchTarget = InputManager.touchTarget;
@@ -45842,7 +46570,7 @@ ${materialUniformGlsl}`;
                 }
                 else {
                     this._beginFlag = 0;
-                    this.onCanShowKeyboard().catch(e => {
+                    this.showKeyboard().catch(e => {
                         console.error("TextInputAdapter begin error:", e);
                     });
                 }
@@ -46007,6 +46735,208 @@ ${materialUniformGlsl}`;
             this._dimension = exports.TextureDimension.Cube;
             this._renderTarget = LayaGL.textureContext.createRenderTargetCubeInternal(this.width, this._format, this._depthStencilFormat, this._generateMipmap, this._gammaSpace, this._multiSamples);
             this._texture = this._renderTarget._textures[0];
+        }
+    }
+
+    class RenderTextureMRT extends RenderTexture {
+        static createFromPool(optionsOrWidth, height, colorFormat, depthFormat, mipmap = false, multiSamples = 1, depthTexture = false, sRGB = false, storage = false) {
+            var _a;
+            if (typeof optionsOrWidth === "number" && (mipmap || multiSamples !== 1 || storage))
+                throw new Error("RenderTextureMRT requires single sampling, no mipmaps and no storage usage.");
+            const options = typeof optionsOrWidth === "number"
+                ? { width: optionsOrWidth, height, colorFormats: [colorFormat], depthStencilFormat: depthFormat, depthTexture, sRGB }
+                : optionsOrWidth;
+            const formats = RenderTextureMRT._getFormats(options);
+            const layout = formats.join(",");
+            const depth = (_a = options.depthStencilFormat) !== null && _a !== void 0 ? _a : exports.RenderTargetFormat.None;
+            const sampledDepth = !!options.depthTexture && depth !== exports.RenderTargetFormat.None;
+            const gammaSpace = !!options.sRGB;
+            for (let index = 0; index < RenderTexture._pool.length; index++) {
+                const rt = RenderTexture._pool[index];
+                if (rt instanceof RenderTextureMRT && !rt.destroyed && rt._poolLayout === layout
+                    && rt.width === options.width && rt.height === options.height && rt.depthStencilFormat === depth
+                    && rt.generateDepthTexture === sampledDepth && rt._gammaSpace === gammaSpace) {
+                    const last = RenderTexture._pool.pop();
+                    if (index < RenderTexture._pool.length)
+                        RenderTexture._pool[index] = last;
+                    RenderTexture._poolMemory -= rt._renderTarget.gpuMemory / 1024 / 1024;
+                    rt._inPool = false;
+                    return rt;
+                }
+            }
+            const rt = new RenderTextureMRT(Object.assign(Object.assign({}, options), { colorFormats: formats }));
+            rt.lock = true;
+            return rt;
+        }
+        static _getFormats(options) {
+            if (!options || !Array.isArray(options.colorFormats) || options.colorFormats.length === 0)
+                throw new RangeError("RenderTextureMRT requires a non-empty colorFormats array.");
+            if (!Number.isInteger(options.width) || !Number.isInteger(options.height) || options.width <= 0 || options.height <= 0)
+                throw new RangeError("RenderTextureMRT dimensions must be positive integers.");
+            if (options.depthTexture && options.depthStencilFormat === exports.RenderTargetFormat.STENCIL_8)
+                throw new Error("A stencil-only MRT attachment cannot be sampled as depth.");
+            if (options.colorFormats[0] == null)
+                throw new Error("RenderTextureMRT requires a color attachment at location 0.");
+            const formats = Array.from(options.colorFormats, format => format == null ? null : RenderTexture._getCompatibleColorFormat(format));
+            while (formats[formats.length - 1] === null)
+                formats.pop();
+            return formats;
+        }
+        get isMRT() {
+            return true;
+        }
+        get colorFormats() {
+            return this._colorFormats;
+        }
+        get colorAttachmentCount() {
+            return this._colorFormats.length;
+        }
+        get width() { return this._width; }
+        set width(value) {
+            if (value !== this._width)
+                throw new Error("RenderTextureMRT dimensions are immutable; construct a new instance.");
+        }
+        get height() { return this._height; }
+        set height(value) {
+            if (value !== this._height)
+                throw new Error("RenderTextureMRT dimensions are immutable; construct a new instance.");
+        }
+        get generateDepthTexture() { return this._generateDepthTexture; }
+        set generateDepthTexture(value) {
+            if (value && this.depthStencilFormat === exports.RenderTargetFormat.STENCIL_8)
+                throw new Error("A stencil-only MRT attachment cannot be sampled as depth.");
+            if (this.depthStencilFormat === exports.RenderTargetFormat.None)
+                value = false;
+            if (value && !this._depthStencilTexture) {
+                const texture = LayaGL.textureContext.createRenderTargetDepthTexture(this._renderTarget, exports.TextureDimension.Tex2D, this.width, this.height);
+                this._depthStencilTexture = new MRTAttachmentTexture(this, texture, this.depthStencilFormat);
+            }
+            this._generateDepthTexture = value;
+        }
+        constructor(options) {
+            var _a, _b;
+            const formats = Object.freeze(RenderTextureMRT._getFormats(options));
+            const { width, height } = options;
+            const context = LayaGL.textureContext;
+            if (!context.createMultiRenderTargetInternal)
+                throw new Error("The active render backend does not support MRT.");
+            const target = context.createMultiRenderTargetInternal(width, height, formats, (_a = options.depthStencilFormat) !== null && _a !== void 0 ? _a : exports.RenderTargetFormat.None, !!options.sRGB);
+            super(width, height, formats[0], (_b = options.depthStencilFormat) !== null && _b !== void 0 ? _b : exports.RenderTargetFormat.None, false, 1, !!options.depthTexture, !!options.sRGB, false);
+            this._colorTextures = [];
+            this._colorFormats = formats;
+            this._poolLayout = formats.join(",");
+            this._dimension = exports.TextureDimension.Tex2D;
+            this._renderTarget = target;
+            this._texture = this._renderTarget._textures[0];
+            for (let i = 0; i < this._colorFormats.length; i++) {
+                const format = this._colorFormats[i];
+                this._colorTextures.push(format === null ? null : new MRTAttachmentTexture(this, this._renderTarget._textures[i], format));
+            }
+            this.generateDepthTexture = this._generateDepthTexture;
+        }
+        _createRenderTarget() {
+            if (this.destroyed || this._renderTarget)
+                throw new Error("RenderTextureMRT cannot be recreated.");
+        }
+        _getRenderTarget(colorAttachment0Only = false) {
+            this._checkAttachment(0);
+            const target = colorAttachment0Only ? this._renderTarget._color0Target : this._renderTarget;
+            if (!target)
+                throw new Error("The MRT backend does not provide a color-0 binding.");
+            return target;
+        }
+        getColorTexture(index) {
+            this._checkAttachment(index);
+            return this._colorTextures[index];
+        }
+        async getDataAsync(xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            this._checkAttachment(attachmentIndex);
+            if (this._colorFormats[attachmentIndex] === null)
+                throw new Error(`MRT color attachment ${attachmentIndex} is not allocated.`);
+            return LayaGL.textureContext.readRenderTargetPixelDataAsync(this._renderTarget, xOffset, yOffset, width, height, out, attachmentIndex);
+        }
+        getData(..._args) {
+            throw new Error("RenderTextureMRT synchronous readback is not supported; use getDataAsync.");
+        }
+        recreate(..._args) {
+            throw new Error("RenderTextureMRT cannot be recreated; construct a new instance.");
+        }
+        _checkAttachment(index) {
+            if (this.destroyed || !this._renderTarget)
+                throw new Error("Cannot access a destroyed RenderTextureMRT.");
+            if (!Number.isInteger(index) || index < 0 || index >= this._colorFormats.length)
+                throw new RangeError(`MRT color attachment index out of range: ${index}.`);
+        }
+        _getSource() {
+            this._checkAttachment(0);
+            return super._getSource();
+        }
+        _disposeResource() {
+            var _a;
+            for (const texture of this._colorTextures)
+                texture === null || texture === void 0 ? void 0 : texture.invalidate();
+            this._colorTextures.length = 0;
+            (_a = this._depthStencilTexture) === null || _a === void 0 ? void 0 : _a.invalidate();
+            this._depthStencilTexture = null;
+            this._texture = null;
+            if (this._renderTarget)
+                super._disposeResource();
+        }
+    }
+    class MRTAttachmentTexture extends BaseTexture {
+        constructor(owner, texture, format) {
+            super(owner.width, owner.height, format);
+            this._owner = owner;
+            this._dimension = exports.TextureDimension.Tex2D;
+            this._texture = texture;
+            this.unmanaged();
+        }
+        get width() { return this._width; }
+        set width(value) {
+            if (value !== this._width)
+                throw new Error("MRT attachment dimensions are immutable.");
+        }
+        get height() { return this._height; }
+        set height(value) {
+            if (value !== this._height)
+                throw new Error("MRT attachment dimensions are immutable.");
+        }
+        _addReference(count = 1) {
+            if (this.destroyed || this._owner.destroyed)
+                throw new Error("Cannot reference a destroyed MRT attachment.");
+            this._referenceCount += count;
+            this._owner._addReference(count);
+        }
+        _removeReference(count = 1) {
+            var _a;
+            this._referenceCount -= count;
+            (_a = this._owner) === null || _a === void 0 ? void 0 : _a._removeReference(count);
+        }
+        _clearReference() {
+            var _a;
+            const count = this._referenceCount;
+            this._referenceCount = 0;
+            if (count)
+                (_a = this._owner) === null || _a === void 0 ? void 0 : _a._removeReference(count);
+        }
+        _getSource() {
+            if (this.destroyed)
+                throw new Error("Cannot sample a destroyed MRT attachment.");
+            return super._getSource();
+        }
+        destroy() {
+            if (!this.destroyed)
+                throw new Error("MRT attachment views cannot be destroyed independently; destroy their owner.");
+        }
+        invalidate() {
+            super.destroy();
+        }
+        _disposeResource() {
+            const owner = this._owner;
+            this._owner = null;
+            this._texture = null;
+            if (this._referenceCount)
+                owner._removeReference(this._referenceCount);
         }
     }
 
@@ -47202,28 +48132,6 @@ ${materialUniformGlsl}`;
         return hasOwnProp.call(obj, key);
     }
 
-    class Mouse {
-        static set cursor(value) {
-            this._cursor = value;
-            if (this._hidden)
-                return;
-            PAL.browser.setCursor(value);
-        }
-        static get cursor() {
-            return this._cursor;
-        }
-        static hide() {
-            this._hidden = true;
-            PAL.browser.setCursor("none");
-        }
-        static show() {
-            this._hidden = false;
-            PAL.browser.setCursor(this._cursor);
-        }
-    }
-    Mouse._cursor = "auto";
-    Mouse._hidden = false;
-
     class SingletonList {
         constructor() {
             this.elements = [];
@@ -47747,6 +48655,7 @@ ${materialUniformGlsl}`;
     exports.RenderTexture2DArray = RenderTexture2DArray;
     exports.RenderTextureCube = RenderTextureCube;
     exports.RenderTextureLoader = RenderTextureLoader;
+    exports.RenderTextureMRT = RenderTextureMRT;
     exports.Resource = Resource;
     exports.RestoreCmd = RestoreCmd;
     exports.RotateCmd = RotateCmd;
@@ -47780,6 +48689,7 @@ ${materialUniformGlsl}`;
     exports.ShaderDataDefaultValue = ShaderDataDefaultValue;
     exports.ShaderDefine = ShaderDefine;
     exports.ShaderDefines2D = ShaderDefines2D;
+    exports.ShaderMRT = ShaderMRT;
     exports.ShaderNode = ShaderNode;
     exports.ShaderParser = ShaderParser;
     exports.ShaderPass = ShaderPass;

@@ -2758,7 +2758,7 @@
             }
         }
         set polygonPoint(poly) {
-            var _a, _b;
+            var _a, _b, _c;
             const light2DManager = (_b = (_a = this.owner) === null || _a === void 0 ? void 0 : _a.scene) === null || _b === void 0 ? void 0 : _b._light2DManager;
             if (poly) {
                 this._lightPolygon = poly;
@@ -2767,7 +2767,8 @@
                 this._needUpdateLightLocalRange = true;
                 this._needUpdateLightWorldRange = true;
                 this._clearScreenCache();
-                light2DManager === null || light2DManager === void 0 ? void 0 : light2DManager.addLight(this);
+                if (this.enabled && ((_c = this.owner) === null || _c === void 0 ? void 0 : _c.activeInHierarchy))
+                    light2DManager === null || light2DManager === void 0 ? void 0 : light2DManager.addLight(this);
             }
             else {
                 this._lightPolygon = null;

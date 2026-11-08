@@ -152,16 +152,16 @@
         }
         setColliderShape(shape) {
             shape._btCollider = this;
-            if (shape == this._btColliderShape || shape._btShape == null)
+            if (shape._btShape == null)
                 return;
             var lastColliderShape = this._btColliderShape;
             this._btColliderShape = shape;
             let bt = btStatics.bt;
             if (shape) {
                 if (this._btCollider) {
-                    bt.btCollisionObject_setCollisionShape(this._btCollider, shape._btShape);
                     let simulate = this._isSimulate;
                     simulate && this._physicsManager.removeCollider(this);
+                    bt.btCollisionObject_setCollisionShape(this._btCollider, shape._btShape);
                     this._onShapeChange();
                     if ((simulate || !lastColliderShape || (lastColliderShape && lastColliderShape._destroyed)) && this.componentEnable) {
                         this._derivePhysicsTransformation(true);
@@ -175,7 +175,8 @@
                     this._isSimulate = false;
                 }
             }
-            lastColliderShape && lastColliderShape.destroy();
+            if (lastColliderShape && lastColliderShape !== shape)
+                lastColliderShape.destroy();
         }
         destroy() {
             btStatics.bt.btCollisionObject_destroy(this._btCollider);
@@ -244,10 +245,10 @@
                 transform.rotation = rotation;
             }
             if (localOffset.x !== 0 || localOffset.y !== 0 || localOffset.z !== 0) {
-                var btScale = bt.btCollisionShape_getLocalScaling(colliderShape._btShape);
-                _tempVector30.x = localOffset.x * bt.btVector3_x(btScale);
-                _tempVector30.y = localOffset.y * bt.btVector3_y(btScale);
-                _tempVector30.z = localOffset.z * bt.btVector3_z(btScale);
+                colliderShape._getOffsetScale(_tempVector30);
+                _tempVector30.x *= localOffset.x;
+                _tempVector30.y *= localOffset.y;
+                _tempVector30.z *= localOffset.z;
                 Laya.Vector3.transformQuat(_tempVector30, rotation, _tempVector30);
                 position.x = bt.btVector3_x(btPosition) - _tempVector30.x;
                 position.y = bt.btVector3_y(btPosition) - _tempVector30.y + addmargin;
@@ -308,10 +309,212 @@
     btCollider._physicObjectsMap = {};
     const _tempVector30 = new Laya.Vector3();
 
+    class btColliderShape {
+        constructor() {
+            this._localOffset = new Laya.Vector3(0, 0, 0);
+            this._btScale = btStatics.bt.btVector3_create(1, 1, 1);
+            this._worldScale = new Laya.Vector3(-1, -1, -1);
+            this._destroyed = false;
+        }
+        _getOffsetScale(out) {
+            const bt = btStatics.bt;
+            const scale = bt.btCollisionShape_getLocalScaling(this._btShape);
+            out.setValue(bt.btVector3_x(scale), bt.btVector3_y(scale), bt.btVector3_z(scale));
+        }
+        getOffset() {
+            return this._localOffset;
+        }
+        getPhysicsShape() {
+            return this._btShape;
+        }
+        _createShape() {
+            throw "override this function";
+        }
+        _getType() {
+            throw "override this function";
+        }
+        setOffset(value) {
+            value.cloneTo(this._localOffset);
+        }
+        setWorldScale(scale) {
+            if (this._btShape && this._worldScale.equal(scale))
+                return;
+            scale.cloneTo(this._worldScale);
+            btStatics.bt.btVector3_setValue(this._btScale, this._worldScale.x, this._worldScale.y, this._worldScale.z);
+            btStatics.bt.btCollisionShape_setLocalScaling(this._btShape, this._btScale);
+        }
+        destroy() {
+            if (this._btShape && !this._destroyed) {
+                if (this._btCollider && this._btCollider._physicsManager) {
+                    this._btCollider._physicsManager.removeCollider(this._btCollider);
+                }
+                btStatics.bt.btCollisionShape_destroy(this._btShape);
+                this._btShape = null;
+                this._destroyed = true;
+            }
+        }
+    }
+    btColliderShape.SHAPEORIENTATION_UPX = 0;
+    btColliderShape.SHAPEORIENTATION_UPY = 1;
+    btColliderShape.SHAPEORIENTATION_UPZ = 2;
+    btColliderShape.SHAPETYPES_BOX = 0;
+    btColliderShape.SHAPETYPES_SPHERE = 1;
+    btColliderShape.SHAPETYPES_CYLINDER = 2;
+    btColliderShape.SHAPETYPES_CAPSULE = 3;
+    btColliderShape.SHAPETYPES_CONVEXHULL = 4;
+    btColliderShape.SHAPETYPES_COMPOUND = 5;
+    btColliderShape.SHAPETYPES_STATICPLANE = 6;
+    btColliderShape.SHAPETYPES_CONE = 7;
+    btColliderShape.SHAPETYPES_HEIGHTFIELDTERRAIN = 8;
+
+    class btCapsuleColliderShape extends btColliderShape {
+        constructor() {
+            super();
+            this._radius = 0.25;
+            this._length = 1;
+            this._orientation = btColliderShape.SHAPEORIENTATION_UPY;
+            this._characterResizing = false;
+            this._dimensionSign = new Laya.Vector3(1, 1, 1);
+            this._worldScale.setValue(1, 1, 1);
+        }
+        _enableCharacterResizing() {
+            if (this._characterResizing)
+                return;
+            this._characterResizing = true;
+            const previousShape = this._btShape;
+            this._btShape = null;
+            this._createShape();
+            if (previousShape)
+                btStatics.bt.btCollisionShape_destroy(previousShape);
+        }
+        _createShape() {
+            let bt = btStatics.bt;
+            const previousShape = this._characterResizing ? null : this._btShape;
+            const radius = this._characterResizing ? 0.5 : this._radius;
+            const cylinderHeight = this._characterResizing ? 1 : this._length - this._radius * 2;
+            if (!this._characterResizing || !this._btShape) {
+                this._dimensionSign.setValue(1, 1, 1);
+                switch (this._orientation) {
+                    case btColliderShape.SHAPEORIENTATION_UPX:
+                        this._btShape = bt.btCapsuleShapeX_create(radius, cylinderHeight);
+                        break;
+                    case btColliderShape.SHAPEORIENTATION_UPY:
+                        this._btShape = bt.btCapsuleShape_create(radius, cylinderHeight);
+                        break;
+                    case btColliderShape.SHAPEORIENTATION_UPZ:
+                        this._btShape = bt.btCapsuleShapeZ_create(radius, cylinderHeight);
+                        break;
+                    default:
+                        throw "CapsuleColliderShape:unknown orientation.";
+                }
+            }
+            const collider = this._btCollider;
+            const simulate = collider && collider._isSimulate;
+            if (simulate)
+                collider._physicsManager.removeCollider(collider);
+            if (this._characterResizing)
+                this._applyDimensions();
+            else
+                bt.btCollisionShape_setLocalScaling(this._btShape, this._btScale);
+            if (collider) {
+                collider.setColliderShape(this);
+                if (simulate && collider.componentEnable)
+                    collider._physicsManager.addCollider(collider, false);
+            }
+            if (previousShape)
+                bt.btCollisionShape_destroy(previousShape);
+        }
+        _applyDimensions() {
+            const radiusScale = this._radius === 0 ? 1e-6 : this._radius * 2;
+            const cylinderHeight = this._length - this._radius * 2;
+            const heightScale = cylinderHeight === 0 ? 1e-6 : cylinderHeight;
+            const scale = this._worldScale;
+            const sx = scale.x, sy = scale.y, sz = scale.z;
+            const bt = btStatics.bt;
+            const x = sx * (this._orientation === btColliderShape.SHAPEORIENTATION_UPX ? heightScale : radiusScale);
+            const y = sy * (this._orientation === btColliderShape.SHAPEORIENTATION_UPY ? heightScale : radiusScale);
+            const z = sz * (this._orientation === btColliderShape.SHAPEORIENTATION_UPZ ? heightScale : radiusScale);
+            bt.btVector3_setValue(this._btScale, x * this._dimensionSign.x, y * this._dimensionSign.y, z * this._dimensionSign.z);
+            bt.btCollisionShape_setLocalScaling(this._btShape, this._btScale);
+            this._dimensionSign.setValue(x < 0 ? -1 : 1, y < 0 ? -1 : 1, z < 0 ? -1 : 1);
+        }
+        _getOffsetScale(out) {
+            if (this._characterResizing)
+                out.setValue(Math.abs(this._worldScale.x), Math.abs(this._worldScale.y), Math.abs(this._worldScale.z));
+            else
+                super._getOffsetScale(out);
+        }
+        _getType() {
+            return this._type = btColliderShape.SHAPETYPES_CAPSULE;
+        }
+        setRadius(radius) {
+            if (this._btShape && this._radius == radius)
+                return;
+            this._radius = radius;
+            this._createShape();
+        }
+        setHeight(height) {
+            if (this._btShape && this._length == height)
+                return;
+            this._length = height;
+            this._createShape();
+        }
+        setUpAxis(upAxis) {
+            if (this._btShape && this._orientation == upAxis)
+                return;
+            const previousShape = this._btShape;
+            this._btShape = null;
+            this._orientation = upAxis;
+            this._createShape();
+            if (previousShape)
+                btStatics.bt.btCollisionShape_destroy(previousShape);
+        }
+        setWorldScale(scale) {
+            var fixScale = btCapsuleColliderShape._tempVector30;
+            switch (this._orientation) {
+                case btColliderShape.SHAPEORIENTATION_UPX:
+                    fixScale.x = scale.x;
+                    fixScale.y = fixScale.z = Math.max(scale.y, scale.z);
+                    break;
+                case btColliderShape.SHAPEORIENTATION_UPY:
+                    fixScale.y = scale.y;
+                    fixScale.x = fixScale.z = Math.max(scale.x, scale.z);
+                    break;
+                case btColliderShape.SHAPEORIENTATION_UPZ:
+                    fixScale.z = scale.z;
+                    fixScale.x = fixScale.y = Math.max(scale.x, scale.y);
+                    break;
+                default:
+                    throw "CapsuleColliderShape:unknown orientation.";
+            }
+            if (this._characterResizing) {
+                fixScale.cloneTo(this._worldScale);
+                this._applyDimensions();
+            }
+            else {
+                super.setWorldScale(fixScale);
+            }
+        }
+        destroy() {
+            super.destroy();
+            this._radius = null;
+            this._length = null;
+            this._orientation = null;
+        }
+    }
+    btCapsuleColliderShape._tempVector30 = new Laya.Vector3();
+
     class btCharacterCollider extends btCollider {
         static __init__() {
             btCharacterCollider._btTempVector30 = btStatics.bt.btVector3_create(0, 0, 0);
             btCharacterCollider._btTempVector31 = new Laya.Vector3(0, 0, 0);
+            btCharacterCollider._btGroundFrom = btStatics.bt.btTransform_create();
+            btCharacterCollider._btGroundTo = btStatics.bt.btTransform_create();
+            btCharacterCollider._btGroundCallback = btStatics.bt.AllConvexResultCallback_create(btCharacterCollider._btTempVector30, btCharacterCollider._btTempVector30);
+            const bt = btStatics.bt;
+            btCharacterCollider._btSupportRayFrom = bt.btVector3_create(0, 0, 0);
+            btCharacterCollider._btSupportRayTo = bt.btVector3_create(0, 0, 0);
+            btCharacterCollider._btSupportRayCallback = bt.AllHitsRayResultCallback_create(btCharacterCollider._btSupportRayFrom, btCharacterCollider._btSupportRayTo);
             btCharacterCollider.initCapable();
         }
         getCapable(value) {
@@ -319,6 +522,13 @@
         }
         constructor(physicsManager) {
             super(physicsManager);
+            this._walkDirection = new Laya.Vector3();
+            this._gravitySuppressed = false;
+            this._supportObject = 0;
+            this._supportPoint = new Laya.Vector3();
+            this._supportTransform = [];
+            this._supportBodyTransform = [];
+            this._supportMoved = false;
             this._btKinematicCharacter = null;
             this._stepHeight = 0.1;
             this._upAxis = new Laya.Vector3(0, 1, 0);
@@ -397,7 +607,11 @@
             super._initCollider();
         }
         _onShapeChange() {
+            this._supportObject = 0;
             super._onShapeChange();
+            if (this._btKinematicCharacter && this._characterShape === this._btColliderShape._btShape)
+                return;
+            this._characterShape = this._btColliderShape._btShape;
             var bt = btStatics.bt;
             if (this._btKinematicCharacter)
                 bt.btKinematicCharacterController_destroy(this._btKinematicCharacter);
@@ -410,14 +624,183 @@
             this.setGravity(this._gravity);
             bt.btKinematicCharacterController_setJumpAxis(this._btKinematicCharacter, 0, 1, 0);
             this.setPushForce(this._pushForce);
+            this.move(this._walkDirection);
         }
         setWorldPosition(value) {
             btStatics.bt.btKinematicCharacterController_setCurrentPosition(this._btKinematicCharacter, value.x, value.y, value.z);
         }
         move(disp) {
+            disp.cloneTo(this._walkDirection);
             var btMovement = btCharacterCollider._btVector30;
             btStatics.bt.btVector3_setValue(btMovement, disp.x, disp.y, disp.z);
             btStatics.bt.btKinematicCharacterController_setWalkDirection(this._btKinematicCharacter, btMovement);
+        }
+        _beforeSimulation(world) {
+            if (this._walkDirection.x !== 0 || this._walkDirection.y !== 0 || this._walkDirection.z !== 0
+                || !this.isGrounded()) {
+                this._supportObject = 0;
+                return;
+            }
+            if (!this._hasStaticSupport(world))
+                return;
+            const bt = btStatics.bt;
+            bt.btVector3_setValue(btCharacterCollider._btTempVector30, 0, 0, 0);
+            bt.btKinematicCharacterController_setGravity(this._btKinematicCharacter, btCharacterCollider._btTempVector30);
+            this._gravitySuppressed = true;
+        }
+        _afterSimulation() {
+            if (this._gravitySuppressed) {
+                this._gravitySuppressed = false;
+                this.setGravity(this._gravity);
+            }
+        }
+        _hasStaticSupport(world) {
+            const bt = btStatics.bt;
+            const up = this._upAxis;
+            const length = Math.sqrt(up.x * up.x + up.y * up.y + up.z * up.z);
+            if (length === 0 || Laya.Vector3.dot(this._gravity, up) >= 0)
+                return false;
+            const ux = up.x / length, uy = up.y / length, uz = up.z / length;
+            const transform = bt.btCollisionObject_getWorldTransform(this._btCollider);
+            const origin = bt.btTransform_getOrigin(transform);
+            const x = bt.btVector3_x(origin), y = bt.btVector3_y(origin), z = bt.btVector3_z(origin);
+            const from = btCharacterCollider._btGroundFrom, to = btCharacterCollider._btGroundTo;
+            const vector = btCharacterCollider._btTempVector30;
+            const rotation = bt.btTransform_getRotation(transform);
+            const rx = bt.btQuaternion_x(rotation), ry = bt.btQuaternion_y(rotation);
+            const rz = bt.btQuaternion_z(rotation), rw = bt.btQuaternion_w(rotation);
+            const scale = bt.btCollisionShape_getLocalScaling(this._btColliderShape._btShape);
+            const sx = bt.btVector3_x(scale), sy = bt.btVector3_y(scale), sz = bt.btVector3_z(scale);
+            const cached = this._supportTransform;
+            const minDot = Math.max(0.0001, Math.cos(this._maxSlope * Math.PI / 180));
+            this._supportMoved = false;
+            if (this._supportObject && Math.abs(x - cached[0]) < 1e-6 && Math.abs(y - cached[1]) < 1e-6
+                && Math.abs(z - cached[2]) < 1e-6 && rx === cached[3] && ry === cached[4]
+                && rz === cached[5] && rw === cached[6] && sx === cached[7] && sy === cached[8] && sz === cached[9]
+                && this._checkSupportRay(world, ux, uy, uz, minDot))
+                return true;
+            this._supportObject = 0;
+            if (this._supportMoved)
+                return false;
+            bt.btTransform_setRotation(from, rotation);
+            bt.btTransform_setRotation(to, rotation);
+            bt.btVector3_setValue(vector, x + ux * 0.05, y + uy * 0.05, z + uz * 0.05);
+            bt.btTransform_setOrigin(from, vector);
+            bt.btVector3_setValue(vector, x - ux * 0.05, y - uy * 0.05, z - uz * 0.05);
+            bt.btTransform_setOrigin(to, vector);
+            const callback = btCharacterCollider._btGroundCallback;
+            bt.ConvexResultCallback_set_m_collisionFilterGroup(callback, this._collisionGroup);
+            bt.ConvexResultCallback_set_m_collisionFilterMask(callback, this._canCollideWith);
+            bt.ConvexResultCallback_set_m_closestHitFraction(callback, 1);
+            const objects = bt.AllConvexResultCallback_get_m_collisionObjects(callback);
+            const normals = bt.AllConvexResultCallback_get_m_hitNormalWorld(callback);
+            const points = bt.AllConvexResultCallback_get_m_hitPointWorld(callback);
+            const fractions = bt.AllConvexResultCallback_get_m_hitFractions(callback);
+            bt.tBtCollisionObjectArray_clear(objects);
+            bt.tVector3Array_clear(normals);
+            bt.tVector3Array_clear(points);
+            bt.tScalarArray_clear(fractions);
+            bt.btCollisionWorld_convexSweepTest(world, this._btColliderShape._btShape, from, to, callback, 0);
+            let closest = 1, supported = false;
+            for (let i = 0, n = bt.tBtCollisionObjectArray_size(objects); i < n; i++) {
+                const object = bt.tBtCollisionObjectArray_at(objects, i);
+                const flags = bt.btCollisionObject_getCollisionFlags(object);
+                if (object === this._btCollider || (flags & btStatics.COLLISIONFLAGS_NO_CONTACT_RESPONSE))
+                    continue;
+                const normal = bt.tVector3Array_at(normals, i);
+                const dot = ux * bt.btVector3_x(normal) + uy * bt.btVector3_y(normal) + uz * bt.btVector3_z(normal);
+                const fraction = bt.tScalarArray_at(fractions, i);
+                if (dot >= minDot && fraction <= 0.5001 && fraction <= closest) {
+                    closest = fraction;
+                    supported = (flags & btStatics.COLLISIONFLAGS_STATIC_OBJECT) !== 0
+                        && (flags & btStatics.COLLISIONFLAGS_KINEMATIC_OBJECT) === 0;
+                    this._supportObject = supported ? object : 0;
+                    if (supported) {
+                        const point = bt.tVector3Array_at(points, i);
+                        this._supportPoint.setValue(bt.btVector3_x(point), bt.btVector3_y(point), bt.btVector3_z(point));
+                    }
+                }
+            }
+            if (supported) {
+                this._readSupportBodyTransform(this._supportBodyTransform);
+                cached[0] = x;
+                cached[1] = y;
+                cached[2] = z;
+                cached[3] = rx;
+                cached[4] = ry;
+                cached[5] = rz;
+                cached[6] = rw;
+                cached[7] = sx;
+                cached[8] = sy;
+                cached[9] = sz;
+            }
+            return supported;
+        }
+        _readSupportBodyTransform(out) {
+            const bt = btStatics.bt;
+            const transform = bt.btCollisionObject_getWorldTransform(this._supportObject);
+            const origin = bt.btTransform_getOrigin(transform);
+            out[0] = bt.btVector3_x(origin);
+            out[1] = bt.btVector3_y(origin);
+            out[2] = bt.btVector3_z(origin);
+            const rotation = bt.btTransform_getRotation(transform);
+            out[3] = bt.btQuaternion_x(rotation);
+            out[4] = bt.btQuaternion_y(rotation);
+            out[5] = bt.btQuaternion_z(rotation);
+            out[6] = bt.btQuaternion_w(rotation);
+        }
+        _checkSupportRay(world, ux, uy, uz, minDot) {
+            const bt = btStatics.bt, point = this._supportPoint;
+            const from = btCharacterCollider._btSupportRayFrom, to = btCharacterCollider._btSupportRayTo;
+            const callback = btCharacterCollider._btSupportRayCallback;
+            bt.btVector3_setValue(from, point.x + ux * 0.05, point.y + uy * 0.05, point.z + uz * 0.05);
+            bt.btVector3_setValue(to, point.x - ux * 0.05, point.y - uy * 0.05, point.z - uz * 0.05);
+            bt.AllHitsRayResultCallback_set_m_rayFromWorld(callback, from);
+            bt.AllHitsRayResultCallback_set_m_rayToWorld(callback, to);
+            bt.RayResultCallback_set_m_collisionFilterGroup(callback, this._collisionGroup);
+            bt.RayResultCallback_set_m_collisionFilterMask(callback, this._canCollideWith);
+            bt.RayResultCallback_set_m_collisionObject(callback, 0);
+            bt.RayResultCallback_set_m_closestHitFraction(callback, 1);
+            const objects = bt.AllHitsRayResultCallback_get_m_collisionObjects(callback);
+            const normals = bt.AllHitsRayResultCallback_get_m_hitNormalWorld(callback);
+            const points = bt.AllHitsRayResultCallback_get_m_hitPointWorld(callback);
+            bt.tBtCollisionObjectArray_clear(objects);
+            bt.tVector3Array_clear(normals);
+            bt.tVector3Array_clear(points);
+            bt.tScalarArray_clear(bt.AllHitsRayResultCallback_get_m_hitFractions(callback));
+            bt.btCollisionWorld_rayTest(world, from, to, callback);
+            let found = false;
+            for (let i = 0, n = bt.tBtCollisionObjectArray_size(objects); i < n; i++) {
+                const object = bt.tBtCollisionObjectArray_at(objects, i);
+                const flags = bt.btCollisionObject_getCollisionFlags(object);
+                if (object === this._btCollider || (flags & btStatics.COLLISIONFLAGS_NO_CONTACT_RESPONSE))
+                    continue;
+                if (object !== this._supportObject || !(flags & btStatics.COLLISIONFLAGS_STATIC_OBJECT)
+                    || (flags & btStatics.COLLISIONFLAGS_KINEMATIC_OBJECT))
+                    return false;
+                const normal = bt.tVector3Array_at(normals, i);
+                if (ux * bt.btVector3_x(normal) + uy * bt.btVector3_y(normal) + uz * bt.btVector3_z(normal) >= minDot) {
+                    const hit = bt.tVector3Array_at(points, i);
+                    if (Math.abs(bt.btVector3_x(hit) - point.x) > 1e-5
+                        || Math.abs(bt.btVector3_y(hit) - point.y) > 1e-5
+                        || Math.abs(bt.btVector3_z(hit) - point.z) > 1e-5) {
+                        this._supportMoved = true;
+                        return false;
+                    }
+                    found = true;
+                }
+            }
+            if (found) {
+                const current = btCharacterCollider._supportBodyTransform;
+                this._readSupportBodyTransform(current);
+                for (let i = 0; i < 7; i++) {
+                    if (current[i] !== this._supportBodyTransform[i]) {
+                        this._supportMoved = true;
+                        return false;
+                    }
+                }
+            }
+            return found;
         }
         jump(velocity) {
             var btVelocity = btCharacterCollider._btVector30;
@@ -439,6 +822,7 @@
             btStatics.bt.btKinematicCharacterController_setStepHeight(this._btKinematicCharacter, offset);
         }
         setUpDirection(up) {
+            this._supportObject = 0;
             up.cloneTo(this._upAxis);
             var btUpAxis = btCharacterCollider._btTempVector30;
             convertToBulletVec3(up, btUpAxis);
@@ -480,6 +864,8 @@
             }
         }
         setColliderShape(shape) {
+            if (shape instanceof btCapsuleColliderShape)
+                shape._enableCharacterResizing();
             super.setColliderShape(shape);
         }
         destroy() {
@@ -489,59 +875,7 @@
             this._btKinematicCharacter = null;
         }
     }
-
-    class btColliderShape {
-        constructor() {
-            this._localOffset = new Laya.Vector3(0, 0, 0);
-            this._btScale = btStatics.bt.btVector3_create(1, 1, 1);
-            this._worldScale = new Laya.Vector3(-1, -1, -1);
-            this._destroyed = false;
-        }
-        getOffset() {
-            return this._localOffset;
-        }
-        getPhysicsShape() {
-            return this._btShape;
-        }
-        _createShape() {
-            throw "override this function";
-        }
-        _getType() {
-            throw "override this function";
-        }
-        setOffset(value) {
-            value.cloneTo(this._localOffset);
-        }
-        setWorldScale(scale) {
-            if (this._btShape && this._worldScale.equal(scale))
-                return;
-            scale.cloneTo(this._worldScale);
-            btStatics.bt.btVector3_setValue(this._btScale, this._worldScale.x, this._worldScale.y, this._worldScale.z);
-            btStatics.bt.btCollisionShape_setLocalScaling(this._btShape, this._btScale);
-        }
-        destroy() {
-            if (this._btShape && !this._destroyed) {
-                if (this._btCollider && this._btCollider._physicsManager) {
-                    this._btCollider._physicsManager.removeCollider(this._btCollider);
-                }
-                btStatics.bt.btCollisionShape_destroy(this._btShape);
-                this._btShape = null;
-                this._destroyed = true;
-            }
-        }
-    }
-    btColliderShape.SHAPEORIENTATION_UPX = 0;
-    btColliderShape.SHAPEORIENTATION_UPY = 1;
-    btColliderShape.SHAPEORIENTATION_UPZ = 2;
-    btColliderShape.SHAPETYPES_BOX = 0;
-    btColliderShape.SHAPETYPES_SPHERE = 1;
-    btColliderShape.SHAPETYPES_CYLINDER = 2;
-    btColliderShape.SHAPETYPES_CAPSULE = 3;
-    btColliderShape.SHAPETYPES_CONVEXHULL = 4;
-    btColliderShape.SHAPETYPES_COMPOUND = 5;
-    btColliderShape.SHAPETYPES_STATICPLANE = 6;
-    btColliderShape.SHAPETYPES_CONE = 7;
-    btColliderShape.SHAPETYPES_HEIGHTFIELDTERRAIN = 8;
+    btCharacterCollider._supportBodyTransform = [];
 
     class btMeshColliderShape extends btColliderShape {
         get mesh() {
@@ -566,6 +900,7 @@
         }
         constructor() {
             super();
+            this._physicsMeshOwned = false;
             this._limitvertex = 255;
         }
         setPhysicsMeshFromMesh(value) {
@@ -584,21 +919,31 @@
         get convex() {
             return this._convex;
         }
-        _createPhysicsMeshFromMesh(value) {
-            if (value._triangleMesh) {
+        _createPhysicsMeshFromMesh(value, shared) {
+            if (shared && value._triangleMesh) {
                 return value._triangleMesh;
             }
             let bt = btStatics.bt;
-            var triangleMesh = value._triangleMesh = bt.btTriangleMesh_create();
-            var nativePositio0 = btMeshColliderShape._btTempVector30;
-            var nativePositio1 = btMeshColliderShape._btTempVector31;
-            var nativePositio2 = btMeshColliderShape._btTempVector32;
-            let posArray = new Array();
-            value.getPositions(posArray);
+            let geometry = btMeshColliderShape._meshGeometryCache.get(value);
+            if (value._isReadable || !geometry) {
+                const positions = [];
+                value.getPositions(positions);
+                const indices = value._indexBuffer.getData().slice();
+                geometry = { positions, indices };
+                btMeshColliderShape._meshGeometryCache.set(value, geometry);
+            }
+            const posArray = geometry.positions;
+            const indices = geometry.indices;
             if (this._convex && posArray.length > this._limitvertex) {
                 console.warn("MeshColliderShape: The number of vertices exceeds the limit, please reduce the number of vertices.");
             }
-            var indices = value._indexBuffer.getData();
+            var triangleMesh = bt.btTriangleMesh_create();
+            if (shared) {
+                value._triangleMesh = triangleMesh;
+            }
+            var nativePositio0 = btMeshColliderShape._btTempVector30;
+            var nativePositio1 = btMeshColliderShape._btTempVector31;
+            var nativePositio2 = btMeshColliderShape._btTempVector32;
             for (var i = 0, n = indices.length; i < n; i += 3) {
                 var position0 = posArray[indices[i]];
                 var position1 = posArray[indices[i + 1]];
@@ -612,7 +957,7 @@
         }
         _createConvexMeshFromMesh(value) {
             if (!value._convexMesh) {
-                let physicMesh = this._createPhysicsMeshFromMesh(this._mesh);
+                let physicMesh = this._createPhysicsMeshFromMesh(this._mesh, true);
                 value._convexMesh = btStatics.bt.btShapeHull_create(physicMesh);
             }
             return value._convexMesh;
@@ -622,7 +967,11 @@
             if (this._btShape) {
                 bt.btCollisionShape_destroy(this._btShape);
             }
-            this._physicMesh = this._createPhysicsMeshFromMesh(this._mesh);
+            if (this._physicMesh && this._physicsMeshOwned) {
+                bt.btStridingMeshInterface_destroy(this._physicMesh);
+            }
+            this._physicMesh = this._createPhysicsMeshFromMesh(this._mesh, false);
+            this._physicsMeshOwned = true;
             if (this._physicMesh) {
                 this._btShape = bt.btBvhTriangleMeshShape_create(this._physicMesh);
                 if (this._btCollider)
@@ -634,19 +983,33 @@
             if (this._btShape) {
                 bt.btCollisionShape_destroy(this._btShape);
             }
+            if (this._physicMesh && this._physicsMeshOwned) {
+                bt.btStridingMeshInterface_destroy(this._physicMesh);
+                this._physicMesh = null;
+                this._physicsMeshOwned = false;
+            }
             let convexMesh = this._createConvexMeshFromMesh(this._mesh);
             this._btShape = bt.btConvexHullShape_create(convexMesh);
             if (this._btCollider)
                 this._btCollider.setColliderShape(this);
         }
         setWorldScale(value) {
-            if (this._btShape && this._btCollider) {
+            if (this._btShape) {
                 let bt = btStatics.bt;
                 bt.btVector3_setValue(btMeshColliderShape._btTempVector30, value.x, value.y, value.z);
                 bt.btCollisionShape_setLocalScaling(this._btShape, btMeshColliderShape._btTempVector30);
             }
         }
+        destroy() {
+            super.destroy();
+            if (this._physicMesh && this._physicsMeshOwned) {
+                btStatics.bt.btStridingMeshInterface_destroy(this._physicMesh);
+                this._physicMesh = null;
+                this._physicsMeshOwned = false;
+            }
+        }
     }
+    btMeshColliderShape._meshGeometryCache = new WeakMap();
 
     class btRigidBodyCollider extends btCollider {
         static __init__() {
@@ -677,7 +1040,7 @@
             this._linearFactor = new Laya.Vector3(1, 1, 1);
             this._angularFactor = new Laya.Vector3(1, 1, 1);
             this._detectCollisions = true;
-            this._allowSleep = false;
+            this._allowSleep = true;
             Laya.Physics3DStatInfo.addStatisticsInfo(Laya.EPhysicsStatisticsInfo.C_PhysicaDynamicRigidBody, 1);
         }
         getCapable(value) {
@@ -764,8 +1127,16 @@
         }
         isSleeping() {
             if (this._btCollider)
-                return btStatics.bt.btCollisionObject_getActivationState(this._btCollider) === btStatics.ACTIVATIONSTATE_ISLAND_SLEEPING || btStatics.bt.btCollisionObject_getActivationState(this._btCollider) === btStatics.ACTIVATIONSTATE_DISABLE_DEACTIVATION;
+                return btStatics.bt.btCollisionObject_getActivationState(this._btCollider) === btStatics.ACTIVATIONSTATE_ISLAND_SLEEPING;
             return false;
+        }
+        allowSleep(value) {
+            this._allowSleep = value;
+            if (this._btCollider) {
+                const state = this._isKinematic || !value
+                    ? btStatics.ACTIVATIONSTATE_DISABLE_DEACTIVATION : btStatics.ACTIVATIONSTATE_ACTIVE_TAG;
+                btStatics.bt.btCollisionObject_forceActivationState(this._btCollider, state);
+            }
         }
         _initCollider() {
             let bt = btStatics.bt;
@@ -913,7 +1284,7 @@
                 if ((flags & btStatics.COLLISIONFLAGS_KINEMATIC_OBJECT) > 0)
                     flags = flags ^ btStatics.COLLISIONFLAGS_KINEMATIC_OBJECT;
                 bt.btCollisionObject_setCollisionFlags(natColObj, flags);
-                bt.btCollisionObject_setActivationState(this._btCollider, btStatics.ACTIVATIONSTATE_ACTIVE_TAG);
+                this.allowSleep(this._allowSleep);
                 this._enableProcessCollisions = true;
                 this._updateMass(this._mass);
             }
@@ -1131,8 +1502,8 @@
             this._staticCapableMap.set(Laya.EColliderCapable.Collider_RollingFriction, true);
             this._staticCapableMap.set(Laya.EColliderCapable.Collider_DynamicFriction, false);
             this._staticCapableMap.set(Laya.EColliderCapable.Collider_StaticFriction, false);
-            this._staticCapableMap.set(Laya.EColliderCapable.Collider_BounceCombine, true);
-            this._staticCapableMap.set(Laya.EColliderCapable.Collider_FrictionCombine, true);
+            this._staticCapableMap.set(Laya.EColliderCapable.Collider_BounceCombine, false);
+            this._staticCapableMap.set(Laya.EColliderCapable.Collider_FrictionCombine, false);
             this._staticCapableMap.set(Laya.EColliderCapable.Collider_EventFilter, false);
             this._staticCapableMap.set(Laya.EColliderCapable.Collider_CollisionDetectionMode, false);
             this._staticCapableMap.set(Laya.EColliderCapable.RigidBody_AllowSleep, true);
@@ -1142,6 +1513,9 @@
             btStatics.bt.btRigidBody_setCenterOfMassPos(btColliderObject, value.x, value.y, value.z);
         }
         destroy() {
+            if (this._destroyed)
+                return;
+            super.destroy();
             this._btCollider = null;
             Laya.Physics3DStatInfo.addStatisticsInfo(Laya.EPhysicsStatisticsInfo.C_PhysicaStaticRigidBody, -1);
         }
@@ -1237,6 +1611,8 @@
             return btJoint._jointCapableMap.get(value);
         }
         constructor(manager) {
+            this._id = btJoint._nextId++;
+            this._destroyed = false;
             this._getJointFeedBack = false;
             this._disableCollisionsBetweenLinkedBodies = false;
             this._anchor = new Laya.Vector3(0);
@@ -1250,6 +1626,11 @@
         _createJoint() {
         }
         destroy() {
+            if (this._destroyed)
+                return;
+            this._destroyed = true;
+            if (this._btJoint && this._manager)
+                this._manager.removeJoint(this);
             Laya.Physics3DStatInfo.addStatisticsInfo(Laya.EPhysicsStatisticsInfo.C_PhysicsJoint, -1);
         }
         setCollider(collider) {
@@ -1293,7 +1674,8 @@
             throw new Laya.NotImplementedError();
         }
         isEnable(value) {
-            btStatics.bt.btTypedConstraint_setEnabled(this._btJoint, value);
+            if (this._btJoint)
+                btStatics.bt.btTypedConstraint_setEnabled(this._btJoint, value);
         }
         isCollision(value) {
             this._disableCollisionsBetweenLinkedBodies = !value;
@@ -1369,17 +1751,92 @@
     btJoint.CONSTRAINT_CONSTRAINT_STOP_ERP = 2;
     btJoint.CONSTRAINT_CONSTRAINT_CFM = 3;
     btJoint.CONSTRAINT_CONSTRAINT_STOP_CFM = 4;
+    btJoint._nextId = 0;
 
     class btCustomJoint extends btJoint {
+        isEnable(value) {
+            this._drivesEnabled = value;
+            super.isEnable(value);
+        }
+        _applyLinearDrives(deltaTime) {
+            const a = this._collider;
+            const b = this._connectCollider;
+            if (!this._drivesEnabled || !this._btJoint || !a || !b || a._destroyed || b._destroyed)
+                return;
+            const scratch = this._driveScratch;
+            const pa = scratch[0], pb = scratch[1], ra = scratch[2], rb = scratch[3];
+            Laya.Vector3.transformCoordinate(this._anchor, a.owner.transform.worldMatrix, pa);
+            Laya.Vector3.transformCoordinate(this._connectAnchor, b.owner.transform.worldMatrix, pb);
+            Laya.Vector3.subtract(pa, a.owner.transform.position, ra);
+            Laya.Vector3.subtract(pb, b.owner.transform.position, rb);
+            const aDynamic = a instanceof btRigidBodyCollider, bDynamic = b instanceof btRigidBodyCollider;
+            const va = scratch[4], vb = scratch[5], spin = scratch[6];
+            if (aDynamic)
+                a.getLinearVelocity().cloneTo(va);
+            else
+                va.setValue(0, 0, 0);
+            if (bDynamic)
+                b.getLinearVelocity().cloneTo(vb);
+            else
+                vb.setValue(0, 0, 0);
+            if (aDynamic) {
+                Laya.Vector3.cross(a.getAngularVelocity(), ra, spin);
+                Laya.Vector3.add(va, spin, va);
+            }
+            if (bDynamic) {
+                Laya.Vector3.cross(b.getAngularVelocity(), rb, spin);
+                Laya.Vector3.add(vb, spin, vb);
+            }
+            const delta = scratch[7], velocity = scratch[8];
+            Laya.Vector3.subtract(pb, pa, delta);
+            Laya.Vector3.subtract(vb, va, velocity);
+            const x = scratch[9], y = scratch[10], z = scratch[11];
+            this._axis.cloneTo(x);
+            x.normalize();
+            Laya.Vector3.cross(x, this._secondAxis, z);
+            z.normalize();
+            Laya.Vector3.cross(z, x, y);
+            const keys = btCustomJoint._driveKeys;
+            const inverseMass = (aDynamic && !a.component.isKinematic ? 1 / Math.max(a.component.mass, 1e-7) : 0)
+                + (bDynamic && !b.component.isKinematic ? 1 / Math.max(b.component.mass, 1e-7) : 0);
+            const force = scratch[12];
+            force.setValue(0, 0, 0);
+            for (let i = 0; i < 3; i++) {
+                const drive = this._linearDrives[i];
+                const motion = i === 0 ? this._linearXMotion : i === 1 ? this._linearYMotion : this._linearZMotion;
+                if (motion === Laya.D6Axis.eLOCKED || !(drive.forceLimit > 0))
+                    continue;
+                const axis = scratch[9 + i];
+                Laya.Vector3.transformQuat(axis, a.owner.transform.rotation, axis);
+                const error = this._drivePosition[keys[i]] - Laya.Vector3.dot(delta, axis);
+                const speed = Laya.Vector3.dot(velocity, axis);
+                const speedError = this._driveVelocity[keys[i]] - speed;
+                const denominator = 1 + inverseMass * deltaTime * (drive.damping + drive.stiffness * deltaTime);
+                const requestedForce = (drive.stiffness * (error - deltaTime * speed) + drive.damping * speedError) / denominator;
+                const amount = Math.max(-drive.forceLimit, Math.min(drive.forceLimit, requestedForce));
+                force.x += axis.x * amount;
+                force.y += axis.y * amount;
+                force.z += axis.z * amount;
+            }
+            if (force.lengthSquared() < 1e-12)
+                return;
+            if (bDynamic && !b.component.isKinematic)
+                b.addForce(force, Laya.PhysicsForceMode.Force, rb);
+            if (aDynamic && !a.component.isKinematic) {
+                Laya.Vector3.scale(force, -1, force);
+                a.addForce(force, Laya.PhysicsForceMode.Force, ra);
+            }
+        }
         initJoint() {
             super.initJoint();
             this._btAxis = btStatics.bt.btVector3_create(-1.0, 0.0, 0.0);
             this._btsceondAxis = btStatics.bt.btVector3_create(0.0, 1.0, 0.0);
         }
         _createJoint() {
+            var _a, _b;
             let bt = btStatics.bt;
-            this._manager && this._manager.removeJoint(this);
-            if (this._collider && this._connectCollider) {
+            this._btJoint && this._manager && this._manager.removeJoint(this);
+            if (((_a = this._collider) === null || _a === void 0 ? void 0 : _a._btCollider) && ((_b = this._connectCollider) === null || _b === void 0 ? void 0 : _b._btCollider)) {
                 this._btJoint = bt.btGeneric6DofSpring2Constraint_create(this._collider._btCollider, this._btTempTrans0, this._connectCollider._btCollider, this._btTempTrans1, 0);
                 this._btJointFeedBackObj = bt.btJointFeedback_create(this._btJoint);
                 bt.btTypedConstraint_setJointFeedback(this._btJoint, this._btJointFeedBackObj);
@@ -1398,6 +1855,12 @@
         }
         constructor(manager) {
             super(manager);
+            this._linearDrives = Array.from({ length: 3 }, () => ({ stiffness: 0, damping: 0, forceLimit: 0 }));
+            this._drivePosition = new Laya.Vector3();
+            this._driveVelocity = new Laya.Vector3();
+            this._drivesEnabled = true;
+            this._driveRegistered = false;
+            this._driveStep = { beforePhysicsStep: (dt) => this._applyLinearDrives(dt), afterPhysicsStep: (_dt) => { } };
             this._minAngularXLimit = 0;
             this._maxAngularXLimit = 0;
             this._minAngularYLimit = 0;
@@ -1414,8 +1877,6 @@
             this._angularZMotion = Laya.D6Axis.eFREE;
             this._axis = new Laya.Vector3(1, 0, 0);
             this._secondAxis = new Laya.Vector3(0, 1, 0);
-            this._btAxis = 0;
-            this._btsceondAxis = 0;
         }
         setEquilibriumPoint(axis, equilibriumPoint) {
             btStatics.bt.btGeneric6DofSpring2Constraint_setEquilibriumPoint(this._btJoint, axis, equilibriumPoint);
@@ -1430,11 +1891,29 @@
         }
         setAxis(axis, secendary) {
             var bt = btStatics.bt;
-            this._axis.setValue(axis.x, axis.y, axis.y);
+            const x = new Laya.Vector3(axis.x, axis.y, axis.z);
+            const y = new Laya.Vector3(secendary.x, secendary.y, secendary.z);
+            const z = new Laya.Vector3();
+            x.normalize();
+            Laya.Vector3.cross(x, y, z);
+            const crossLength = z.lengthSquared();
+            if (!(crossLength >= 1e-12) || !Number.isFinite(crossLength))
+                return;
+            z.normalize();
+            Laya.Vector3.cross(z, x, y);
+            this._axis.setValue(axis.x, axis.y, axis.z);
             this._secondAxis.setValue(secendary.x, secendary.y, secendary.z);
-            this._btAxis = bt.btVector3_setValue(-axis.x, axis.y, axis.z);
-            this._btsceondAxis = bt.btVector3_setValue(-secendary.x, secendary.y, secendary.z);
-            bt.btGeneric6DofSpring2Constraint_setAxis(this._btJoint, this._btAxis, this._btsceondAxis);
+            bt.btVector3_setValue(this._btAxis, -axis.x, axis.y, axis.z);
+            bt.btVector3_setValue(this._btsceondAxis, -secendary.x, secendary.y, secendary.z);
+            const matrix = new Laya.Matrix3x3();
+            matrix.elements.set([x.x, x.y, x.z, y.x, y.y, y.z, z.x, z.y, z.z]);
+            const rotation = new Laya.Quaternion();
+            Laya.Quaternion.rotationMatrix(matrix, rotation);
+            const nativeRotation = bt.btQuaternion_create(rotation.x, rotation.y, rotation.z, rotation.w);
+            bt.btTransform_setRotation(this._btTempTrans0, nativeRotation);
+            bt.btTransform_setRotation(this._btTempTrans1, nativeRotation);
+            bt.btQuaternion_delete(nativeRotation);
+            bt.btGeneric6DofSpring2Constraint_setFrames(this._btJoint, this._btTempTrans0, this._btTempTrans1);
         }
         _setLimit(axis, motionType, low, high) {
             let lowLimit = 0;
@@ -1577,12 +2056,30 @@
             this._setDamp(this._angularZMotion, Laya.D6MotionType.eSWING2, damping);
         }
         setDrive(index, stiffness, damping, forceLimit) {
-            btStatics.bt.btGeneric6DofSpring2Constraint_enableMotor(this._btJoint, index, true);
+            if (index <= Laya.D6Drive.eZ) {
+                const drive = this._linearDrives[index];
+                drive.stiffness = Math.max(0, stiffness);
+                drive.damping = Math.max(0, damping);
+                drive.forceLimit = Math.max(0, forceLimit);
+                btStatics.bt.btGeneric6DofSpring2Constraint_enableMotor(this._btJoint, index, false);
+                const active = this._linearDrives.some(d => d.forceLimit > 0 && (d.stiffness > 0 || d.damping > 0));
+                if (active && !this._driveScratch)
+                    this._driveScratch = Array.from({ length: 13 }, () => new Laya.Vector3());
+                if (active && !this._driveRegistered)
+                    this._manager.addPhysicsStepListener(this._driveStep);
+                else if (!active && this._driveRegistered)
+                    this._manager.removePhysicsStepListener(this._driveStep);
+                this._driveRegistered = active;
+            }
+            else {
+                btStatics.bt.btGeneric6DofSpring2Constraint_enableMotor(this._btJoint, index, stiffness > 0 || damping > 0);
+            }
         }
         setDriveTransform(position, rotate) {
-            Laya.D6Drive.eY;
+            position.cloneTo(this._drivePosition);
         }
         setDriveVelocity(position, angular) {
+            position.cloneTo(this._driveVelocity);
             let bt = btStatics.bt;
             let axis = Laya.D6Drive.eX;
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, position.x);
@@ -1590,11 +2087,11 @@
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, position.y);
             axis = Laya.D6Drive.eZ;
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, position.z);
-            axis = Laya.D6Drive.eX;
+            axis = Laya.D6MotionType.eTWIST;
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, angular.x);
-            axis = Laya.D6Drive.eY;
+            axis = Laya.D6MotionType.eSWING1;
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, angular.y);
-            axis = Laya.D6Drive.eZ;
+            axis = Laya.D6MotionType.eSWING2;
             bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, axis, angular.z);
         }
         getTwistAngle() {
@@ -1607,20 +2104,25 @@
             throw new Laya.NotImplementedError();
         }
         destroy() {
+            if (this._driveRegistered)
+                this._manager.removePhysicsStepListener(this._driveStep);
+            this._driveRegistered = false;
+            super.destroy();
             this._btJoint = null;
             this._btJointFeedBackObj = null;
-            super.destroy();
         }
     }
+    btCustomJoint._driveKeys = ["x", "y", "z"];
 
     class btFixedJoint extends btJoint {
         constructor(manager) {
             super(manager);
         }
         _createJoint() {
+            var _a, _b;
             let bt = btStatics.bt;
-            this._manager && this._manager.removeJoint(this);
-            if (this._collider && this._connectCollider) {
+            this._btJoint && this._manager && this._manager.removeJoint(this);
+            if (((_a = this._collider) === null || _a === void 0 ? void 0 : _a._btCollider) && ((_b = this._connectCollider) === null || _b === void 0 ? void 0 : _b._btCollider)) {
                 this._btJoint = bt.btFixedConstraint_create(this._collider._btCollider, this._btTempTrans0, this._connectCollider._btCollider, this._btTempTrans1, 0);
                 this._btJointFeedBackObj = bt.btJointFeedback_create(this._btJoint);
                 bt.btTypedConstraint_setJointFeedback(this._btJoint, this._btJointFeedBackObj);
@@ -1629,17 +2131,18 @@
             }
         }
         destroy() {
+            super.destroy();
             this._btJoint = null;
             this._btJointFeedBackObj = null;
-            super.destroy();
         }
     }
 
     class btHingeJoint extends btJoint {
         _createJoint() {
+            var _a, _b;
             var bt = btStatics.bt;
-            this._manager && this._manager.removeJoint(this);
-            if (this._collider && this._connectCollider) {
+            this._btJoint && this._manager && this._manager.removeJoint(this);
+            if (((_a = this._collider) === null || _a === void 0 ? void 0 : _a._btCollider) && ((_b = this._connectCollider) === null || _b === void 0 ? void 0 : _b._btCollider)) {
                 this._btJoint = bt.btGeneric6DofSpring2Constraint_create(this._collider._btCollider, this._btTempTrans0, this._connectCollider._btCollider, this._btTempTrans1, 0);
                 this._btJointFeedBackObj = bt.btJointFeedback_create(this._btJoint);
                 bt.btTypedConstraint_setJointFeedback(this._btJoint, this._btJointFeedBackObj);
@@ -1650,17 +2153,21 @@
         }
         _initJointConstraintInfo() {
             let bt = btStatics.bt;
+            for (let i = 0; i < 3; i++)
+                bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, i, 0, 0);
             bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, btHingeJoint.ANGULAR_X, 0, 0);
             bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, btHingeJoint.ANGULAR_Y, 0, 0);
             bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, btHingeJoint.ANGULAR_Z, 0, 0);
         }
         constructor(manager) {
             super(manager);
-            this._uperLimit = 0;
-            this._lowerLimit = 1;
-            this._angularAxis = 0;
+            this.supportsContactDistance = false;
+            this._uperLimit = Math.PI / 2;
+            this._lowerLimit = -Math.PI / 2;
+            this._angularAxis = 3;
             this._enableLimit = false;
             this._enableDrive = false;
+            this._driveVelocity = 0;
         }
         setLocalPos(pos) {
             super.setLocalPos(pos);
@@ -1671,20 +2178,14 @@
             this._btJoint && btStatics.bt.btGeneric6DofSpring2Constraint_setFrames(this._btJoint, this._btTempTrans0, this._btTempTrans1);
         }
         setLowerLimit(lowerLimit) {
-            if (!this._btJoint)
-                return;
-            if (lowerLimit == this._lowerLimit)
-                return;
-            this._lowerLimit = lowerLimit / Math.PI * 180;
-            btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
+            this._lowerLimit = lowerLimit;
+            if (this._btJoint && this._enableLimit)
+                btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
         }
         setUpLimit(value) {
-            if (!this._btJoint)
-                return;
-            if (value == this._uperLimit)
-                return;
-            this._uperLimit = value / Math.PI * 180;
-            btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
+            this._uperLimit = value;
+            if (this._btJoint && this._enableLimit)
+                btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
         }
         setBounceness(value) {
             if (!this._btJoint)
@@ -1699,6 +2200,8 @@
         }
         enableLimit(value) {
             this._enableLimit = value;
+            if (this._btJoint)
+                btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, value ? this._lowerLimit : 1, value ? this._uperLimit : 0);
         }
         enableDrive(value) {
             this._enableDrive = value;
@@ -1707,33 +2210,23 @@
         enableFreeSpin(value) {
         }
         setAxis(value) {
-            if (value.x == 1) {
-                this._angularAxis = btHingeJoint.ANGULAR_X;
-                if (this._enableLimit) {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
-                }
-                else {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, 1, 0);
-                }
+            const axis = value.x === 1 ? btHingeJoint.ANGULAR_X
+                : value.y === 1 ? btHingeJoint.ANGULAR_Y
+                    : value.z === 1 ? btHingeJoint.ANGULAR_Z : -1;
+            if (axis < 0)
+                return;
+            const previousAxis = this._angularAxis;
+            this._angularAxis = axis;
+            if (!this._btJoint)
+                return;
+            const bt = btStatics.bt;
+            if (previousAxis !== axis)
+                bt.btGeneric6DofSpring2Constraint_enableMotor(this._btJoint, previousAxis, false);
+            for (let i = btHingeJoint.ANGULAR_X; i <= btHingeJoint.ANGULAR_Z; i++) {
+                bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, i, i === axis ? (this._enableLimit ? this._lowerLimit : 1) : 0, i === axis ? (this._enableLimit ? this._uperLimit : 0) : 0);
             }
-            if (value.y == 1) {
-                this._angularAxis = btHingeJoint.ANGULAR_Y;
-                if (this._enableLimit) {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
-                }
-                else {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, 1, 0);
-                }
-            }
-            if (value.z == 1) {
-                this._angularAxis = btHingeJoint.ANGULAR_Z;
-                if (this._enableLimit) {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, this._lowerLimit, this._uperLimit);
-                }
-                else {
-                    btStatics.bt.btGeneric6DofSpring2Constraint_setLimit(this._btJoint, this._angularAxis, 1, 0);
-                }
-            }
+            this.setDriveVelocity(this._driveVelocity);
+            this.enableDrive(this._enableDrive);
         }
         setSwingOffset(value) {
             throw new Laya.NotImplementedError();
@@ -1751,7 +2244,9 @@
             throw new Laya.NotImplementedError();
         }
         setDriveVelocity(velocity) {
-            btStatics.bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, this._angularAxis, velocity);
+            this._driveVelocity = velocity;
+            if (this._btJoint)
+                btStatics.bt.btGeneric6DofSpring2Constraint_setTargetVelocity(this._btJoint, this._angularAxis, velocity);
         }
         setDriveForceLimit(limit) {
             throw new Laya.NotImplementedError();
@@ -1763,9 +2258,9 @@
             throw new Laya.NotImplementedError();
         }
         destroy() {
+            super.destroy();
             this._btJoint = null;
             this._btJointFeedBackObj = null;
-            super.destroy();
         }
     }
     btHingeJoint.ANGULAR_X = 3;
@@ -1774,9 +2269,10 @@
 
     class btSpringJoint extends btJoint {
         _createJoint() {
+            var _a, _b;
             var bt = btStatics.bt;
-            this._manager && this._manager.removeJoint(this);
-            if (this._collider && this._connectCollider) {
+            this._btJoint && this._manager && this._manager.removeJoint(this);
+            if (((_a = this._collider) === null || _a === void 0 ? void 0 : _a._btCollider) && ((_b = this._connectCollider) === null || _b === void 0 ? void 0 : _b._btCollider)) {
                 this._btJoint = bt.btGeneric6DofSpring2Constraint_create(this._collider._btCollider, this._btTempTrans0, this._connectCollider._btCollider, this._btTempTrans1, 0);
                 this._btJointFeedBackObj = bt.btJointFeedback_create(this._btJoint);
                 bt.btTypedConstraint_setJointFeedback(this._btJoint, this._btJointFeedBackObj);
@@ -1844,9 +2340,9 @@
             btStatics.bt.btGeneric6DofSpring2Constraint_setDamping(this._btJoint, btSpringJoint.LINEARSPRING_AXIS_Y, damping, true);
         }
         destroy() {
+            super.destroy();
             this._btJoint = null;
             this._btJointFeedBackObj = null;
-            super.destroy();
         }
     }
     btSpringJoint.LINEARSPRING_AXIS_X = 0;
@@ -1889,86 +2385,11 @@
         }
     }
 
-    class btCapsuleColliderShape extends btColliderShape {
-        constructor() {
-            super();
-            this._radius = 0.25;
-            this._length = 1;
-            this._orientation = btColliderShape.SHAPEORIENTATION_UPY;
-        }
-        _createShape() {
-            let bt = btStatics.bt;
-            if (this._btShape) {
-                bt.btCollisionShape_destroy(this._btShape);
-            }
-            switch (this._orientation) {
-                case btColliderShape.SHAPEORIENTATION_UPX:
-                    this._btShape = bt.btCapsuleShapeX_create(this._radius, this._length - this._radius * 2);
-                    break;
-                case btColliderShape.SHAPEORIENTATION_UPY:
-                    this._btShape = bt.btCapsuleShape_create(this._radius, this._length - this._radius * 2);
-                    break;
-                case btColliderShape.SHAPEORIENTATION_UPZ:
-                    this._btShape = bt.btCapsuleShapeZ_create(this._radius, this._length - this._radius * 2);
-                    break;
-                default:
-                    throw "CapsuleColliderShape:unknown orientation.";
-            }
-        }
-        _getType() {
-            return this._type = btColliderShape.SHAPETYPES_CAPSULE;
-        }
-        setRadius(radius) {
-            if (this._btShape && this._radius == radius)
-                return;
-            this._radius = radius;
-            this._createShape();
-        }
-        setHeight(height) {
-            if (this._btShape && this._length == height)
-                return;
-            this._length = height;
-            this._createShape();
-        }
-        setUpAxis(upAxis) {
-            if (this._btShape && this._orientation == upAxis)
-                return;
-            this._orientation = upAxis;
-            this._createShape();
-        }
-        setWorldScale(scale) {
-            var fixScale = btCapsuleColliderShape._tempVector30;
-            switch (this._orientation) {
-                case btColliderShape.SHAPEORIENTATION_UPX:
-                    fixScale.x = scale.x;
-                    fixScale.y = fixScale.z = Math.max(scale.y, scale.z);
-                    break;
-                case btColliderShape.SHAPEORIENTATION_UPY:
-                    fixScale.y = scale.y;
-                    fixScale.x = fixScale.z = Math.max(scale.x, scale.z);
-                    break;
-                case btColliderShape.SHAPEORIENTATION_UPZ:
-                    fixScale.z = scale.z;
-                    fixScale.x = fixScale.y = Math.max(scale.x, scale.y);
-                    break;
-                default:
-                    throw "CapsuleColliderShape:unknown orientation.";
-            }
-            super.setWorldScale(fixScale);
-        }
-        destroy() {
-            super.destroy();
-            this._radius = null;
-            this._length = null;
-            this._orientation = null;
-        }
-    }
-    btCapsuleColliderShape._tempVector30 = new Laya.Vector3();
-
     class btCompoundColliderShape extends btColliderShape {
         constructor() {
             super();
             this._childColliderShapes = [];
+            this._nativeChildShapes = [];
             let bt = btStatics.bt;
             this._btVector3One = bt.btVector3_create(1, 1, 1);
             this._btTransform = bt.btTransform_create();
@@ -1983,21 +2404,47 @@
             return this._type = btColliderShape.SHAPETYPES_COMPOUND;
         }
         addChildShape(shape) {
-            var offset = shape.getOffset();
-            var bt = btStatics.bt;
-            bt.btVector3_setValue(this._btOffset, offset.x, offset.y, offset.z);
-            bt.btQuaternion_setValue(this._btRotation, 0, 0, 0, 1);
+            this.addChildShapeWithTransform(shape, shape.getOffset(), Laya.Quaternion.DEFAULT, Laya.Vector3.ONE);
+        }
+        addChildShapeWithTransform(shape, localPosition, localRotation, localScale) {
+            const bt = btStatics.bt;
+            const childShape = shape.getPhysicsShape();
+            if (!childShape) {
+                this._childColliderShapes.push(shape);
+                return;
+            }
+            shape.setWorldScale(localScale);
+            bt.btTransform_setIdentity(this._btTransform);
+            bt.btVector3_setValue(this._btOffset, localPosition.x, localPosition.y, localPosition.z);
+            bt.btQuaternion_setValue(this._btRotation, localRotation.x, localRotation.y, localRotation.z, localRotation.w);
             bt.btTransform_setOrigin(this._btTransform, this._btOffset);
             bt.btTransform_setRotation(this._btTransform, this._btRotation);
-            var btScale = bt.btCollisionShape_getLocalScaling(this._btShape);
+            const btScale = bt.btCollisionShape_getLocalScaling(this._btShape);
             bt.btCollisionShape_setLocalScaling(this._btShape, this._btVector3One);
-            let childShape = shape.getPhysicsShape();
-            childShape && bt.btCompoundShape_addChildShape(this._btShape, this._btTransform, childShape);
+            if (childShape) {
+                bt.btCompoundShape_addChildShape(this._btShape, this._btTransform, childShape);
+                this._childColliderShapes.push(shape);
+                this._nativeChildShapes.push(childShape);
+            }
             bt.btCollisionShape_setLocalScaling(this._btShape, btScale);
         }
         removeChildShape(shape, index) {
-            let bt = btStatics.bt;
-            bt.btCompoundShape_removeChildShapeByIndex(this._btShape, index);
+            if (index < 0 || index >= this._childColliderShapes.length || this._childColliderShapes[index] !== shape)
+                return;
+            const bt = btStatics.bt;
+            const nativeIndex = this._nativeChildShapes.indexOf(shape.getPhysicsShape());
+            if (nativeIndex !== -1) {
+                bt.btCompoundShape_removeChildShapeByIndex(this._btShape, nativeIndex);
+                const last = this._nativeChildShapes.pop();
+                if (nativeIndex < this._nativeChildShapes.length)
+                    this._nativeChildShapes[nativeIndex] = last;
+            }
+            this._childColliderShapes.splice(index, 1);
+        }
+        refreshMassProperties(mass) {
+            var _a;
+            if (((_a = this._btCollider) === null || _a === void 0 ? void 0 : _a._btColliderShape) === this)
+                this._btCollider.setMass(mass);
         }
         setShapeData(component) {
             this._physicsComponent = component;
@@ -2007,6 +2454,8 @@
         }
         destroy() {
             super.destroy();
+            this._childColliderShapes.length = 0;
+            this._nativeChildShapes.length = 0;
             this._btRotation = null;
             this._btTransform = null;
             this._btVector3One = null;
@@ -2155,6 +2604,298 @@
         }
     }
 
+    class btWheelCollider {
+        constructor(_btVehicle, _wheelIndex) {
+            this._btVehicle = _btVehicle;
+            this._wheelIndex = _wheelIndex;
+            this._btWheelInfo = 0;
+            this._maxSuspensionForce = 0;
+            this._state = new Laya.VehicleWheelState();
+            this._refreshWheelInfo();
+        }
+        _refreshWheelInfo() {
+            if (!this._btVehicle)
+                return 0;
+            this._btWheelInfo = btStatics.bt.btRaycastVehicle_getWheelInfo(this._btVehicle, this._wheelIndex);
+            return this._btWheelInfo;
+        }
+        applyConfig(desc, chassisMass) {
+            if (!this._refreshWheelInfo())
+                return;
+            const bt = btStatics.bt;
+            const mass = Math.max(chassisMass, 0.0001);
+            this._maxSuspensionForce = desc.maxSuspensionForce;
+            bt.btWheelInfo_setChassisConnectionPointCS(this._btWheelInfo, desc.centerX, desc.centerY, desc.centerZ);
+            bt.btWheelInfo_setRadius(this._btWheelInfo, desc.radius);
+            bt.btWheelInfo_setSuspensionRestLength(this._btWheelInfo, desc.suspensionRestLength);
+            bt.btWheelInfo_setMaxSuspensionTravelCm(this._btWheelInfo, desc.maxSuspensionTravel * 100.0);
+            bt.btWheelInfo_setSuspensionStiffness(this._btWheelInfo, desc.springStiffness / mass);
+            bt.btWheelInfo_setWheelsDampingCompression(this._btWheelInfo, desc.compressionDamping / mass);
+            bt.btWheelInfo_setWheelsDampingRelaxation(this._btWheelInfo, desc.reboundDamping / mass);
+            bt.btWheelInfo_setMaxSuspensionForce(this._btWheelInfo, desc.maxSuspensionForce);
+            bt.btWheelInfo_setFrictionSlip(this._btWheelInfo, desc.frictionStiffness);
+        }
+        capturePhysicsState(fixedDeltaTime) {
+            const outState = this._state;
+            if (!this._refreshWheelInfo()) {
+                this._clearState(outState);
+                return;
+            }
+            const bt = btStatics.bt;
+            outState.isContact = !!bt.btWheelInfo_getIsInContact(this._btWheelInfo);
+            outState.currentSuspensionLength = bt.btWheelInfo_getSuspensionLength(this._btWheelInfo);
+            outState.suspensionForce = Math.min(this._maxSuspensionForce, bt.btWheelInfo_getSuspensionForce(this._btWheelInfo));
+            outState.skidInfo = bt.btWheelInfo_getSkidInfo(this._btWheelInfo);
+            outState.rotation = bt.btWheelInfo_getRotation(this._btWheelInfo);
+            outState.angularSpeed = bt.btWheelInfo_getAngularVelocity(this._btWheelInfo, fixedDeltaTime);
+            outState.rpm = outState.angularSpeed * 60.0 / (2.0 * Math.PI);
+            if (outState.isContact) {
+                const point = bt.btWheelInfo_getContactPointWS(this._btWheelInfo);
+                const normal = bt.btWheelInfo_getContactNormalWS(this._btWheelInfo);
+                outState.contactPos.setValue(bt.btVector3_x(point), bt.btVector3_y(point), bt.btVector3_z(point));
+                outState.contactNormal.setValue(bt.btVector3_x(normal), bt.btVector3_y(normal), bt.btVector3_z(normal));
+                const groundObject = bt.btWheelInfo_getGroundObject(this._btWheelInfo);
+                if (groundObject) {
+                    const userIndex = bt.btCollisionObject_getUserIndex(groundObject);
+                    outState.otherCollider = btCollider._physicObjectsMap[userIndex] || null;
+                }
+                else {
+                    outState.otherCollider = null;
+                }
+            }
+            else {
+                outState.otherCollider = null;
+                outState.contactPos.setValue(0, 0, 0);
+                outState.contactNormal.setValue(0, 1, 0);
+            }
+        }
+        updateWorldTransform() {
+            if (!this._btWheelInfo)
+                return;
+            const bt = btStatics.bt;
+            const outState = this._state;
+            bt.btRaycastVehicle_updateWheelTransform(this._btVehicle, this._wheelIndex, true);
+            const transform = bt.btWheelInfo_getWorldTransform(this._btWheelInfo);
+            if (transform) {
+                const origin = bt.btTransform_getOrigin(transform);
+                const rotation = bt.btTransform_getRotation(transform);
+                outState.worldPosition.setValue(bt.btVector3_x(origin), bt.btVector3_y(origin), bt.btVector3_z(origin));
+                outState.worldRotation.setValue(bt.btQuaternion_x(rotation), bt.btQuaternion_y(rotation), bt.btQuaternion_z(rotation), bt.btQuaternion_w(rotation));
+                Laya.Quaternion.multiply(outState.worldRotation, btWheelCollider._nativeWheelBasisInverse, outState.worldRotation);
+            }
+        }
+        readState(outState, _fixedDeltaTime) {
+            const state = this._state;
+            outState.isContact = state.isContact;
+            outState.otherCollider = state.otherCollider;
+            state.contactPos.cloneTo(outState.contactPos);
+            state.contactNormal.cloneTo(outState.contactNormal);
+            outState.currentSuspensionLength = state.currentSuspensionLength;
+            outState.suspensionForce = state.suspensionForce;
+            outState.skidInfo = state.skidInfo;
+            outState.rotation = state.rotation;
+            outState.angularSpeed = state.angularSpeed;
+            outState.rpm = state.rpm;
+            state.worldPosition.cloneTo(outState.worldPosition);
+            state.worldRotation.cloneTo(outState.worldRotation);
+        }
+        resetState() {
+            this._clearState(this._state);
+        }
+        _clearState(outState) {
+            outState.isContact = false;
+            outState.otherCollider = null;
+            outState.currentSuspensionLength = 0;
+            outState.suspensionForce = 0;
+            outState.skidInfo = 1;
+            outState.rotation = 0;
+            outState.angularSpeed = 0;
+            outState.rpm = 0;
+            outState.contactPos.setValue(0, 0, 0);
+            outState.contactNormal.setValue(0, 1, 0);
+            outState.worldPosition.setValue(0, 0, 0);
+            outState.worldRotation.setValue(0, 0, 0, 1);
+        }
+        destroy() {
+            this.resetState();
+            this._btWheelInfo = 0;
+            this._btVehicle = 0;
+            this._wheelIndex = -1;
+        }
+    }
+    btWheelCollider._nativeWheelBasisInverse = new Laya.Quaternion(0, -1, 0, 0);
+
+    class btVehicle {
+        constructor(_physicsManager, desc) {
+            this._physicsManager = _physicsManager;
+            this._btVehicle = 0;
+            this._btPhysicsWorld = 0;
+            this._wheels = [];
+            this._inputs = [];
+            this._enabled = false;
+            this._destroyed = false;
+            this._wakeRequested = false;
+            this._fixedDeltaTime = 1 / 60;
+            this._build(desc);
+        }
+        _build(desc) {
+            const bt = btStatics.bt;
+            this._vehicleBody = desc.chassis;
+            this._btPhysicsWorld = this._physicsManager._btDiscreteDynamicsWorld;
+            const rigidBody = this._vehicleBody._btCollider;
+            if (!this._btPhysicsWorld || !rigidBody)
+                throw new Error("Bullet vehicle requires an active dynamics world and chassis rigid body.");
+            this._btVehicle = bt.btRaycastVehicle_create(this._btPhysicsWorld, rigidBody);
+            if (!this._btVehicle)
+                throw new Error("Bullet failed to create btRaycastVehicle.");
+            bt.btRaycastVehicle_setCoordinateSystem(this._btVehicle, 0, 1, 2);
+            const mass = Math.max(desc.chassisMass, 0.0001);
+            for (let i = 0; i < desc.wheels.length; i++) {
+                const wheelDesc = desc.wheels[i];
+                const wheelInfo = bt.btRaycastVehicle_addWheel(this._btVehicle, wheelDesc.centerX, wheelDesc.centerY, wheelDesc.centerZ, 0, -1, 0, -1, 0, 0, wheelDesc.suspensionRestLength, wheelDesc.radius, wheelDesc.springStiffness / mass, wheelDesc.compressionDamping / mass, wheelDesc.reboundDamping / mass, wheelDesc.frictionStiffness, wheelDesc.maxSuspensionTravel * 100.0, wheelDesc.maxSuspensionForce, false);
+                if (!wheelInfo) {
+                    this.destroy();
+                    throw new Error("Bullet failed to create vehicle wheel " + i + ".");
+                }
+                const wheel = new btWheelCollider(this._btVehicle, i);
+                wheel.applyConfig(wheelDesc, desc.chassisMass);
+                this._wheels.push(wheel);
+                this._inputs.push({ motorForce: 0, brakeForce: 0, steerAngle: 0 });
+            }
+        }
+        setEnabled(value) {
+            if (this._destroyed || this._enabled === value)
+                return;
+            const bt = btStatics.bt;
+            if (value)
+                bt.btDynamicsWorld_addAction(this._btPhysicsWorld, this._btVehicle);
+            else
+                bt.btDynamicsWorld_removeAction(this._btPhysicsWorld, this._btVehicle);
+            this._enabled = value;
+        }
+        applyConfig(desc, changes) {
+            if (this._destroyed || desc.chassis !== this._vehicleBody)
+                return Laya.VehicleApplyResult.Invalid;
+            if (desc.wheels.length !== this._wheels.length)
+                return Laya.VehicleApplyResult.RebuildRequired;
+            if (!this._validateDesc(desc))
+                return Laya.VehicleApplyResult.Invalid;
+            if ((changes.flags & Laya.VehicleChangeFlags.ChassisMass) !== 0) {
+                for (let i = 0; i < this._wheels.length; i++)
+                    this._wheels[i].applyConfig(desc.wheels[i], desc.chassisMass);
+            }
+            else {
+                for (let i = 0; i < changes.changedWheelIndices.length; i++) {
+                    const index = changes.changedWheelIndices[i];
+                    this._wheels[index].applyConfig(desc.wheels[index], desc.chassisMass);
+                }
+            }
+            return Laya.VehicleApplyResult.Applied;
+        }
+        _validateDesc(desc) {
+            if (!(desc.chassisMass > 0) || !Number.isFinite(desc.chassisMass))
+                return false;
+            for (let i = 0; i < desc.wheels.length; i++) {
+                const wheel = desc.wheels[i];
+                if (!this._validateWheel(wheel))
+                    return false;
+            }
+            return true;
+        }
+        _validateWheel(wheel) {
+            return Number.isFinite(wheel.centerX) && Number.isFinite(wheel.centerY) && Number.isFinite(wheel.centerZ)
+                && Number.isFinite(wheel.radius) && wheel.radius > 0
+                && Number.isFinite(wheel.suspensionRestLength) && wheel.suspensionRestLength >= 0
+                && Number.isFinite(wheel.maxSuspensionTravel) && wheel.maxSuspensionTravel >= 0
+                && Number.isFinite(wheel.springStiffness) && wheel.springStiffness >= 0
+                && Number.isFinite(wheel.compressionDamping) && wheel.compressionDamping >= 0
+                && Number.isFinite(wheel.reboundDamping) && wheel.reboundDamping >= 0
+                && Number.isFinite(wheel.maxSuspensionForce) && wheel.maxSuspensionForce >= 0
+                && Number.isFinite(wheel.frictionStiffness) && wheel.frictionStiffness >= 0;
+        }
+        setInputs(inputs) {
+            if (this._destroyed)
+                return;
+            const count = Math.min(inputs.length, this._wheels.length);
+            for (let i = 0; i < count; i++) {
+                if (this._inputs[i].steerAngle !== inputs[i].steerAngle)
+                    this._wakeRequested = true;
+                this._inputs[i].motorForce = inputs[i].motorForce;
+                this._inputs[i].brakeForce = inputs[i].brakeForce;
+                this._inputs[i].steerAngle = inputs[i].steerAngle;
+            }
+            for (let i = count; i < this._inputs.length; i++) {
+                if (this._inputs[i].steerAngle !== 0)
+                    this._wakeRequested = true;
+                this._inputs[i].motorForce = 0;
+                this._inputs[i].brakeForce = 0;
+                this._inputs[i].steerAngle = 0;
+            }
+        }
+        beforePhysicsStep(fixedDeltaTime) {
+            if (!this._enabled || this._destroyed)
+                return;
+            this._fixedDeltaTime = fixedDeltaTime;
+            const bt = btStatics.bt;
+            let shouldWake = this._wakeRequested;
+            this._wakeRequested = false;
+            for (let i = 0; i < this._inputs.length; i++) {
+                const input = this._inputs[i];
+                shouldWake || (shouldWake = input.motorForce !== 0 || input.brakeForce !== 0);
+                bt.btRaycastVehicle_applyEngineForce(this._btVehicle, input.motorForce, i);
+                bt.btRaycastVehicle_setBrake(this._btVehicle, input.brakeForce * fixedDeltaTime, i);
+                bt.btRaycastVehicle_setSteeringValue(this._btVehicle, input.steerAngle, i);
+            }
+            if (shouldWake)
+                this._vehicleBody.wakeUp();
+        }
+        afterPhysicsStep(fixedDeltaTime) {
+            if (!this._enabled || this._destroyed)
+                return;
+            this._fixedDeltaTime = fixedDeltaTime;
+            for (let i = 0; i < this._wheels.length; i++)
+                this._wheels[i].capturePhysicsState(fixedDeltaTime);
+            for (let i = 0; i < this._wheels.length; i++)
+                this._wheels[i].updateWorldTransform();
+        }
+        readStates(outStates) {
+            const count = Math.min(outStates.length, this._wheels.length);
+            for (let i = 0; i < count; i++)
+                this._wheels[i].readState(outStates[i], this._fixedDeltaTime);
+        }
+        reset() {
+            if (this._destroyed)
+                return;
+            btStatics.bt.btRaycastVehicle_resetSuspension(this._btVehicle);
+            for (let i = 0; i < this._wheels.length; i++) {
+                this._wheels[i].resetState();
+                this._inputs[i].motorForce = 0;
+                this._inputs[i].brakeForce = 0;
+                this._inputs[i].steerAngle = 0;
+                btStatics.bt.btRaycastVehicle_applyEngineForce(this._btVehicle, 0, i);
+                btStatics.bt.btRaycastVehicle_setBrake(this._btVehicle, 0, i);
+                btStatics.bt.btRaycastVehicle_setSteeringValue(this._btVehicle, 0, i);
+            }
+            this._vehicleBody.wakeUp();
+        }
+        destroy() {
+            if (this._destroyed)
+                return;
+            this.setEnabled(false);
+            for (let i = 0; i < this._wheels.length; i++)
+                this._wheels[i].destroy();
+            this._wheels.length = 0;
+            this._inputs.length = 0;
+            if (this._btVehicle)
+                btStatics.bt.btRaycastVehicle_destroy(this._btVehicle);
+            this._btVehicle = 0;
+            this._btPhysicsWorld = 0;
+            this._vehicleBody = null;
+            this._physicsManager = null;
+            this._destroyed = true;
+        }
+    }
+
     class BulletInteractive {
         constructor(mem, dbgline) {
             this.drawLine = (sx, sy, sz, ex, ey, ez, color) => {
@@ -2200,6 +2941,9 @@
             btPhysicsManager._tempVector30 = new Laya.Vector3();
         }
         constructor(physicsSettings) {
+            this._physicsStepListeners = [];
+            this._pendingPhysicsOperations = [];
+            this._inPhysicsUpdate = false;
             this.maxSubSteps = 1;
             this.fixedTimeStep = 1.0 / 60.0;
             this.enableCCD = false;
@@ -2227,7 +2971,7 @@
             bt.btOverlappingPairCache_setInternalGhostPairCallback(bt.btDbvtBroadphase_getOverlappingPairCache(this._btBroadphase), bt.btGhostPairCallback_create());
             var conFlags = physicsSettings.flags;
             if (conFlags & btStatics.PHYSICSENGINEFLAGS_COLLISIONSONLY) {
-                this._btCollisionWorld = new bt.btCollisionWorld(this._btDispatcher, this._btBroadphase, this._btCollisionConfiguration);
+                this._btCollisionWorld = bt.btCollisionWorld_create(this._btDispatcher, this._btBroadphase, this._btCollisionConfiguration);
             }
             else if (conFlags & btStatics.PHYSICSENGINEFLAGS_SOFTBODYSUPPORT) {
                 throw "PhysicsSimulation:SoftBody processing is not yet available";
@@ -2265,8 +3009,17 @@
         _simulate(deltaTime) {
             this._updatedRigidbodies = 0;
             this.dt = deltaTime;
-            if (this._btDiscreteDynamicsWorld)
-                btStatics.bt.btDiscreteDynamicsWorld_stepSimulation(this._btDiscreteDynamicsWorld, deltaTime, this.maxSubSteps, this.fixedTimeStep);
+            if (this._btDiscreteDynamicsWorld) {
+                try {
+                    for (const character of this._characters)
+                        character._beforeSimulation(this._btCollisionWorld);
+                    btStatics.bt.btDiscreteDynamicsWorld_stepSimulation(this._btDiscreteDynamicsWorld, deltaTime, 1, deltaTime);
+                }
+                finally {
+                    for (const character of this._characters)
+                        character._afterSimulation();
+                }
+            }
             else
                 btStatics.bt.PerformDiscreteCollisionDetection(this._btCollisionWorld);
             this._updateCount++;
@@ -2514,11 +3267,12 @@
             btStatics.bt.btVector3_setValue(btGravity, gravity.x, gravity.y, gravity.z);
             btStatics.bt.btDiscreteDynamicsWorld_setGravity(this._btDiscreteDynamicsWorld, btGravity);
         }
-        addCollider(collider) {
+        addCollider(collider, deriveTransform = true) {
             let btcollider = collider;
             if (btcollider._isSimulate || !collider.active)
                 return;
-            btcollider._derivePhysicsTransformation(true);
+            if (deriveTransform)
+                btcollider._derivePhysicsTransformation(true);
             switch (btcollider._type) {
                 case exports.btColliderType.StaticCollider:
                     btStatics.bt.btCollisionWorld_addCollisionObject(this._btCollisionWorld, btcollider._btCollider, btcollider._collisionGroup, btcollider._canCollideWith);
@@ -2557,6 +3311,8 @@
             this._currentConstraint[joint._id] = joint;
         }
         removeJoint(joint) {
+            if (this._currentConstraint[joint._id] !== joint)
+                return;
             if (!this._btDiscreteDynamicsWorld)
                 throw "Cannot perform this action when the physics engine is set to CollisionsOnly";
             btStatics.bt.btCollisionWorld_removeConstraint(this._btDiscreteDynamicsWorld, joint._btJoint);
@@ -2565,9 +3321,34 @@
         update(elapsedTime) {
             this._updatePhysicsTransformToRender();
             btCollider._addUpdateList = false;
-            this._simulate(elapsedTime);
+            const fixedDeltaTime = this.fixedTimeStep > 0 ? this.fixedTimeStep : elapsedTime;
+            const requestedSteps = fixedDeltaTime > 0 && elapsedTime > 0
+                ? Math.max(1, Math.round(elapsedTime / fixedDeltaTime)) : 0;
+            const stepCount = Math.min(Math.max(1, this.maxSubSteps), requestedSteps);
+            try {
+                this._flushPendingPhysicsOperations();
+                for (let step = 0; step < stepCount; step++) {
+                    this._inPhysicsUpdate = true;
+                    try {
+                        const listeners = this._physicsStepListeners;
+                        for (let i = 0, n = listeners.length; i < n; i++)
+                            listeners[i].beforePhysicsStep(fixedDeltaTime);
+                        this._simulate(fixedDeltaTime);
+                        for (let i = 0, n = listeners.length; i < n; i++)
+                            listeners[i].afterPhysicsStep(fixedDeltaTime);
+                    }
+                    finally {
+                        this._inPhysicsUpdate = false;
+                        this._flushPendingPhysicsOperations();
+                    }
+                }
+            }
+            finally {
+                this._inPhysicsUpdate = false;
+                this._flushPendingPhysicsOperations();
+                btCollider._addUpdateList = true;
+            }
             this._updateCharacters();
-            btCollider._addUpdateList = true;
             this._updateCollisions();
             this.dispatchCollideEvent();
         }
@@ -2790,6 +3571,12 @@
             }
         }
         destroy() {
+            this._inPhysicsUpdate = false;
+            this._flushPendingPhysicsOperations();
+            for (const id in this._currentConstraint)
+                this._currentConstraint[id].destroy();
+            this._physicsStepListeners.length = 0;
+            this._pendingPhysicsOperations.length = 0;
             var bt = btStatics.bt;
             if (this._btDiscreteDynamicsWorld) {
                 bt.btCollisionWorld_destroy(this._btDiscreteDynamicsWorld);
@@ -2841,6 +3628,32 @@
             if (idx !== -1)
                 characters.splice(idx, 1);
         }
+        addPhysicsStepListener(listener) {
+            this.deferPhysicsOperation(() => {
+                if (this._physicsStepListeners.indexOf(listener) === -1)
+                    this._physicsStepListeners.push(listener);
+            });
+        }
+        removePhysicsStepListener(listener) {
+            this.deferPhysicsOperation(() => {
+                const index = this._physicsStepListeners.indexOf(listener);
+                if (index !== -1)
+                    this._physicsStepListeners.splice(index, 1);
+            });
+        }
+        deferPhysicsOperation(operation) {
+            if (this._inPhysicsUpdate)
+                this._pendingPhysicsOperations.push(operation);
+            else
+                operation();
+        }
+        _flushPendingPhysicsOperations() {
+            while (this._pendingPhysicsOperations.length > 0) {
+                const operations = this._pendingPhysicsOperations.splice(0, this._pendingPhysicsOperations.length);
+                for (let i = 0; i < operations.length; i++)
+                    operations[i]();
+            }
+        }
     }
 
     class btPhysicsCreateUtil {
@@ -2863,24 +3676,37 @@
             this._physicsEngineCapableMap.set(Laya.EPhysicsCapable.Physics_SpringJoint, true);
             this._physicsEngineCapableMap.set(Laya.EPhysicsCapable.Physics_HingeJoint, true);
             this._physicsEngineCapableMap.set(Laya.EPhysicsCapable.Physics_CreateCorveMesh, true);
+            this._physicsEngineCapableMap.set(Laya.EPhysicsCapable.Physics_VehicleSystem, true);
         }
         getPhysicsCapable(value) {
             return this._physicsEngineCapableMap.get(value);
         }
         initialize() {
             let physics3D = window.Physics3D;
-            physics3D(Math.max(16, Laya.Config3D.defaultPhysicsMemory) * 16, new BulletInteractive(null, null)).then(() => {
-                btStatics.bt = window.Physics3D;
-                this.initPhysicsCapable();
-                btPhysicsManager.init();
-                btCollider.__init__();
-                btRigidBodyCollider.__init__();
-                btStaticCollider.__init__();
-                btCharacterCollider.__init__();
-                btMeshColliderShape.__init__();
-                return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                try {
+                    const initialization = physics3D(Math.max(16, Laya.Config3D.defaultPhysicsMemory) * 16, new BulletInteractive(null, null));
+                    initialization.then(() => {
+                        try {
+                            btStatics.bt = window.Physics3D;
+                            this.initPhysicsCapable();
+                            btPhysicsManager.init();
+                            btCollider.__init__();
+                            btRigidBodyCollider.__init__();
+                            btStaticCollider.__init__();
+                            btCharacterCollider.__init__();
+                            btMeshColliderShape.__init__();
+                            resolve();
+                        }
+                        catch (error) {
+                            reject(error);
+                        }
+                    }, reject);
+                }
+                catch (error) {
+                    reject(error);
+                }
             });
-            return Promise.resolve();
         }
         createPhysicsManger(physicsSettings) {
             return new btPhysicsManager(physicsSettings);
@@ -2957,6 +3783,9 @@
             }
             return mesh.__convexMesh;
         }
+        createVehicle(manager, desc) {
+            return new btVehicle(manager, desc);
+        }
     }
     Laya.Laya3D.PhysicsCreateUtil = new btPhysicsCreateUtil();
 
@@ -2982,6 +3811,8 @@
     exports.btSpringJoint = btSpringJoint;
     exports.btStaticCollider = btStaticCollider;
     exports.btStatics = btStatics;
+    exports.btVehicle = btVehicle;
+    exports.btWheelCollider = btWheelCollider;
     exports.convertToBulletVec3 = convertToBulletVec3;
 
 })(window.Laya = window.Laya || {}, Laya);
@@ -2989,14 +3820,12 @@
 
 var WASI_STDOUT_FILENO = 1;
 var WASI_ESUCCESS = 0;
-function locateFile(path) {
-  return scriptDirectory + path;
-}
-let scriptDirectory = "";
-if(typeof document!=="undefined") {
-  scriptDirectory = (document.currentScript && document.currentScript.src) ? document.currentScript.src : "";
-  if(scriptDirectory)
-    scriptDirectory = scriptDirectory.substr(0, scriptDirectory.replace(/[?#].*/, "").lastIndexOf("/") + 1)
+var scriptDirectory = "";
+
+if (typeof document !== "undefined") {
+  scriptDirectory = document.currentScript && document.currentScript.src ? document.currentScript.src : "";
+  if (scriptDirectory)
+    scriptDirectory = scriptDirectory.substr(0, scriptDirectory.replace(/[?#].*/, "").lastIndexOf("/") + 1);
 }
 
 if (window.conch && window.layaConchBullet) {
@@ -3004,70 +3833,65 @@ if (window.conch && window.layaConchBullet) {
     window.conch.setGetWorldTransformFunction(interactive.getWorldTransform);
     window.conch.setSetWorldTransformFunction(interactive.setWorldTransform);
     var conchBullet = window.layaConchBullet;
-    conchBullet.then = (complete) => {
+    conchBullet.then = function(complete) {
       complete();
     };
     window.Physics3D = conchBullet;
     return conchBullet;
   };
-  }
-  else{
-window.Physics3D = function (initialMemory, interactive) {
-    let mem = new Laya.WasmAdapter.Memory({ initial: initialMemory });
-    let imports ={
+} else {
+  window.Physics3D = function(initialMemory, interactive) {
+    var mem = new Laya.WasmAdapter.Memory({ initial: initialMemory });
+    var imports = {
       LayaAirInteractive: interactive,
       wasi_snapshot_preview1: {
-        fd_close: () => { },
-        fd_seek: () => { },
-        fd_fdstat_get: (fd, bufPtr) => { },
-        fd_prestat_get: () => { },
-        fd_prestat_dir_name: (fd, bufPtr) => { },
-        fd_write: (fd, iovs, iovsLen, nwritten) => {
-          if (fd == 1) {//stdout
+        fd_close: function() { return WASI_ESUCCESS; },
+        fd_seek: function() { return WASI_ESUCCESS; },
+        fd_fdstat_get: function() { return WASI_ESUCCESS; },
+        fd_prestat_get: function() { return WASI_ESUCCESS; },
+        fd_prestat_dir_name: function() { return WASI_ESUCCESS; },
+        fd_write: function(fd, iovs, iovsLen, nwritten) {
+          if (fd === WASI_STDOUT_FILENO) {
             var view = new DataView(mem.buffer);
-            var ptr = iovs; //实际iovs是一个数组 [{ptr,len},{ptr,len}...]
-            var buf = view.getUint32(ptr, true);
-            var bufLen = view.getUint32(ptr + 4, true);
-            let u8buff = new Uint8Array(mem.buffer, buf, bufLen);
-            let txdec = new TextDecoder();
-            let str = txdec.decode(u8buff);
-            console.log(str);
-            view.setUint32(nwritten, bufLen, true);
+            var bufferPointer = view.getUint32(iovs, true);
+            var bufferLength = view.getUint32(iovs + 4, true);
+            var bytes = new Uint8Array(mem.buffer, bufferPointer, bufferLength);
+            console.log(new TextDecoder().decode(bytes));
+            view.setUint32(nwritten, bufferLength, true);
           }
           return WASI_ESUCCESS;
         },
-        proc_exit: () => { },
-        path_open: () => { },
-        path_filestat_get: () => { },
-        path_unlink_file: () => { },
-        path_remove_directory: () => { },
-        path_create_directory: () => { },
-        fd_fdstat_set_flags: () => { },
-        fd_read: () => { },
-        clock_time_get: () => { },
-        environ_sizes_get: () => { },
-        environ_get: () => { },
-        __wasm_lpad_context: () => { }
+        proc_exit: function() { return WASI_ESUCCESS; },
+        path_open: function() { return WASI_ESUCCESS; },
+        path_filestat_get: function() { return WASI_ESUCCESS; },
+        path_unlink_file: function() { return WASI_ESUCCESS; },
+        path_remove_directory: function() { return WASI_ESUCCESS; },
+        path_create_directory: function() { return WASI_ESUCCESS; },
+        fd_fdstat_set_flags: function() { return WASI_ESUCCESS; },
+        fd_read: function() { return WASI_ESUCCESS; },
+        clock_time_get: function() { return WASI_ESUCCESS; },
+        environ_sizes_get: function() { return WASI_ESUCCESS; },
+        environ_get: function() { return WASI_ESUCCESS; },
+        __wasm_lpad_context: function() { return WASI_ESUCCESS; }
       },
-      env: {
-        memory: mem,
-      }
+      env: { memory: mem }
     };
 
-    let p;
-    if(Laya.WasmAdapter.instantiateWasm) {
-      p = Laya.WasmAdapter.instantiateWasm("bullet.wasm", imports);
-    }
-    else {
-      p = fetch((Laya.WasmAdapter.locateFile || Laya.WasmAdapter.locateFileDefault)("bullet.wasm", scriptDirectory)).then((response) =>
-        response.arrayBuffer().then((buffer) => WebAssembly.instantiate(buffer, imports)));
+    var promise;
+    if (Laya.WasmAdapter.instantiateWasm) {
+      promise = Laya.WasmAdapter.instantiateWasm("bullet.wasm", imports);
+    } else {
+      var locate = Laya.WasmAdapter.locateFile || Laya.WasmAdapter.locateFileDefault;
+      promise = fetch(locate("bullet.wasm", scriptDirectory))
+        .then(function(response) { return response.arrayBuffer(); })
+        .then(function(buffer) { return WebAssembly.instantiate(buffer, imports); });
     }
 
-    return p.then((physics3D) => {
-      let bt = window.Physics3D = physics3D.instance.exports;
-      if (bt.main) {
+    return promise.then(function(physics3D) {
+      var bt = window.Physics3D = physics3D.instance.exports;
+      if (bt.main)
         bt.main();
-      }
+      return bt;
     });
+  };
 }
-  }

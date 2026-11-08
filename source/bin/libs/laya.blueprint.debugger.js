@@ -308,7 +308,14 @@
             if (_runTimeData.debuggerPause == exports.BpDebuggerRunType.stepOut) {
                 _runTimeData.debuggerPause = exports.BpDebuggerRunType.none;
                 if (this.staticNext) {
+                    const continuation = BP.BlueprintPromise.create();
+                    continuation.wait(() => {
+                        continuation.recover();
+                        super._executeFun(context, cb, parmsArray, runner);
+                    });
                     context.debuggerManager.pause(context, this, parmsArray, runner);
+                    context.debuggerManager.context.next = () => continuation.complete();
+                    return;
                 }
             }
             super._executeFun(context, cb, parmsArray, runner);

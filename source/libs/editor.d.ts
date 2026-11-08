@@ -174,18 +174,12 @@ declare global {
         export interface IWebIFrameOptions {
             /** Whether rendering is throttled while the frame target is inactive. Defaults to true. */
             backgroundThrottling?: boolean;
-
-            /**
-             * Restrict the frame to passive content. Script execution, forms, popups,
-             * downloads and top-level navigation are disabled while editor-side DOM
-             * access remains available for theme, focus and drag/drop integration.
-             */
-            sandbox?: boolean;
         }
 
         /**
          * A DOM iframe managed by the editor and hosted in the current renderer process.
          * Use {@link loaded} or await {@link loadUntilReady} before accessing its document.
+         * Cross-origin frames remain subject to DOM access restrictions; communicate with postMessage.
          */
         export interface IWebIFrame extends IWebFrameBase {
             /**
@@ -346,6 +340,10 @@ declare global {
 
         /** General file-system, path, timing, string and process helpers exposed by the editor. */
         export interface IUtils {
+            /** Resolve a native save-dialog path back into assets, using filesystem IO.
+             * Returns null for locations outside assets or ambiguous directory links.
+             */
+            resolveAssetSavePath(filePath: string, defaultPath?: string): Promise<string | null>;
             /**
              * Parse string content from a file to a JSON object.
              * @param filePath The path of the file. 
@@ -913,6 +911,16 @@ declare global {
              * ``` 
              */
             decompressUUID(str: string): string;
+        }
+
+        /** Standalone UBB source editor with tag controls, live preview, and clipboard copying. */
+        export interface IUBBEditDialog extends IDialog {
+            /**
+             * Opens the editor. Copy writes the current source to the clipboard and keeps the dialog open.
+             * @param popupOwner Element or widget used to position the dialog.
+             * @param text Initial UBB source.
+             */
+            show(popupOwner?: DialogPopupOwner, text?: string): Promise<void>;
         }
 
         /** Prefix used by reflected shader type names. */
@@ -2317,6 +2325,82 @@ declare global {
              */
             renderTemplateFileAsync(filePath: string, templateArgs?: Record<string, any>, options?: RenderTemplateOptions): Promise<void>;
         }
+        /** Options for a plugin entry in the bottom-right status bar. */
+        export interface IStatusBarItemOptions {
+            /** Icon URL, res:// UUID, or logical editorResources/<plugin>/... path. */
+            icon?: string;
+            /** Optional text displayed next to the icon. Supports i18n: translation keys. */
+            text?: string;
+            /** Hover tooltip and accessible label. Supports i18n: translation keys. */
+            tooltip?: string;
+            /** Higher values appear further left. Equal priorities sort by ID in ascending order, independent of registration or reload order. Defaults to 0. */
+            priority?: number;
+            /** Whether the entry is visible. Defaults to true. */
+            visible?: boolean;
+            /** Whether the entry can be clicked. Defaults to true. */
+            enabled?: boolean;
+            /** Apply the editor's light/dark icon filter. Set false for colored artwork. Defaults to true. */
+            monochrome?: boolean;
+            /** Optional semantic highlight for the entry. */
+            tone?: "accent" | "warning" | "error";
+            /** Invoked when the entry is activated by mouse or keyboard. */
+            onClick?: () => void | Promise<void>;
+        }
+
+        /** A plugin-owned status bar entry. Disposing an entry is safe to repeat. */
+        export interface IStatusBarItem {
+            /** Globally unique identifier, prefixed with the plugin or company name. */
+            readonly id: string;
+            /** Current immutable options. Change options with update(). */
+            readonly options: Readonly<IStatusBarItemOptions>;
+            /** Merge changed options into this entry. Set an optional value to undefined to clear it.
+             * @param options The changed options.
+             */
+            update(options: Partial<IStatusBarItemOptions>): void;
+            /** Show this entry. */
+            show(): void;
+            /** Hide this entry without disposing it. */
+            hide(): void;
+            /** Remove this entry and release its click handler. */
+            dispose(): void;
+        }
+
+        /** Plugin icon and command entries in the main editor's bottom-right status bar. */
+        export interface IStatusBar {
+            /**
+             * Create an entry. Call from IEditor.onLoad to associate it with the plugin bundle;
+             * associated entries are automatically disposed when that bundle reloads or unloads.
+             * For entries created later (for example in a click handler), dispose them in IEditor.onUnload.
+             * @param id Globally unique, plugin-prefixed identifier. Duplicate IDs throw an error.
+             * @param options Initial entry options. Entries are visible by default.
+             * @returns The entry handle.
+             * @example
+             * ```
+             * class MyPlugin {
+             *     ＠IEditor.onLoad
+             *     static onLoad() {
+             *         Editor.statusBar.createItem("com.example.tools.open", {
+             *             icon: "editorResources/my-plugin/tools.svg",
+             *             text: "Tools",
+             *             tooltip: "Open My Tools",
+             *             onClick: () => { Editor.panelManager.showPanel("com.example.ToolsPanel"); }
+             *         });
+             *     }
+             * }
+             * ```
+             */
+            createItem(id: string, options?: IStatusBarItemOptions): IStatusBarItem;
+            /** Find an existing entry, including hidden entries.
+             * @param id The identifier of the entry.
+             * @returns The entry, or undefined when it does not exist.
+             */
+            getItem(id: string): IStatusBarItem | undefined;
+            /** Visible entries in display order. The array is stable until an entry changes. */
+            readonly items: ReadonlyArray<IStatusBarItem>;
+            /** Entry creation, update, visibility, and disposal event. */
+            readonly onChanged: IDelegate<() => void>;
+        }
+
         /**
          * `IEditor.StateGraph` — an editor-agnostic *state-machine* graph editor:
          * pinless nodes connected center-to-center, straight links with a mid-line
@@ -2884,6 +2968,94 @@ declare global {
             show(popupOwner: DialogPopupOwner, typeName?: string): Promise<void>;
         }
 
+        /** Editor-wide encrypted storage and host-authenticated HTTP. Names are not plugin permissions. */
+        export namespace ISecretStorage {
+            type StorageScope = "global" | "environment";
+
+            interface StorageOptions {
+                /** Global by default. Environment keeps separate values for the current development and production modes. */
+                scope?: StorageScope;
+            }
+
+            /** Authentication is fixed when saving the secret, not when sending each request. */
+            type Authentication =
+                | { type: "bearer" }
+                | { type: "header"; name: string; prefix?: string }
+                | { type: "query"; name: string }
+                | { type: "body"; name: string };
+
+            interface SecretOptions extends StorageOptions {
+                /** Base for relative request URLs. This scheme and hostname are always allowed, regardless of port. */
+                baseURL: string;
+                /** Additional HTTP(S) origins or domains, e.g. https://upload.example.com or *.example.com. Ports are ignored; no paths.
+                 * Subdomains of layaair.com, layabox.com and layaverse.com are always allowed. */
+                allowedOrigins?: string[];
+                /** Defaults to Bearer authentication. */
+                auth?: Authentication;
+            }
+
+            type QueryValue = string | number | boolean | null | undefined;
+            /** Repeated names are supported, e.g. multiple `image[]` fields. */
+            type MultipartPart =
+                | { name: string; value: string }
+                | { name: string; data: Uint8Array; filename: string; contentType?: string }
+                | { name: string; filePath: string; filename?: string; contentType?: string };
+
+            interface RequestOptions {
+                method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS";
+                /** Provider-specific headers are preserved; authentication headers are host-controlled. */
+                headers?: Record<string, string>;
+                query?: Record<string, QueryValue | QueryValue[]>;
+                /** JSON by default; use MultipartPart[] for multipart, a record for form, Uint8Array for binary. */
+                body?: unknown;
+                bodyType?: "json" | "text" | "binary" | "multipart" | "form";
+                /** JSON by default. Stream returns a ReadableStream<Uint8Array> (SSE/NDJSON/raw bytes). */
+                responseType?: "json" | "text" | "arrayBuffer" | "stream";
+                /** Opt into the shared task queue and isolated transport. Defaults to false. */
+                isTask?: boolean;
+                /** Active operation including stream consumption; defaults to 10 minutes. Long-task queue wait is excluded. */
+                timeoutMs?: number;
+                /** Defaults to 128 MiB, including streamed responses. */
+                maxResponseBytes?: number;
+                /** Cancels transport only; use the provider's cancel endpoint to cancel a server-side job. */
+                signal?: AbortSignal;
+            }
+
+            interface Response<T = any> {
+                status: number;
+                /** Lowercase header names; includes upload locations, request IDs and rate-limit information. */
+                headers: Record<string, string>;
+                /** Complete provider body, without business-code interpretation, with the used secret redacted. */
+                data: T;
+            }
+
+            /** Save a user secret. */
+            function set(name: string, value: string, options: SecretOptions): Promise<boolean>;
+            /** Check whether a user secret is stored or the name is the built-in AIGC secret, without resolving its value. */
+            function has(name: string): Promise<boolean>;
+            /** Remove a user secret. */
+            function remove(name: string, options?: StorageOptions): Promise<void>;
+            /**
+             * Send an HTTP request using a named secret. Relative paths and absolute URLs on the saved origins
+             * are accepted, including resumable-upload URLs. Redirects and automatic retries are disabled.
+             * HTTP errors are returned to the business; transport/decoding errors reject without credential details.
+             * Consume or cancel returned streams. No plaintext getter is exposed.
+             */
+            function request<T = any>(name: string, url: string, options?: RequestOptions): Promise<Response<T>>;
+        }
+
+        /** Snapshot of resource import or package installation progress. */
+        export interface IImportProgress {
+            /** Whether progress should be displayed. */
+            readonly visible: boolean;
+            /** Current operation or resource name. */
+            readonly prompt: string;
+            /** Completed work, in the same units as max. */
+            readonly value: number;
+            /** Total work for the current batch. */
+            readonly max: number;
+        }
+
         /** Main-process facade for opening, saving, activating and playing Scene-process scenes. */
         export interface ISceneManager extends gui.EventDispatcher {
             /**
@@ -2900,6 +3072,12 @@ declare global {
              * Triggered when properties of a node is changed.
              */
             readonly onNodeChanged: IDelegate<(node: IMyNode, datapath: ReadonlyArray<string>, value: any, oldValue: any) => void>;
+
+            /** Current resource import or package installation progress. */
+            readonly importProgress: IImportProgress;
+
+            /** Triggered when the import progress snapshot changes. */
+            readonly onImportProgressChanged: IDelegate<() => void>;
 
             /**
              * Multiple scenes can be opened at the same time, but only one scene is active.
@@ -2963,7 +3141,8 @@ declare global {
             setPlaying(playing: boolean): Promise<boolean>;
 
             /**
-             * Whether any scene is playing.
+             * Whether any scene is playing. The `playing-changed` event is emitted when
+             * this changes, including before the playing scene's first frame is ready.
              */
             readonly playing: boolean;
 
@@ -3743,6 +3922,12 @@ declare global {
             closePopup(): void;
         }
 
+        /** Preferred side and alignment of an anchored popup. */
+        export type PopupPlacement = "top" | "top-start" | "top-end"
+            | "right" | "right-start" | "right-end"
+            | "bottom" | "bottom-start" | "bottom-end"
+            | "left" | "left-start" | "left-end";
+
         /** Anchored popup that portals into the owner document or shadow root. */
         export interface PopupProps {
             /** Anchor element used for positioning. If omitted, use renderTrigger's ref. */
@@ -3755,6 +3940,8 @@ declare global {
             maxHeight?: number;
             /** Gap in pixels between the anchor and the popup. */
             gap?: number;
+            /** Preferred placement relative to the anchor. Flips to the opposite side when needed. Defaults to bottom-start. */
+            placement?: PopupPlacement;
             /** CSS class for the popup element. */
             className?: string;
             /** Called when the popup closes normally, such as by outside click. */
@@ -3870,6 +4057,24 @@ declare global {
             lineWrapping?: boolean;
         }
 
+        /** Character offsets of the primary code-editor selection. */
+        export interface CodeEditorSelection {
+            /** Fixed end of the selection. */
+            anchor: number;
+            /** Moving end of the selection (the caret). */
+            head: number;
+        }
+
+        /** Imperative editing operations that preserve the editor's undo history. */
+        export interface CodeEditorHandle {
+            /** Reads the current primary selection. */
+            getSelection(): CodeEditorSelection;
+            /** Replaces a character range and optionally selects part of the resulting document. */
+            replaceRange(from: number, to: number, text: string, selection?: CodeEditorSelection): void;
+            /** Focuses the editor. */
+            focus(): void;
+        }
+
         /** Props for the lazily loaded CodeMirror editor. */
         export interface CodeEditorProps {
             /** Text displayed by the editor. */
@@ -3896,6 +4101,10 @@ declare global {
             onChange(content: string): void;
             /** Called when the editor receives the platform save shortcut. */
             onSave(): void;
+            /** Receives the editing handle on mount, and null on unmount. */
+            onReady?(handle: CodeEditorHandle | null): void;
+            /** Called when the primary selection or document changes. */
+            onSelectionChange?(selection: CodeEditorSelection): void;
         }
 
         /** React component exported by the optional code editor bundle. */
@@ -4604,6 +4813,162 @@ declare global {
             createFolder(folderName?: string): void;
         }
 
+        /** Tracy collection target. Browser mode uses an already opened IDE browser preview. */
+        export type ProfilerTarget = "editor" | "browser" | "emulator" | "remote";
+
+        /** Selects and prepares a profiling target. */
+        export interface ProfilerOptions {
+            /** Defaults to editor preview. */
+            target?: ProfilerTarget;
+            /** Required for remote: host, host:port, or tcp://host:port. Default port is 8086. */
+            remoteAddress?: string;
+        }
+
+        /** Options for a bounded CPU-zone statistics report. */
+        export interface ProfilerReportOptions {
+            /** Maximum source-location groups, sorted by total self time descending. Default 100; range 1–10000. */
+            maxZones?: number;
+        }
+
+        /** Timing statistics for completed events only. All durations are milliseconds. */
+        export interface ProfilerTimingStats {
+            /** Number of completed events. */
+            count: number;
+            /** Sum of durations; overlapping or nested zones can exceed capture duration. */
+            totalMs: number;
+            /** Arithmetic mean; zero when count is zero. */
+            meanMs: number;
+            /** Minimum duration; zero when count is zero. */
+            minMs: number;
+            /** Maximum duration; zero when count is zero. */
+            maxMs: number;
+        }
+
+        /** CPU timings grouped by instrumentation source location across all threads.
+         * Like Tracy's zone statistics, only completed zones with positive duration are included. */
+        export interface ProfilerZoneStats {
+            /** Tracy source-location identifier within this capture. */
+            sourceLocationId: number;
+            /** Instrumentation name, falling back to the function name. */
+            name: string;
+            /** Instrumented function name, when supplied by the runtime. */
+            function: string;
+            /** Source path supplied by instrumentation. */
+            file: string;
+            /** Source line supplied by instrumentation. */
+            line: number;
+            /** Duration including child zones. */
+            inclusive: ProfilerTimingStats;
+            /** Duration excluding direct child zones. */
+            self: ProfilerTimingStats;
+        }
+
+        /** Statistics for one frame-mark series. Unfinished frames and Tracy initialization/missed-frame
+         * intervals are excluded. */
+        export interface ProfilerFrameStats {
+            /** Frame series name; Frame for the default series. */
+            name: string;
+            /** Completed frame timings. */
+            timing: ProfilerTimingStats;
+            /** Nearest-rank median in milliseconds; zero for an empty series. */
+            p50Ms: number;
+            /** Nearest-rank 95th percentile in milliseconds; zero for an empty series. */
+            p95Ms: number;
+            /** Nearest-rank 99th percentile in milliseconds; zero for an empty series. */
+            p99Ms: number;
+        }
+
+        /** JSON-serializable summary suitable for automated/AI analysis. This is a CPU-zone/frame
+         * summary, not a replacement for the native capture: GPU, memory, locks, call stacks,
+         * per-event timelines and dynamic zone text are not included. */
+        export interface ProfilerReport {
+            /** JSON report schema version. */
+            schemaVersion: 1;
+            /** Version of the Tracy decoder that produced the report. */
+            tracyVersion: string;
+            /** Unit for report durations. */
+            timeUnit: "ms";
+            /** Capture name from Tracy. */
+            captureName: string;
+            /** Time between the first and last captured timestamp. */
+            durationMs: number;
+            /** Whether the runtime was connected when the snapshot was taken. */
+            connected: boolean;
+            /** Completed positive-duration CPU zones across all source-location groups, before limiting output. */
+            completedZoneCount: number;
+            /** Number of source-location groups with completed zones, before limiting output. */
+            totalZoneGroups: number;
+            /** Whether maxZones omitted some source-location groups. */
+            truncated: boolean;
+            /** Source-location groups sorted by total self time descending. */
+            zones: ProfilerZoneStats[];
+            /** All frame-mark series, including empty series. */
+            frames: ProfilerFrameStats[];
+        }
+
+        /** Snapshot shared by the programmatic API and the Profiler panel. */
+        export interface ProfilerState {
+            /** Selected collection target, or null when disconnected. */
+            readonly target: ProfilerTarget | null;
+            /** Whether the local Tracy WASM host is ready. */
+            readonly ready: boolean;
+            /** Whether a recording session is active. */
+            readonly recording: boolean;
+            /** Whether Tracy has completed the runtime handshake. */
+            readonly connected: boolean;
+            /** Whether the viewer holds data that can be exported. */
+            readonly hasData: boolean;
+            /** Whether an API or panel operation is in progress. */
+            readonly busy: boolean;
+            /** Last error code/message; empty when clear. */
+            readonly error: string;
+        }
+
+        /** UI-process profiling API mounted by the profiler feature-pack.
+         * Uses the local Tracy WASM host in a background WebIFrame; no panel or file dialog is required.
+         * The API and panel share one session. Requires an open scene and the IDE preview server.
+         * exportCapture returns native .tracy bytes; exportReport returns structured statistics for analysis.
+         * Moving the viewer between windows resets its capture. */
+        export declare class IProfiler {
+            private constructor();
+            /** Current session snapshot. Reading this does not initialize WASM. */
+            static readonly state: Readonly<ProfilerState>;
+            /** Fires when the shared session state changes. Remove listeners when no longer needed. */
+            static readonly onChanged: IDelegate<(state: Readonly<ProfilerState>) => void>;
+            /** Prepares a target without recording. Call before opening a browser preview so the IDE
+             * can inject Tracy into that preview. Defaults to editor. Replacing a recording is rejected. */
+            static connect(options?: ProfilerOptions): Promise<void>;
+            /** Starts recording. With options, first prepares that target; otherwise uses the current
+             * target or editor by default. Editor/emulator preview may be started or restarted as needed.
+             * Browser mode requires an already opened preview instrumented after connect().
+             * Resolves after the Tracy handshake. Clears the previous capture when starting a new one.
+             * Concurrent API/panel operations reject with PROFILER_BUSY; an active recording rejects
+             * with PROFILER_RECORDING. Other failures retain the underlying TRACY_* code/message.
+             * @example
+             * await IEditor.Profiler.start({ target: "editor" });
+             * // Exercise the workload here.
+             * await IEditor.Profiler.stop();
+             * const bytes = await IEditor.Profiler.exportCapture();
+             * // Save bytes with fs.writeFile, or pass them to a compatible Tracy parser.
+             * await IEditor.Profiler.dispose();
+             */
+            static start(options?: ProfilerOptions): Promise<void>;
+            /** Stops recording and retains captured data. Does not stop the game preview. Idempotent when idle. */
+            static stop(): Promise<void>;
+            /** Returns a native .tracy snapshot as bytes, without a file dialog. Can export while recording. */
+            static exportCapture(): Promise<Uint8Array>;
+            /** Returns CPU-zone and frame statistics from the current decoded capture as a JSON-serializable
+             * object, without external tools. Works with live or imported captures; only completed events
+             * present at snapshot time are counted. Stop first for a stable capture. Native processing runs
+             * on an export worker and temporarily holds Tracy's capture-data lock. */
+            static exportReport(options?: ProfilerReportOptions): Promise<ProfilerReport>;
+            /** Opens native .tracy bytes for viewing/export, stopping the current recording first. */
+            static importCapture(bytes: Uint8Array): Promise<void>;
+            /** Stops recording, clears the target and capture, and releases the background WASM host
+             * when no panel is attached. Does not stop the game preview. */
+            static dispose(): Promise<void>;
+        }
+
         export interface IPreviewPanel extends IEditorPanel {
             /**
              * Toolbar widget. If provided, it will be added to the toolbar holder.
@@ -4744,6 +5109,13 @@ declare global {
             }>
         }
 
+        export interface IShowPanelOptions {
+            /** Briefly highlight the panel after showing it. */
+            highlight?: boolean;
+            /** Select the panel without activating its window or showing its floating dialog. Defaults to false. */
+            skipWindowActivation?: boolean;
+        }
+
         export interface IPanelManager {
             /**
              * All registered panel ids.
@@ -4795,16 +5167,16 @@ declare global {
             setPanelTitle(panelId: string, title: string): void;
 
             /**
-             * Show a panel.
+             * Show a panel and activate its containing window.
              * @param panel The panel.
              */
-            showPanel(panel: IEditorPanel): void;
+            showPanel(panel: IEditorPanel, options?: IShowPanelOptions): void;
 
             /**
-             * Show a panel by id.
+             * Show a panel by id and activate its containing window.
              * @param panelId The panel id.
              */
-            showPanel(panelId: string): void;
+            showPanel(panelId: string, options?: IShowPanelOptions): void;
 
             /**
              * Hide a panel.
@@ -4929,6 +5301,9 @@ declare global {
             /**
              * Export assets to a Laya resource package.
              * Precompilation is enabled only when assetIdsOrPaths contains exactly one folder. Only package.json directly inside that folder is checked.
+             * package.json precompile accepts either an array of directories or an object with directories, minify, keepNames, define, and external properties.
+             * minify and keepNames default to true. Package definitions override project definitions, while external entries are appended.
+             * Used external npm dependencies are included in package-local node_modules for IDE/CLI use, excluding IDE/Node built-ins.
              */
             function exportPackage(assetIdsOrPaths: ReadonlyArray<string>, outputPath: string, options?: IExportPackageOptions): Promise<boolean>;
 
@@ -4936,6 +5311,9 @@ declare global {
              * Export one package folder as an installable .layapkg file with package.json at the archive root.
              * The folder may be identified by an asset id or by an absolute/project-relative path inside the current project.
              * It must contain a valid package.json directly inside it.
+             * package.json precompile accepts either an array of directories or an object with directories, minify, keepNames, define, and external properties.
+             * minify and keepNames default to true. Package definitions override project definitions, while external entries are appended.
+             * Used external npm dependencies are included in package-local node_modules for IDE/CLI use, excluding IDE/Node built-ins.
              */
             function exportInstallablePackage(packageFolderIdOrPath: string, outputPath: string, options?: IExportInstallablePackageOptions): Promise<boolean>;
 
@@ -5305,8 +5683,10 @@ declare global {
             /**
              * Opens the code editor.
              * @param filePath The file path.
+             * @param line Optional one-based line number.
+             * @param column Optional one-based column number; defaults to 1 when a line is provided.
              */
-            openCodeEditor(filePath: string): void;
+            openCodeEditor(filePath: string, line?: number, column?: number): void;
 
             /**
              * Opens the browser.
@@ -5333,6 +5713,7 @@ declare global {
              */
             runCommandInTerminal(command: string, workingDirectory?: string): Promise<void>;
         }
+
         export interface ICreateNodeOptions {
             /**
              * When creating a node, a reasonable position will be set for the node if this option is true. Default is true.
@@ -6020,11 +6401,101 @@ declare global {
              */
             callHandler(channel: string, ...args: any[]): Promise<any>;
         }
+        /**
+         * Callback used to report module installation progress.
+         * @param name Name of the file or task currently being processed.
+         * @param phase Operation phase. `0` means downloading and `1` means installing.
+         * @param loaded Completed bytes or percentage for the current phase.
+         * @param total Total bytes for the current phase, or `-1` if it is unknown.
+         */
+        export type ModuleInstallProgressCallback = (name: string, phase: number, loaded: number, total: number) => void;
+
+        /**
+         * A downloadable archive that forms part of a module.
+         */
+        export interface IModuleDownloadInfo {
+            /**
+             * Download URL of the archive.
+             */
+            url: string;
+
+            /**
+             * Directory relative to the module installation path where the archive is extracted.
+             */
+            destination?: string;
+
+            /**
+             * Optional target platform filter, such as `darwin`, `win32`, or `linux`.
+             */
+            platform?: string;
+
+            /**
+             * Optional target architecture filter, such as `arm64` or `x64`.
+             */
+            arch?: string;
+
+            /**
+             * Download size in bytes.
+             */
+            downloadSize?: number;
+
+            /**
+             * Installed size in bytes.
+             */
+            installedSize?: number;
+        }
+
+        /**
+         * Metadata for a module contributed by a plugin. Custom modules use the same download,
+         * extraction, dependency, and installation detection logic as built-in modules.
+         */
+        export interface ICustomModuleOptions {
+            /**
+             * Default display name, used when no name is provided for the current language.
+             */
+            name: string;
+
+            /**
+             * Localized display names, for example `"name:zh-CN": "自定义模块"`.
+             */
+            [key: `name:${string}`]: string | undefined;
+
+            /**
+             * Description displayed in the module manager.
+             */
+            description?: string;
+
+            /**
+             * Whether the module is visible in the module manager. Default is `true`.
+             */
+            visible?: boolean;
+
+            /**
+             * Category supplied by the plugin for future grouping and filtering.
+             */
+            category?: string;
+
+            /**
+             * Identifiers of modules that must also be installed.
+             */
+            dependencies?: ReadonlyArray<string>;
+
+            /**
+             * Archives downloaded and extracted when the module is installed.
+             */
+            downloadUrls?: ReadonlyArray<IModuleDownloadInfo>;
+        }
+
         export interface IModuleInfo {
             /**
              * Identifier of the module.
              */
             id: string;
+
+            /**
+             * Whether the module is contributed by a plugin.
+             */
+            custom: boolean;
 
             /**
              * Name of the module.
@@ -6049,10 +6520,7 @@ declare global {
             /**
              * Download URLs of the module.
              */
-            downloadUrls: Array<{
-                url: string,
-                destination: string
-            }>;
+            downloadUrls: Array<IModuleDownloadInfo>;
 
             /**
              * Category of the module.
@@ -6109,6 +6577,12 @@ declare global {
             getModule(id: string): Readonly<IModuleInfo>;
 
             /**
+             * Recheck whether a module and its dependencies are installed.
+             * @param id Identifier of the module.
+             * @returns Whether the module and all its dependencies are installed.
+             */
+            checkModule(id: string): Promise<boolean>;
+            /**
              * Show module installation dialog if any of the modules is not installed.
              * @param modules Identifiers of the modules.
              * @param alert Whether to show alert messages before displaying the dialog.
@@ -6116,7 +6590,6 @@ declare global {
              * @returns Whether the installation is successful.
              */
             installModules(modules: Array<string>, alert?: boolean, waitForComplete?: boolean): Promise<boolean>;
-
             /**
              * Gather modules to install, including the specified modules and their dependencies.
              * @param ids Identifiers of the modules to install.
@@ -6131,8 +6604,9 @@ declare global {
              * @param abortToken Abort token. If you want to abort the operation on some conditions, you can pass an abort token here. Call abortToken.signal() to abort the operation.
              * @returns Whether the installation is successful.
              */
-            installModule(id: string, progressCallback?: (name: string, phase: number, loaded: number, total: number) => void, abortToken?: IAbortToken): Promise<boolean>;
+            installModule(id: string, progressCallback?: ModuleInstallProgressCallback, abortToken?: IAbortToken): Promise<boolean>;
         }
+
         export interface IMenuItem {
             /**
              * Will be called with `click(menuItemId)` when the menu item
@@ -6512,6 +6986,124 @@ declare global {
              * @param to End index. End index is exclusive.
              */
             updateIndexColumn(from: number, to: number): void;
+        }
+
+        /** Lighting settings and probe parameters are read from the current scene, independently of selection.
+         * Device defaults to CPU. Node IDs are editor node IDs. */
+        export type BakeRequest =
+            /** Bake lightmaps. */
+            | { kind: "gi"; device?: "CPU" | "CUDA" }
+            /** Preview lightmaps. */
+            | { kind: "gi-preview" }
+            /** Bake environment lighting. Target defaults to scene3D; bridge3D targets the 2D scene's 3D bridge. */
+            | { kind: "ibl"; target?: "scene3D" | "bridge3D" }
+            /** Bake the reflection probe on the specified node. */
+            | { kind: "reflection-probe"; nodeId: string }
+            /** Bake volumetric GI on the specified node. */
+            | { kind: "volumetric-gi"; nodeId: string; device?: "CPU" | "CUDA" }
+            /** Bake environment lighting, lightmaps, reflection probes and volumetric GI sequentially; stop on failure.
+             * Starts fresh unless resume is true. Checkpoints in library/temp must match scene inputs,
+             * lighting settings and steps, with generated assets still present. Resume restores completed
+             * steps' scene properties before running the remaining steps. */
+            | { kind: "all"; device?: "CPU" | "CUDA"; resume?: boolean };
+
+        /** A machine-readable problem and a human-readable explanation. */
+        export interface BakeDiagnostic {
+            /** Stable error identifier. */
+            code: string;
+            /** Underlying error or diagnostic message. */
+            message: string;
+        }
+        /** Preflight information. Checking does not reserve the scene or install modules. */
+        export interface BakeCheckResult {
+            /** Whether this request can execute without further setup. */
+            ready: boolean;
+            /** Reasons the request is not ready. */
+            diagnostics: BakeDiagnostic[];
+            /** Whether the installed native baking tool supports CUDA. */
+            cudaSupported: boolean;
+            /** GI atlas dimensions; empty for other requests. */
+            textureSizes: Array<{ maxW: number; maxH: number }>;
+            /** Whether an all-bake checkpoint matches this scene and request. */
+            resumable: boolean;
+        }
+        /** Snapshot of the current baking step. */
+        export interface BakeProgress {
+            /** Preparing, current bake kind, or complete. */
+            phase: string;
+            /** Percentage within the current step, or null when unknown. Await task.result to determine completion. */
+            value: number | null;
+            /** Number of fully applied steps. */
+            completedItems: number;
+            /** Number of planned steps. Zero while preparing. */
+            totalItems: number;
+            /** Current probe or volume node ID, when applicable. */
+            nodeId?: string;
+        }
+        /** Applied output from completed steps, including partial output after cancellation. */
+        export interface BakeResult {
+            /** Failed tasks reject their result promise instead. */
+            status: "succeeded" | "cancelled";
+            /** Generated resources, with paths relative to assets/. */
+            assets: Array<{ id: string; path: string }>;
+            /** Editor IDs of affected nodes. */
+            nodeIds: string[];
+        }
+        /** A single task bound to the scene active when start was called. */
+        export interface IBakeTask {
+            /** Unique task ID. */
+            readonly id: string;
+            /** Bound editor scene ID. */
+            readonly sceneId: string;
+            /** Current lifecycle state. */
+            readonly state: "preparing" | "running" | "cancelling" | "succeeded" | "cancelled" | "failed";
+            /** Most recent progress snapshot. */
+            readonly progress: Readonly<BakeProgress>;
+            /** Fires when state or progress changes. Remove listeners when no longer needed. */
+            readonly onChanged: IDelegate<() => void>;
+            /** Resolves after resource loading, postprocessing and scene updates finish. Errors have a code string
+             * and the underlying message. Common codes include BAKE_BUSY, NO_SCENE, UNNAMED_SCENE,
+             * READ_ONLY_SCENE, NO_3D_SCENE, INVALID_REQUEST, INVALID_NODE, INVALID_LIGHTING_SETTINGS,
+             * CUDA_UNAVAILABLE, INVALID_CHECKPOINT, BAKE_UNAVAILABLE, SCENE_DISCONNECTED and BAKE_FAILED.
+             * Cancellation and failure do not roll back generated resources or completed steps. */
+            readonly result: Promise<BakeResult>;
+            /** Idempotent. Waits for execution to exit; does not undo completed work.
+             * Preprocessing and resource loading may not be immediately interruptible. */
+            cancel(): Promise<void>;
+        }
+
+        /** UI-process lighting baking API, mounted by the lightingBake feature-pack before user plugin onLoad callbacks.
+         * Requires an open, named, editable scene. Does not create baking dialogs, change selection or save the scene.
+         * Switching or closing the scene, or unloading the feature-pack, cancels the task.
+         * A scene-process disconnection rejects the task result. */
+        export declare class ILightingBake {
+            private constructor();
+            /** Read-only preflight. Reports MODULE_NOT_INSTALLED without prompting for installation.
+             * Does not reserve a task slot; start rechecks the request. */
+            static check(request: BakeRequest): Promise<BakeCheckResult>;
+            /** Starts on the current, named, editable scene. Defaults to CPU and a fresh bake.
+             * Missing modules use the IDE installation prompt while the task stays in preparing.
+             * Successful installation continues automatically; dismissing the prompt cancels the task.
+             * Only one task is active per UI process, including preparation and cancellation; calls do not queue.
+             * Concurrent starts return a task whose result rejects with BAKE_BUSY, rather than throwing synchronously.
+             * @example
+             * const task = IEditor.LightingBake.start({ kind: "gi" });
+             * const onChanged = () => console.log(task.state, task.progress);
+             * task.onChanged.add(onChanged);
+             * try {
+             *     const result = await task.result;
+             *     console.log(result.status, result.assets, result.nodeIds);
+             *     // Saving the scene is the caller's responsibility.
+             * } catch (error) {
+             *     console.error(error);
+             * } finally {
+             *     task.onChanged.remove(onChanged);
+             * }
+             * // To cancel: await task.cancel();
+             */
+            static start(request: BakeRequest): IBakeTask;
+            /** Current UI-process task, including preparation and cancellation, or null while idle. */
+            static readonly activeTask: IBakeTask | null;
         }
 
         export interface ILanguageModule {
@@ -7277,6 +7869,48 @@ declare global {
              */
             createInspectorPanel(): InspectorPanel;
         }
+        /** Screenshot quality: low resolution, full resolution, or no screenshots. */
+        export type FrameCaptureResolution = "low" | "high" | "none";
+
+        /** Options for capturing the next rendered frame. */
+        export interface FrameCaptureOptions {
+            /** Capture the editor scene view instead of the running scene. Defaults to false. */
+            targetSceneView?: boolean;
+            /** Screenshot quality. Defaults to low; none skips screenshots but retains frame data. */
+            resolution?: FrameCaptureResolution;
+        }
+
+        /** JSON-serializable Spector.js capture, suitable for analysis or saving as a capture JSON file.
+         * Fields and nested render state depend on the bundled Spector.js version and WebGL context. */
+        export interface FrameCaptureResult {
+            /** Captured WebGL commands in execution order. */
+            commands: Array<Record<string, any>>;
+            /** Render state at the beginning of the capture. */
+            initState: Record<string, any>;
+            /** Render state at the end of the capture, including screenshots when enabled. */
+            endState: Record<string, any>;
+            /** Additional unmodified Spector.js capture fields. */
+            [key: string]: any;
+        }
+
+        /** UI-process frame capture API, mounted by the framedebugger feature-pack.
+         * Does not open a debugger panel or require UI interaction. Requires a Laya WebGL scene. */
+        export declare class IFrameDebugger {
+            private constructor();
+            /** Captures the next frame and returns the parsed Spector.js data.
+             * Defaults to the running scene with low-resolution screenshots. The scene view can be
+             * captured without entering play mode. Only one capture runs at a time; calls do not queue.
+             * Rejects with an Error carrying a code: INVALID_OPTIONS, CAPTURE_BUSY, SCENE_NOT_PLAYING,
+             * NO_SCENE, UNSUPPORTED_SCENE or CAPTURE_FAILED. Transport/capture errors retain their message.
+             * @example
+             * const capture = await IEditor.FrameDebugger.captureFrame({
+             *     targetSceneView: true, resolution: "none"
+             * });
+             * console.log(capture.commands);
+             */
+            static captureFrame(options?: FrameCaptureOptions): Promise<FrameCaptureResult>;
+        }
+
         /**
          * `IEditor.Flow` — the shared, editor-agnostic graph editing core (React Flow
          * based). Used by editor plugins/panels (and the blueprint & shader editors) to
@@ -7486,6 +8120,8 @@ declare global {
             }
             /** Read-only registry used to create nodes and populate add-node menus. */
             interface INodeRegistry {
+                /** Case-sensitive node shortcut used while left-clicking empty canvas. */
+                getDefinitionByHotkey?(key: string): NodeDefinition | undefined;
                 /** Return a definition, or undefined when `typeId` is unknown. */
                 getDefinition(typeId: string): NodeDefinition | undefined;
                 /** Return all registered definitions in registry order. */
@@ -7618,6 +8254,8 @@ declare global {
                 onCanvasDrop?: (info: CanvasDropInfo) => void;
                 /** Open AddNodeMenu directly when right-clicking empty canvas. */
                 directAddNodeMenuOnCanvasContextMenu?: boolean;
+                /** Map host hotkey command names to graph actions (keys are registered by the host). */
+                hotkeyCommands?: Readonly<Record<string, "addNode" | "addComment">>;
                 /** Receives an imperative handle (focus a node, …) once mounted. */
                 controllerRef?: React.RefObject<GraphEditorApi | null>;
                 /** Show the minimap overview. Defaults to false. */
@@ -7640,6 +8278,8 @@ declare global {
                 onNodeSelectionChange?: (selectedIds: string[]) => void;
                 /** Handle DOM Ctrl/Cmd+Z/Y inside the graph. Defaults to true. */
                 historyHotkeys?: boolean;
+                /** Single key to wrap selected nodes in a comment, or add one at canvas center. */
+                commentHotkey?: string;
             }
 
             /** Generic reactive + undoable document store (base of GraphStore). */
@@ -8072,7 +8712,6 @@ declare global {
              * Whether the extension manager is reloading
              */
             readonly reloading: boolean;
-
             /**
              * Issue a reload request
              * @param forced Whether to force reload, even if no changes are detected 
@@ -8135,6 +8774,18 @@ declare global {
              * @param options Build target info.
              */
             createBuildTarget(name: string, options: IBuildTargetInfo): void;
+
+            /**
+             * Register a custom module definition with the module manager. This does not download or install it.
+             * Use `Editor.modulesManager.installModule` to install the registered module.
+             *
+             * This method is only allowed to be called in ＠IEditor.onLoad. The registration is automatically
+             * removed when the contributing plugin is unloaded or reloaded; installed files are not deleted.
+             *
+             * @param id Globally unique module identifier. It must not conflict with a built-in module.
+             * @param options Module metadata, dependencies, and downloadable archives.
+             */
+            registerCustomModule(id: string, options: ICustomModuleOptions): void;
 
             /**
              * Set the file type of the specified file extension. The file type is used for resource filtering, such as only allowing the selection of specified types of resources in the resource input box.
@@ -8407,6 +9058,9 @@ declare global {
              * The extension manager of the editor.
              */
             readonly extensionManager: IExtensionManager;
+
+            /** Plugin entries in the main editor's bottom-right status bar. */
+            readonly statusBar: IStatusBar;
 
             /**
              * The account manager of the editor.
@@ -8713,9 +9367,8 @@ declare global {
 
             /**
              * Show a loading view. It is only used during the editor startup phase.
-             * @return The loading view.
              */
-            showLoading(): Promise<{ label: gui.Widget, pb: gui.ProgressBar }>;
+            showLoading(): void;
 
             /**
              * Activate a hotkey. After activation, this hotkey can be handled in the onHotkey or onGlobalHotkey of the EditorPanel.
@@ -8999,8 +9652,9 @@ declare global {
             /**
              * Called after a scene save attempt finishes, including when saving fails.
              * @param scene The scene involved in the save attempt.
+             * @param saved Whether the scene write succeeded. Existing callbacks may omit this argument.
              */
-            onAfterSaveScene?(scene: IMyScene): Promise<void> | void;
+            onAfterSaveScene?(scene: IMyScene, saved?: boolean): Promise<void> | void;
 
             /**
              * Called when a hotkey is pressed if the panel gains focus.
@@ -11379,6 +12033,7 @@ declare global {
              * - curve : Curve editor.
              * - matrix3 : 3x3 matrix inputs.
              * - matrix4 : 4x4 matrix inputs.
+             * - json : Display a read-only JSON summary and edit any JSON-compatible value in a code editor dialog.
              * - TabBar : Tab control. Display properties grouped in different Tab pages.
              * - Group : Make a group of properties with an indent and collapsible.
              * - RadioGroup : Display the captions of multiple properties using a dropdown box and select the property whose current value is true. The property value is converted to a boolean using `!!`.
@@ -12201,9 +12856,9 @@ declare global {
              * Gets the URL to play the scene.
              * @param currentOrStartup If true, get the URL to play the current scene. If false, get the URL to play the startup scene. 
              * @param additionParams Additional parameters to add to the URL.
-             * @param player The URL is for where to play the scene. Default is "browser".
+             * @param player The URL is for where to play the scene. Omit to use the LAN address for QR-code previews.
              * - "browser": Play the scene in the browser.
-             * - "game-view": Play the scene in the game view.
+             * - "editor": Play the scene in the game view.
              * - "emulator": Play the scene in the emulator.
              * @returns Returns the URL to play the scene.
              */
@@ -12318,7 +12973,7 @@ declare global {
             onSceneActivate?(scene: IMyScene): void;
             onSceneDeactivate?(scene: IMyScene): void;
             onBeforeSaveScene?(scene: IMyScene): Promise<void> | void;
-            onAfterSaveScene?(scene: IMyScene): Promise<void> | void;
+            onAfterSaveScene?(scene: IMyScene, saved?: boolean): Promise<void> | void;
             onHotkey?(combo: string): boolean;
             onGlobalHotkey?(combo: string): boolean;
             onSearch?(searchKey: string): void;
@@ -13031,75 +13686,206 @@ declare global {
             _Max = 8
         }
 
+        /** Display state available to custom React property-field renderers. Managed by the inspector. */
         export interface IPropertyFieldState {
-            owner: IInspectorModel;
+            /** ID of this live field instance, used by inspector-store subscriptions. */
             id: string;
-            schemaId: string;
+            /** Structural role of the field: catalog, object, collection, or property. */
             kind: InspectorFieldKind;
+            /** Nesting depth in the field tree. Root catalog fields have depth zero. */
             depth: number;
+            /** Property-name segments locating the field from the inspected root data. */
             path: string[];
+            /** Resolved label displayed beside the field control. */
             caption: string;
+            /** Resolved tooltip text, including property information and descriptor tips. */
             help: string;
+            /** Optional icon resource displayed beside the field label. */
             icon?: string;
+            /** Effective visibility after the inspector combines local and inherited flags. */
             visible: boolean;
+            /** Effective read-only state. Custom renderers should disable editing when true. */
             readonly: boolean;
+            /** Whether the inspector displays this field's child rows. */
             expanded: boolean;
+            /** Whether the field has a prefab override. */
             overrided: boolean;
+            /** Data or display-state revision; use as a dependency for derived React view data. */
             version: number;
+            /** Child-structure revision; use as a dependency for derived child-row views. */
             structureVersion: number;
-            createInitialized?: boolean;
-            createFailed?: boolean;
-            host?: gui.Widget;
-            content?: gui.Widget;
-            element?: HTMLElement;
-            errorElement?: HTMLElement;
-            pendingError?: string;
-            pendingScroll?: {
-                ani?: boolean;
-                setFirst?: boolean | IPropertyField;
-            };
-            styles?: string;
         }
+        /**
+         * Base class for custom inspector fields registered with IEditor.inspectorField.
+         * Override create() to initialize the field, refresh() to update its view, and
+         * render() to provide a React control. The inspector assigns descriptors and targets.
+         */
         export class PropertyField implements IPropertyField {
+            /** Inspector that owns the field and provides status, visibility, and refresh operations. */
             inspector: IDataInspector;
+            /** Type descriptor of the object that declares this property. */
             objType: Readonly<FTypeDescriptor>;
+            /** Property descriptor used to construct and configure this field. */
             property: Readonly<FPropertyDescriptor>;
+            /** Bound data targets; use getValue() and setValue() to read or edit the property. */
             target: IInspectingTarget;
+            /** Display state assigned by the React inspector before create() is called. */
             react?: IPropertyFieldState;
+            /** Direct children in display order. Use child-management methods to modify the tree. */
             readonly children: PropertyField[];
+            /**
+             * Property names that trigger refreshes. Initially contains the field's property name.
+             * Add names for dependent properties, or clear the array to stop watching properties.
+             */
             watchProps: Array<string>;
+            /**
+             * Properties represented or modified by this field, used for prefab override markers
+             * and copy, paste, and reset operations. Initially contains the property descriptor.
+             */
             memberProps: Array<FPropertyDescriptor>;
+            /** Optional lookup tag used by the inspector's tagged-field APIs. */
             tag: string;
+            /** Parent reference maintained by child-management methods. */
             private _parent;
+            /** Parent in the field tree, if the field is attached to one. */
             get parent(): IPropertyField;
+            /** Whether the field is a container or already has child fields. */
             get isFolder(): boolean;
+            /**
+             * Attach a child, removing it from its previous parent and applying inherited flags.
+             * An existing child of this field keeps its position.
+             * @param child Field to attach.
+             * @returns The attached child.
+             */
             addChild(child: PropertyField): PropertyField;
+            /**
+             * Replace a direct child at its current position and apply inherited flags.
+             * If oldChild is absent, the tree is unchanged and no field is returned.
+             * @param oldChild Direct child to replace.
+             * @param newChild Replacement field, detached from its previous parent if necessary.
+             * @returns The replacement field when oldChild belongs to this field.
+             */
             replaceChild(oldChild: PropertyField, newChild: PropertyField): PropertyField;
+            /**
+             * Detach a direct child. An unattached field leaves the tree unchanged.
+             * @param child Field to detach.
+             * @returns The supplied child.
+             */
             removeChild(child: PropertyField): PropertyField;
+            /**
+             * Initialize layout and property-watch metadata once when the field is constructed.
+             * React fields return layout or styles here and provide their control through render().
+             * Legacy fields return their widget in the result's ui property.
+             * @returns Optional view and layout configuration; the base implementation provides none.
+             */
             create(): IPropertyFieldCreateResult;
+            /** Return the React control displayed beside the field caption. Called by the inspector. */
             render?(): ReactNode;
+            /** Return optional React content displayed after the field's child rows. */
             renderChildrenFooter?(): ReactNode;
+            /**
+             * Apply a read-only display change. The base implementation updates the legacy host widget.
+             * React controls should use react.readonly to disable editing.
+             * @param value Whether editing should be disabled.
+             */
             makeReadonly(value: boolean): void;
+            /** Update field-specific view state after data binding or watched-property changes. Override as needed. */
             refresh(): void;
+            /**
+             * Read a named display status from the inspector's status store.
+             * @param name Status name scoped to this field.
+             * @returns The saved status value, if present.
+             */
             getStatus(name: string): any;
+            /**
+             * Save a display status and notify the inspector view when it changes.
+             * Has no effect if the inspector has no status store.
+             * @param name Status name scoped to this field.
+             * @param value Status value to save.
+             */
             setStatus(name: string, value: any): void;
+            /**
+             * Set the field's user-controlled hidden flag; other visibility flags still apply.
+             * @param hidden Whether to hide the field.
+             */
             setHidden(hidden: boolean): void;
+            /**
+             * Optional drag-over handler forwarded by the inspector host.
+             * Set the native data-transfer drop effect and prevent the default action to accept a drag.
+             * @param evt Editor event containing the native drag event in data.
+             */
             onNativeDragOver?(evt: gui.Event): void;
+            /**
+             * Optional drop handler forwarded by the inspector host.
+             * @param evt Editor event containing the native drop event in data.
+             */
             onNativeDrop?(evt: gui.Event): void;
+            /** Optional custom reset handler, called instead of assigning descriptor defaults for this field. */
             onResetData?(): void;
+            /**
+             * Check both local and inherited status flags.
+             * @param flag FieldStatusFlags value, rather than a bit mask.
+             * @returns Whether the flag is set locally or inherited from an ancestor.
+             */
             isFlagSet(flag: number): boolean;
+            /**
+             * Find a field by property name among the parent's children, including grouped fields.
+             * @param name Property name to find.
+             * @returns The first matching field, if one exists.
+             */
             findBrotherField(name: string): IPropertyField;
+            /**
+             * Find a child by property name, searching through display groups.
+             * @param name Property name to find.
+             * @returns The first matching field, if one exists.
+             */
             findChildField(name: string): IPropertyField;
+            /**
+             * Collect property-bearing children, also traversing display groups.
+             * Object and collection children are included without traversing their descendants.
+             * @param result Optional array to append to; existing entries are retained.
+             * @returns The supplied array or a new array containing the collected fields.
+             */
             getChildFields(result?: Array<IPropertyField>): Array<IPropertyField>;
+            /**
+             * Show an error tip at the field row, or queue it until the row mounts.
+             * @param msg Error message to display.
+             */
             displayError(msg: string): void;
+            /** Collect editable member values, traversing display groups and catalogs. */
             private doCopyData;
+            /** Apply compatible clipboard members to one target, merging matching object values. */
             private doPasteData;
+            /** Reset one target through a custom reset hook or writable descriptor defaults. */
             private doResetData;
+            /** Copy supported editable member-property values to the editor's typed object clipboard format. */
             copyData(): void;
+            /**
+             * Apply compatible property values to the bound targets using the field's clipboard format.
+             * @param data Optional property-value payload in the format written by copyData().
+             * If omitted, the payload is read from the clipboard.
+             * @returns A promise that resolves after the paste attempt completes.
+             */
             pasteData(data?: any): Promise<void>;
+            /**
+             * Reset editable member properties to their defaults, honoring disableReset and onResetData.
+             * Script-component defaults are requested from the scene process when needed.
+             * @returns A promise that resolves after default loading and reset complete.
+             */
             resetData(): Promise<void>;
+            /** Populate missing descriptor defaults from the scene's script-component instance. */
             private fetchScriptDefaults;
+            /**
+             * Apply one number to supported numeric properties and immediate numeric object members
+             * through the field's copy/paste format.
+             * @param num Number to assign.
+             */
             setNumValue(num: number): void;
+            /**
+             * Check whether the clipboard advertises editor object data or plain text.
+             * This does not validate compatibility with this field's property type.
+             * @returns Whether either supported clipboard format is available.
+             */
             hasClipboardData(): Promise<boolean>;
         }
 
@@ -13137,6 +13923,7 @@ declare global {
             children: PropertyField[];
             getCollectionLength(): number;
             canAppendChild(): boolean;
+            createCollection(): boolean;
             addDictionaryEntry(key: string): boolean;
             destroyCollection(): boolean;
             syncDynamicChildren(): boolean;
@@ -13162,6 +13949,7 @@ declare global {
             addDictionaryEntry(key: string): boolean;
             deleteDictionaryEntry(key: string): boolean;
             canAppendChild(): boolean;
+            createCollection(): boolean;
             destroyCollection(): boolean;
             getCollectionLength(): number;
             syncDynamicChildren(): boolean;
@@ -13500,6 +14288,18 @@ declare global {
          */
         const AssetStoreTools: typeof IAssetStoreTools;
 
+        /** Named secret storage and HTTP requests with host-managed authentication. */
+        const SecretStorage: typeof ISecretStorage;
+
+        /** A hint anchored to an element. Clicking its target or the acknowledgment button records completion in guides.json. */
+        class OnboardingGuide {
+            constructor(options: { id: string; target: HTMLElement; title: string; description: string });
+            /** Also returns true when interactive guides are unavailable (CLI or browser). */
+            static isCompleted(id: string): boolean;
+            /** Remove the hint, highlight and listeners without recording completion. Call during plugin unload. */
+            dispose(): void;
+        }
+
         /**
          * The `EventTracking` class is used to track events.
          * @param appId The application ID.
@@ -13605,6 +14405,9 @@ declare global {
          */
         const InputTextDialog: new () => IInputTextDialog;
 
+        /** UBB source editor with live preview and controls for all built-in engine tags. */
+        const UBBEditDialog: new () => IUBBEditDialog;
+
         /**
          * The `QRCodeDialog` class is used to create a dialog for displaying a QR code.
          */
@@ -13646,6 +14449,15 @@ declare global {
 
         /** Tools for importing and exporting Laya resource packages. */
         const PackageTool: typeof IPackageTool;
+
+        /** Lighting baking in the UI process. Mounted when the lightingBake feature-pack loads. */
+        const LightingBake: typeof ILightingBake;
+
+        /** Frame capture in the UI process. Mounted when the framedebugger feature-pack loads. */
+        const FrameDebugger: typeof IFrameDebugger;
+
+        /** Tracy profiling in the UI process. Mounted by the profiler feature-pack. */
+        const Profiler: typeof IProfiler;
 
         /**
          * The `React` namespace contains React components that can be used in the editor.

@@ -1895,7 +1895,7 @@
                     break;
                 case Laya.ShaderDataType.Texture2D:
                     this._value = this.data_texture = value;
-                    this._nativeObj.setTexture2D(this.data_texture._texture._nativeObj);
+                    this._nativeObj.setTexture2D(this.data_texture ? this.data_texture._texture._nativeObj : null);
                     break;
                 case Laya.ShaderDataType.Vector4:
                     !this.data_v4 && (this.data_v4 = new Laya.Vector4());
@@ -2861,12 +2861,38 @@
     }
 
     class LayaXInternalRT {
-        constructor(nativeObj) {
+        constructor(nativeObj, owner = null) {
+            this._disposed = false;
             this._propBuf = new ArrayBuffer(7 * 4);
             this._propU32 = new Uint32Array(this._propBuf);
             this._propI32 = new Int32Array(this._propBuf);
+            if (!nativeObj)
+                throw new Error("Cannot wrap a missing LayaX render target.");
             this._nativeObj = nativeObj;
             this._nativeObj.bindPropertyBuffer(this._propBuf);
+            this._owner = owner;
+            if (owner) {
+                this._texturesRef = [owner._textures[0]];
+            }
+            else {
+                const formats = nativeObj.getColorFormats();
+                if (formats.length)
+                    this.colorFormats = Object.freeze(formats.map(format => format === Laya.RenderTargetFormat.None ? null : format));
+            }
+        }
+        get destroyed() {
+            var _a;
+            return this._disposed || !!((_a = this._owner) === null || _a === void 0 ? void 0 : _a.destroyed);
+        }
+        get _color0Target() {
+            if (this.destroyed)
+                return null;
+            if (!this._color0TargetRef && this.colorFormats) {
+                const target = this._nativeObj.getColor0Target();
+                if (target)
+                    this._color0TargetRef = new LayaXInternalRT(target, this);
+            }
+            return this._color0TargetRef;
         }
         get _isCube() {
             return this._propI32[1] !== 0;
@@ -2918,12 +2944,14 @@
                 this._texturesRef = [];
                 let textures = this._nativeObj.getTextures();
                 textures.forEach((element) => {
-                    this._texturesRef.push(new LayaXInternalTex(element));
+                    this._texturesRef.push(element ? new LayaXInternalTex(element) : null);
                 });
                 return this._texturesRef;
             }
         }
         get _depthTexture() {
+            if (this._owner)
+                return this._owner._depthTexture;
             if (this._depthTextureRef) {
                 return this._depthTextureRef;
             }
@@ -2935,7 +2963,17 @@
             }
         }
         dispose() {
+            if (this._disposed)
+                return;
+            this._disposed = true;
             this._nativeObj.dispose();
+            this._texturesRef = null;
+            this._depthTextureRef = null;
+            if (this._color0TargetRef) {
+                this._color0TargetRef._disposed = true;
+                this._color0TargetRef._texturesRef = null;
+                this._color0TargetRef._depthTextureRef = null;
+            }
         }
     }
 
@@ -3049,13 +3087,33 @@
             return this._native.setTextureCompareMode(texture._nativeObj, compareMode);
         }
         bindRenderTarget(renderTarget, faceIndex = 0) {
-            this._native.bindRenderTarget(renderTarget._nativeObj, faceIndex);
+            var _a;
+            if (renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.destroyed)
+                throw new Error("Cannot bind a disposed LayaX render target.");
+            if ((renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.colorFormats) && faceIndex !== 0)
+                throw new RangeError("LayaX MRT only supports 2D attachments at mip level 0.");
+            this._native.bindRenderTarget((_a = renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget._nativeObj) !== null && _a !== void 0 ? _a : null, faceIndex);
         }
         bindoutScreenTarget() {
             this._native.bindoutScreenTarget();
         }
         unbindRenderTarget(renderTarget) {
-            this._native.unbindRenderTarget(renderTarget._nativeObj);
+            var _a;
+            this._native.unbindRenderTarget((_a = renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget._nativeObj) !== null && _a !== void 0 ? _a : null);
+        }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat, color0SRGB = false) {
+            if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0 || width > 0x7fffffff || height > 0x7fffffff)
+                throw new RangeError("MRT dimensions must be positive integers.");
+            if (!Array.isArray(colorFormats) || !colorFormats.length || colorFormats[0] == null)
+                throw new RangeError("MRT requires color attachment 0 and a non-empty color layout.");
+            const formats = Array.from(colorFormats, format => {
+                if (format == null)
+                    return Laya.RenderTargetFormat.None;
+                if (!Number.isInteger(format) || format === Laya.RenderTargetFormat.None)
+                    throw new TypeError("MRT color formats must be valid format values or null.");
+                return format;
+            });
+            return new LayaXInternalRT(this._native.createMultiRenderTargetInternal(width, height, formats, depthStencilFormat !== null && depthStencilFormat !== void 0 ? depthStencilFormat : Laya.RenderTargetFormat.None, color0SRGB));
         }
         createRenderTargetInternal(width, height, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
             return new LayaXInternalRT(this._native.createRenderTargetInternal(width, height, colorFormat, depthStencilFormat ? depthStencilFormat : Laya.RenderTargetFormat.None, generateMipmap, sRGB, multiSamples));
@@ -3067,40 +3125,76 @@
             return new LayaXInternalTex(this._native.createRenderTextureCubeInternal(dimension, size, format, generateMipmap, sRGB));
         }
         createRenderTargetDepthTexture(renderTarget, dimension, width, height) {
-            return new LayaXInternalTex(this._native.createRenderTargetDepthTexture(renderTarget._nativeObj, dimension, width, height));
+            if (!renderTarget || renderTarget.destroyed || renderTarget._owner)
+                throw new Error("Cannot replace depth storage on a disposed or borrowed LayaX render target.");
+            if (renderTarget.colorFormats && (dimension !== Laya.TextureDimension.Tex2D ||
+                width !== renderTarget._textures[0].width || height !== renderTarget._textures[0].height))
+                throw new RangeError("LayaX MRT depth dimensions must match its 2D color attachments.");
+            const nativeTexture = this._native.createRenderTargetDepthTexture(renderTarget._nativeObj, dimension, width, height);
+            if (nativeTexture && renderTarget._depthTextureRef &&
+                renderTarget._depthTextureRef._nativeObj === nativeTexture)
+                return renderTarget._depthTextureRef;
+            const texture = nativeTexture ? new LayaXInternalTex(nativeTexture) : null;
+            renderTarget._depthTextureRef = texture;
+            return texture;
         }
         readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out) {
             return out;
         }
-        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out) {
+        async readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if (!renderTarget || renderTarget.destroyed)
+                throw new Error("Cannot read a missing or disposed LayaX render target.");
+            if (!Number.isInteger(attachmentIndex) || attachmentIndex < 0 ||
+                (!renderTarget.colorFormats && attachmentIndex !== 0))
+                throw new RangeError("Color attachment index is out of range.");
+            const texture = renderTarget._textures[attachmentIndex];
+            if (!texture)
+                throw new RangeError("LayaX color attachment is empty or out of range.");
+            if (!Number.isInteger(xOffset) || !Number.isInteger(yOffset) || !Number.isInteger(width) || !Number.isInteger(height) ||
+                xOffset < 0 || yOffset < 0 || width <= 0 || height <= 0 || width > texture.width || height > texture.height ||
+                xOffset > texture.width - width || yOffset > texture.height - height)
+                throw new RangeError("LayaX readback rectangle must be within the color attachment.");
+            const format = renderTarget.colorFormats ? renderTarget.colorFormats[attachmentIndex] : renderTarget.colorFormat;
+            const bytePixels = format === Laya.RenderTargetFormat.R8G8B8 || format === Laya.RenderTargetFormat.R8G8B8A8;
+            const halfPixels = format === Laya.RenderTargetFormat.R16G16B16 || format === Laya.RenderTargetFormat.R16G16B16A16;
+            const floatPixels = format === Laya.RenderTargetFormat.R32G32B32 || format === Laya.RenderTargetFormat.R32G32B32A32;
+            if (!bytePixels && !halfPixels && !floatPixels)
+                throw new TypeError("Unsupported LayaX color format for readback.");
+            if (bytePixels ? !(out instanceof Uint8Array || out instanceof Uint8ClampedArray) : !(out instanceof Float32Array))
+                throw new TypeError("LayaX color readback requires a byte view for byte attachments and Float32Array for floating-point attachments.");
+            const outputBytes = width * height * 4 * (bytePixels ? 1 : 4);
+            if (out.byteLength < outputBytes)
+                throw new RangeError(`LayaX readback output requires at least ${outputBytes} bytes.`);
+            const bytesPerPixel = bytePixels ? 4 : halfPixels ? 8 : 16;
+            const unpaddedRow = width * bytesPerPixel;
+            const paddedRow = Math.ceil(unpaddedRow / 256) * 256;
+            const padded = new Uint8Array(paddedRow * height);
             return new Promise((resolve, reject) => {
-                if (!renderTarget || !renderTarget._nativeObj || width <= 0 || height <= 0) {
-                    reject(new Error("readRenderTargetPixelDataAsync: invalid args"));
-                    return;
-                }
-                const pixelCount = width * height;
-                if (pixelCount <= 0 || out.byteLength % pixelCount !== 0) {
-                    reject(new Error("readRenderTargetPixelDataAsync: out.byteLength not divisible by width*height"));
-                    return;
-                }
-                const bpp = out.byteLength / pixelCount;
-                const unpaddedRow = width * bpp;
-                const paddedRow = (unpaddedRow + 255) & ~255;
-                const padded = new Uint8Array(paddedRow * height);
-                const id = this._native.readRenderTargetPixelData(renderTarget._nativeObj, xOffset, yOffset, width, height, paddedRow, padded.buffer);
+                const id = renderTarget.colorFormats
+                    ? this._native.readMultiRenderTargetPixelData(renderTarget._nativeObj, xOffset, yOffset, width, height, paddedRow, padded.buffer, attachmentIndex)
+                    : this._native.readRenderTargetPixelData(renderTarget._nativeObj, xOffset, yOffset, width, height, paddedRow, padded.buffer);
                 if (!id || id <= 0) {
                     reject(new Error("readRenderTargetPixelDataAsync: submit failed"));
                     return;
                 }
                 LayaXReadbackDispatcher.register(id, () => {
-                    const dstU8 = new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
-                    if (paddedRow === unpaddedRow) {
-                        dstU8.set(padded.subarray(0, unpaddedRow * height));
+                    if (halfPixels) {
+                        const source = new Uint16Array(padded.buffer);
+                        const destination = out;
+                        for (let row = 0; row < height; row++)
+                            for (let i = 0; i < width * 4; i++)
+                                destination[row * width * 4 + i] = Laya.HalfFloatUtils.convertToNumber(source[row * paddedRow / 2 + i]);
+                    }
+                    else if (floatPixels) {
+                        const source = new Float32Array(padded.buffer);
+                        const destination = out;
+                        for (let row = 0; row < height; row++)
+                            destination.set(source.subarray(row * paddedRow / 4, row * paddedRow / 4 + width * 4), row * width * 4);
                     }
                     else {
-                        for (let row = 0; row < height; row++) {
-                            dstU8.set(padded.subarray(row * paddedRow, row * paddedRow + unpaddedRow), row * unpaddedRow);
-                        }
+                        const destination = new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
+                        for (let row = 0; row < height; row++)
+                            destination.set(padded.subarray(row * paddedRow, row * paddedRow + unpaddedRow), row * unpaddedRow);
                     }
                     resolve(out);
                 }, (e) => reject(e));
@@ -3120,6 +3214,7 @@
             this._lastDeviceBufferMemory = 0;
             this._lastGpuBufferMemory = 0;
             this._lastGpuMemory = 0;
+            this._capabilities = new Map();
             this._remapZ = false;
             this._screenInvertY = true;
             this._lodTextureSample = false;
@@ -3135,6 +3230,7 @@
             this._nativeObj._framePassCount = value;
         }
         initRenderEngine(canvas) {
+            this._capabilities.clear();
             this._nativeObj.initRenderEngine(canvas._nativeObj);
             this._textureContext = new LayaXTextureContext(this._nativeObj.getTextureContext());
             Laya.Config._uniformBlock = Laya.Config.enableUniformBufferObject && this.getCapable(Laya.RenderCapable.UnifromBufferObject);
@@ -3178,7 +3274,12 @@
             return this._nativeObj.getParams(params);
         }
         getCapable(capatableType) {
-            return this._nativeObj.getCapable(capatableType);
+            let value = this._capabilities.get(capatableType);
+            if (value === undefined) {
+                value = this._nativeObj.getCapable(capatableType);
+                this._capabilities.set(capatableType, value);
+            }
+            return value;
         }
         getTextureContext() {
             return this._textureContext;
@@ -3310,8 +3411,14 @@
 
     class LayaXDefineDatas {
         constructor() {
+            this._readback = null;
             this._nativeObj = new window.conchLayaXDefineDatas();
             this._nativeObj.create();
+            if (this._nativeObj.bindReadback) {
+                const words = new Uint32Array(9);
+                if (this._nativeObj.bindReadback(words.buffer))
+                    this._readback = words;
+            }
         }
         get _length() {
             return 0;
@@ -3326,10 +3433,17 @@
         _intersectionDefineDatas(define) {
         }
         add(define) {
-            this._nativeObj.add(define._index, define._value);
+            const words = this._readback, index = define._index >>> 0, value = define._value >>> 0;
+            if ((words === null || words === void 0 ? void 0 : words[0]) && index < words.length - 1 && value !== 0
+                && ((words[index + 1] & value) >>> 0) === value)
+                return;
+            this._nativeObj.add(index, value);
         }
         remove(define) {
-            this._nativeObj.remove(define._index, define._value);
+            const words = this._readback, index = define._index >>> 0, value = define._value >>> 0;
+            if ((words === null || words === void 0 ? void 0 : words[0]) === 1 && index < words.length - 1 && (words[index + 1] & value) === 0)
+                return;
+            this._nativeObj.remove(index, value);
         }
         addDefineDatas(define) {
             if (define._nativeObj) {
@@ -3339,7 +3453,9 @@
         removeDefineDatas(define) {
         }
         has(define) {
-            return this._nativeObj.has(define._index, define._value);
+            const words = this._readback, index = define._index >>> 0, value = define._value >>> 0;
+            return (words === null || words === void 0 ? void 0 : words[0]) && index < words.length - 1
+                ? (words[index + 1] & value) !== 0 : this._nativeObj.has(index, value);
         }
         clear() {
             this._nativeObj.clear();
@@ -3384,11 +3500,12 @@
         getData() {
         }
         clearData() {
-            for (let index in this._textureData) {
-                let tex = this._textureData[index];
+            const textures = this._textureData;
+            this._textureData = {};
+            for (let index in textures) {
+                let tex = textures[index];
                 tex && tex._removeReference();
             }
-            this._textureData = {};
             this._bufferData = {};
             this._deviceBufferData = {};
             this._defineDatas.clear();
@@ -3570,6 +3687,7 @@
             var lastValue = this._textureData[index];
             if (value && value.bitmap)
                 value = value.bitmap;
+            value && value._addReference();
             this._textureData[index] = value;
             if (value && value._texture) {
                 let tex = value._texture;
@@ -3585,7 +3703,6 @@
                 this._setInternalTexture(index, null);
             }
             lastValue && lastValue._removeReference();
-            value && value._addReference();
         }
         _setInternalTexture(index, value) {
             let nativeVal = value ? value : null;
@@ -3737,6 +3854,10 @@
             }
             let vertexCode = vs.join('\n');
             let fragmentCode = fs.join('\n');
+            const mrtTargetCount = Laya.ShaderMRT.getTargetCount(defines);
+            const mrt = mrtTargetCount > 0 || defines.indexOf(Laya.ShaderMRT.defineName) !== -1;
+            if (mrtTargetCount)
+                fragmentCode = Laya.ShaderMRT.prepare(fragmentCode, mrtTargetCount);
             const defineStrs = defineString(defMap);
             const additionDefineStrs = additionDefineString();
             const precision = `precision highp float;
@@ -3762,8 +3883,7 @@ ${vertexCode}
                 vertexCode = renameMainFunction(vertexCode, "main_vs");
                 let fs = `layout(std140, column_major) uniform;
 #define varying in
-out highp vec4 pc_fragColor;
-#define gl_FragColor pc_fragColor
+${mrt ? "" : "out highp vec4 pc_fragColor;\n#define gl_FragColor pc_fragColor"}
 #define gl_FragDepthEXT gl_FragDepth
 #define texture2D texture
 #define textureCube texture
@@ -3783,6 +3903,8 @@ ${fragmentCode}
 `;
                 let resFS = engine.shaderCompiler.glslang.glsl300es_preprocess(fs, "fragment");
                 if (!resFS.success) {
+                    if (mrt)
+                        throw new Error(`LAYA_MRT fragment preprocessing failed: ${resFS.info_log}`);
                     console.error("fragment shader preprocess error", resFS.info_log);
                 }
                 fragmentCode = resFS.preprocessed_code;
@@ -3795,7 +3917,10 @@ ${fragmentCode}
             for (const v of vsOnlyVaryings) {
                 vsOnlyGlobalStrs += `${v}\n`;
             }
-            const fragmentOutStrs = fragmentOutString();
+            const mrtOutputs = mrt ? Laya.ShaderMRT.extract(fragmentCode, mrtTargetCount > 0) : null;
+            const fragmentOutStrs = mrtOutputs ? mrtOutputs.declarations : fragmentOutString();
+            if (mrtOutputs)
+                fragmentCode = mrtOutputs.source;
             let collectionUniforms = new Map();
             const materialUniformNames = new Set();
             if (materialMap && materialMap.size > 0) {
@@ -3897,7 +4022,8 @@ ${fragmentCode}
             fragmentCode = fragmentCode.replace(uniformBlockRegex, '\n');
             vertexCode = vertexCode.replace(vertexVaryingRegex, '\n');
             fragmentCode = fragmentCode.replace(fragmentVaryingRegex, '\n');
-            fragmentCode = fragmentCode.replace(vertexVaryingRegex, "");
+            if (!mrt)
+                fragmentCode = fragmentCode.replace(vertexVaryingRegex, "");
             vertexCode = replaceTextureSampler(vertexCode, useTexArray);
             fragmentCode = replaceTextureSampler(fragmentCode, useTexArray);
             {
@@ -4175,7 +4301,8 @@ ${attributeDefines}
         let res = "";
         let binding = bindOffset;
         if (blockUniforms.length > 0) {
-            res = `${res}layout(std140, set=${set}, binding=${binding++}) uniform ${name} {`;
+            const blockName = /^[A-Za-z_]\w*$/.test(name) ? name : `LayaUBO_${set}_${binding}`;
+            res = `${res}layout(std140, set=${set}, binding=${binding++}) uniform ${blockName} {`;
             for (let uniform of blockUniforms) {
                 let uniformName = uniform.propertyName;
                 if (uniform.arrayLength > 0) {
@@ -4599,6 +4726,7 @@ ${computeCode}
                     let passIndex = subShader._passes.indexOf(this._shaderPass);
                     console.error(`${shader.name}_sub${subIndex}_pass${passIndex}`);
                     console.error(vertexSpvRes.info_log);
+                    throw Object.assign(new Error(`${shader.name}_sub${subIndex}_pass${passIndex}: vertex compilation failed: ${vertexSpvRes.info_log}`), { shaderSource: glslObj.vertex });
                 }
                 let vertexSpirv = new Uint8Array(vertexSpvRes.spirv.buffer, vertexSpvRes.spirv.byteOffset, vertexSpvRes.spirv.byteLength);
                 let fragmentSpvRes = engine.shaderCompiler.glslang.glsl450_to_spirv(glslObj.fragment, "fragment");
@@ -4609,6 +4737,7 @@ ${computeCode}
                     let passIndex = subShader._passes.indexOf(this._shaderPass);
                     console.error(`${shader.name}_sub${subIndex}_pass${passIndex}`);
                     console.error(fragmentSpvRes.info_log);
+                    throw Object.assign(new Error(`${shader.name}_sub${subIndex}_pass${passIndex}: fragment compilation failed: ${fragmentSpvRes.info_log}`), { shaderSource: glslObj.fragment });
                 }
                 let fragmentSpv = new Uint8Array(fragmentSpvRes.spirv.buffer, fragmentSpvRes.spirv.byteOffset, fragmentSpvRes.spirv.byteLength);
                 vs_wgsl = engine.shaderCompiler.naga.spirv_to_wgsl(vertexSpirv, false);
@@ -4996,9 +5125,6 @@ ${computeCode}
     });
 
     class LayaXRenderState extends Laya.RenderState {
-        createObj() {
-            this._nativeObj = null;
-        }
         constructor() {
             super();
         }
@@ -5268,73 +5394,6 @@ ${computeCode}
         if (!Laya.LayaGL.unitRenderModuleDataFactory)
             Laya.LayaGL.unitRenderModuleDataFactory = new LayaXUnitRenderModuleDataFactory();
     });
-
-    class LayaXShaderCompileCode {
-        static processVS(vs, defineString) {
-            return LayaXShaderCompileCode._injectDefines(vs, defineString);
-        }
-        static processFS(fs, defineString) {
-            return LayaXShaderCompileCode._injectDefines(fs, defineString);
-        }
-        static _injectDefines(source, defineString) {
-            if (!defineString || defineString.length === 0) {
-                return source;
-            }
-            const versionIdx = source.indexOf("#version");
-            if (versionIdx >= 0) {
-                const lineEnd = source.indexOf("\n", versionIdx);
-                if (lineEnd >= 0) {
-                    return source.substring(0, lineEnd + 1) + defineString + "\n" + source.substring(lineEnd + 1);
-                }
-            }
-            return defineString + "\n" + source;
-        }
-    }
-
-    class LayaXShaderCompileUtil {
-        static stripInlinePrecision(source) {
-            return source.replace(/(?<!precision\s+)(lowp|mediump|highp)\s+/g, '');
-        }
-        static ensureVersion(source, version = "#version 300 es") {
-            if (source.indexOf("#version") >= 0) {
-                return source;
-            }
-            return version + "\n" + source;
-        }
-        static processVS(vs, defineString) {
-            let result = LayaXShaderCompileCode.processVS(vs, defineString);
-            result = LayaXShaderCompileUtil.ensureVersion(result);
-            return result;
-        }
-        static processFS(fs, defineString) {
-            let result = LayaXShaderCompileCode.processFS(fs, defineString);
-            result = LayaXShaderCompileUtil.ensureVersion(result);
-            return result;
-        }
-        static upgradeTextureCalls(source) {
-            if (source.indexOf("#version 300 es") < 0 && source.indexOf("#version 310 es") < 0) {
-                return source;
-            }
-            let result = source;
-            result = result.replace(/\btexture2DLodEXT\b/g, 'textureLod');
-            result = result.replace(/\btexture2DProjLodEXT\b/g, 'textureProjLod');
-            result = result.replace(/\btextureCubeLodEXT\b/g, 'textureLod');
-            result = result.replace(/\btexture2DGradEXT\b/g, 'textureGrad');
-            result = result.replace(/\btexture2DProjGradEXT\b/g, 'textureProjGrad');
-            result = result.replace(/\btextureCubeGradEXT\b/g, 'textureGrad');
-            return result;
-        }
-        static removeUnsupportedExtensions(source) {
-            return source.replace(/^\s*#\s*extension\s+(GL_EXT_shader_texture_lod|GL_OES_standard_derivatives)\s*:\s*\w+\s*$/gm, '');
-        }
-        static prepareForNative(source, isVertex) {
-            let result = source;
-            result = LayaXShaderCompileUtil.ensureVersion(result);
-            result = LayaXShaderCompileUtil.removeUnsupportedExtensions(result);
-            result = LayaXShaderCompileUtil.upgradeTextureCalls(result);
-            return result;
-        }
-    }
 
     class RTDefineDatas {
         constructor() {
@@ -5726,8 +5785,6 @@ ${computeCode}
     exports.LayaXSetRenderData = LayaXSetRenderData;
     exports.LayaXSetRendertarget2DCMD = LayaXSetRendertarget2DCMD;
     exports.LayaXSetShaderDefine = LayaXSetShaderDefine;
-    exports.LayaXShaderCompileCode = LayaXShaderCompileCode;
-    exports.LayaXShaderCompileUtil = LayaXShaderCompileUtil;
     exports.LayaXShaderCompiler = LayaXShaderCompiler;
     exports.LayaXShaderData = LayaXShaderData;
     exports.LayaXShaderInstance = LayaXShaderInstance;

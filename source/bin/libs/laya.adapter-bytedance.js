@@ -330,8 +330,12 @@
             });
         }
         saveDirtyManifests() {
-            return Promise.all(this.toSaveManifestFlags.filter(needSave => needSave)
-                .map((_, index) => this.saveManifest(index)));
+            const tasks = [];
+            this.toSaveManifestFlags.forEach((needSave, group) => {
+                if (needSave)
+                    tasks.push(this.saveManifest(group));
+            });
+            return Promise.all(tasks);
         }
         saveManifest(group) {
             let bytes = new Laya.Byte();
@@ -617,7 +621,7 @@
                 return;
             }
             this.ws.onOpen(res => this.onOpen(res));
-            this.ws.onClose(() => this.onClose());
+            this.ws.onClose((res) => this.onClose(res === null || res === void 0 ? void 0 : res.code, res === null || res === void 0 ? void 0 : res.reason));
             this.ws.onError(err => this.onError(err));
             this.ws.onMessage(msg => {
                 if (msg.data) {

@@ -80,8 +80,17 @@
             this._rigiBodyList.remove(body);
         }
         _update() {
-            var delta = Math.min(Laya.ILaya.timer.delta / 1000, 0.033);
-            this._factory.update(delta);
+            const deltaMs = Laya.ILaya.timer.delta;
+            if (!Number.isFinite(deltaMs))
+                return;
+            this.update(Math.min(deltaMs / 1000, 0.033));
+        }
+        update(deltaTime) {
+            if (!Number.isFinite(deltaTime))
+                throw new Error("Physics2D.update: deltaTime must be a finite number.");
+            if (!this._factory || !this._rigiBodyList)
+                return;
+            this._factory.update(deltaTime);
             this._updatePhysicsTransformToRender();
         }
         _updatePhysicsTransformToRender() {
@@ -108,8 +117,6 @@
             }
             if (!this._rigiBodyList)
                 this._rigiBodyList = new Laya.SingletonList();
-            else
-                this._rigiBodyList.clear();
             if (!Physics2DOption.customUpdate && Laya.LayaEnv.isPlaying)
                 Laya.ILaya.physicsTimer.frameLoop(1, this, this._update);
         }
@@ -118,7 +125,6 @@
             Laya.ILaya.physicsTimer.clear(this, this._update);
         }
         stop() {
-            this._rigiBodyList.clear();
             Laya.ILaya.physicsTimer.clear(this, this._update);
         }
         static toPhysicsX(v) { return v / Laya.ILaya.stage.clientScaleX; }
@@ -831,6 +837,9 @@
     Physics2DDebugDraw._RETAIN_FRAMES = 6;
 
     class Physics2DWorldManager {
+        getEmptyBody() {
+            return this._emptyBody || (this._emptyBody = Physics2D.I._factory.createBody(this._box2DWorld, null));
+        }
         get box2DWorld() {
             return this._box2DWorld;
         }
@@ -839,6 +848,7 @@
         }
         constructor(scene) {
             var _a, _b, _c, _d, _e, _f, _g, _h;
+            this._subStepCount = 1;
             this._pixelRatio = 50;
             this._RePixelRatio = 1 / this._pixelRatio;
             this._subStep = 1;
@@ -915,7 +925,13 @@
             }
         }
         setGravity(gravity) {
-            this._gravity = gravity;
+            this._gravity.setValue(gravity.x, gravity.y);
+            if (this._box2DWorld) {
+                const factory = Physics2D.I._factory;
+                const value = factory.createPhyVec2(gravity.x, gravity.y);
+                this._box2DWorld.SetGravity(value);
+                factory.destroyData(value);
+            }
         }
         getRootSprite() {
             return this._scene;
@@ -933,28 +949,44 @@
             this._enableBox2DDraw(enable, bli);
         }
         setPixel_Ratio(pixelRatio) {
+            if (!Number.isFinite(pixelRatio) || pixelRatio <= 0)
+                throw new Error("Physics2D pixel ratio must be a finite positive number.");
             this._pixelRatio = pixelRatio;
+            this._RePixelRatio = 1 / pixelRatio;
+            if (this._box2DWorld)
+                this._box2DWorld._pixelRatio = pixelRatio;
         }
         getPixel_Ratio() {
             return this._pixelRatio;
         }
         setSubStep(subStep) {
-            this._subStep = subStep;
+            if (!Number.isSafeInteger(subStep) || subStep < 1)
+                throw new Error("Physics2D substeps must be a positive integer.");
+            this._subStep = this._subStepCount = subStep;
         }
         getSubStep() {
             return this._subStep;
         }
         sendEvent() {
-            let length = this._eventList.length;
+            var _a;
+            const events = this._eventList;
+            if (!events)
+                return;
+            (_a = this._subStepStayEvents) === null || _a === void 0 ? void 0 : _a.clear();
+            let length = events.length;
             if (length > 0) {
-                for (let i = 0; i < length; i += 2) {
-                    this._dispatchEvent(this._eventList[i], this._eventList[i + 1]);
+                for (let i = 0; i < length && this._box2DWorld; i += 2) {
+                    this._dispatchEvent(events[i], events[i + 1]);
                 }
                 let factory = Physics2D.I._factory;
                 for (let i = 1; i < length; i += 2) {
-                    factory._cleanCache(this._eventList[i]);
+                    if (!events[i]._eventSnapshot && !events[i]._endSnapshot)
+                        factory._cleanCache(events[i]);
                 }
-                this._eventList.length = 0;
+                if (events.length === length)
+                    events.length = 0;
+                else
+                    events.splice(0, length);
             }
         }
         setVelocityIterations(velocityIterations) {
@@ -1015,8 +1047,8 @@
                 hitRes.collider = collider;
                 hitRes.hitPoint.x = this.physics2DToLaya(px);
                 hitRes.hitPoint.y = this.physics2DToLaya(py);
-                hitRes.hitNormal.x = this.physics2DToLaya(nx);
-                hitRes.hitNormal.y = this.physics2DToLaya(ny);
+                hitRes.hitNormal.x = nx;
+                hitRes.hitNormal.y = ny;
                 hitRes.fraction = fraction;
                 res.push(hitRes);
                 if (collider) {
@@ -1030,11 +1062,12 @@
             Physics2D.I._factory.RayCast(this._box2DWorld, this._JSRayCastcallback, startPos, endPos);
         }
         destroy() {
+            var _a;
             if (!this._box2DWorld)
                 return;
-            if (Physics2D.I._emptyBody) {
-                Physics2D.I._factory.removeBody(this._box2DWorld, Physics2D.I._emptyBody);
-                Physics2D.I._emptyBody = null;
+            if (this._emptyBody) {
+                Physics2D.I._factory.removeBody(this._box2DWorld, this._emptyBody);
+                this._emptyBody = null;
             }
             if (this._debugDraw) {
                 this._debugDraw.destroy();
@@ -1045,18 +1078,60 @@
             Physics2D.I._factory.destroyWorld(this._box2DWorld);
             this._box2DWorld = null;
             this._eventList = null;
+            (_a = this._subStepStayEvents) === null || _a === void 0 ? void 0 : _a.clear();
+        }
+        _queueContactEvent(type, pointer) {
+            const factory = Physics2D.I._factory;
+            const contact = factory.warpPoint(pointer, exports.Ebox2DType.b2Contact);
+            const substeps = this._subStepCount > 1;
+            if (!substeps && type !== "triggerexit") {
+                this._eventList.push(type, contact);
+                return;
+            }
+            const a = factory.getContactShapeA(contact);
+            const b = factory.getContactShapeB(contact);
+            const hit = new Physics2DContactHitResult();
+            const count = factory.getContactWorldManifold(contact, hit);
+            for (let i = 0; i < count; i++) {
+                hit.points[i].x = this.physics2DToLaya(hit.points[i].x);
+                hit.points[i].y = this.physics2DToLaya(hit.points[i].y);
+                hit.separations[i] = this.physics2DToLaya(hit.separations[i]);
+            }
+            const snapshot = {
+                _eventSnapshot: true,
+                GetFixtureA: () => a,
+                GetFixtureB: () => b,
+                getHitInfo: () => hit
+            };
+            factory._cleanCache(contact);
+            if (!substeps) {
+                contact._endSnapshot = snapshot;
+                contact.getHitInfo = snapshot.getHitInfo;
+                this._eventList.push(type, snapshot);
+                return;
+            }
+            const stays = this._subStepStayEvents || (this._subStepStayEvents = new Map());
+            if (type === "triggerstay") {
+                const index = stays.get(pointer);
+                if (index !== undefined) {
+                    this._eventList[index] = snapshot;
+                    return;
+                }
+                stays.set(pointer, this._eventList.length + 1);
+            }
+            else {
+                stays.delete(pointer);
+            }
+            this._eventList.push(type, snapshot);
         }
         _worldBeginContactCallback(contact) {
-            let contactInfo = Physics2D.I._factory.warpPoint(contact, exports.Ebox2DType.b2Contact);
-            this._eventList.push("triggerenter", contactInfo);
+            this._queueContactEvent("triggerenter", contact);
         }
         _worldEndContactCallback(contact) {
-            let contactInfo = Physics2D.I._factory.warpPoint(contact, exports.Ebox2DType.b2Contact);
-            this._eventList.push("triggerexit", contactInfo);
+            this._queueContactEvent("triggerexit", contact);
         }
         _worldPreSolveCallback(contact, oldManifold) {
-            let contactInfo = Physics2D.I._factory.warpPoint(contact, exports.Ebox2DType.b2Contact);
-            this._eventList.push("triggerstay", contactInfo);
+            this._queueContactEvent("triggerstay", contact);
         }
         _worldPostSolveCallback(contact, impulse) {
         }
@@ -1198,11 +1273,14 @@
             this._debugDraw.appendLineSegment(rx, ty, rx, by, outColor);
         }
         _dispatchEvent(type, contact) {
+            contact = contact._endSnapshot || contact;
             let contactShapeA = Physics2D.I._factory.getContactShapeA(contact);
             let contactShapeB = Physics2D.I._factory.getContactShapeB(contact);
             if (contactShapeA == null || contactShapeB == null) {
                 return;
             }
+            if (type !== "triggerexit" && (contactShapeA.destroyed || contactShapeB.destroyed))
+                return;
             let colliderA = contactShapeA.collider;
             let colliderB = contactShapeB.collider;
             if (colliderA == null || colliderB == null) {
@@ -1215,22 +1293,25 @@
             let ownerB = colliderB.owner;
             let __this = this;
             let _hitResult;
-            contact.getHitInfo = function () {
-                if (!_hitResult)
-                    _hitResult = new Physics2DContactHitResult();
-                let pointCount = Physics2D.I._factory.getContactWorldManifold(contact, _hitResult);
-                for (let i = 0; i < pointCount; i++) {
-                    _hitResult.points[i].x = __this.physics2DToLaya(_hitResult.points[i].x);
-                    _hitResult.points[i].y = __this.physics2DToLaya(_hitResult.points[i].y);
-                    _hitResult.separations[i] = __this.physics2DToLaya(_hitResult.separations[i]);
-                }
-                return _hitResult;
-            };
+            if (!contact._eventSnapshot)
+                contact.getHitInfo = function () {
+                    if (contact._endSnapshot)
+                        return contact._endSnapshot.getHitInfo();
+                    if (!_hitResult)
+                        _hitResult = new Physics2DContactHitResult();
+                    let pointCount = Physics2D.I._factory.getContactWorldManifold(contact, _hitResult);
+                    for (let i = 0; i < pointCount; i++) {
+                        _hitResult.points[i].x = __this.physics2DToLaya(_hitResult.points[i].x);
+                        _hitResult.points[i].y = __this.physics2DToLaya(_hitResult.points[i].y);
+                        _hitResult.separations[i] = __this.physics2DToLaya(_hitResult.separations[i]);
+                    }
+                    return _hitResult;
+                };
             if (ownerA) {
                 var args = [colliderB, colliderA, contact];
                 ownerA.event(type, args);
             }
-            if (ownerB) {
+            if (ownerB && this._box2DWorld && !colliderA.destroyed && !colliderB.destroyed) {
                 args = [colliderA, colliderB, contact];
                 ownerB.event(type, args);
             }
@@ -1308,8 +1389,19 @@
             return this._useAutoMass;
         }
         set useAutoMass(value) {
+            if (this._useAutoMass === value)
+                return;
             this._useAutoMass = value;
-            this._box2DBody && Physics2D.I._factory.set_rigidBody_Mass(this._box2DBody, this._mass, this._centerOfMass, this._inertia, this._massData);
+            this._resetMassData();
+        }
+        _resetMassData() {
+            if (!this._box2DBody || this._box2DBody.destroyed)
+                return;
+            const factory = Physics2D.I._factory;
+            if (this._useAutoMass)
+                factory.retSet_rigidBody_MassData(this._box2DBody);
+            else if (this._massData)
+                factory.set_rigidBody_Mass(this._box2DBody, this._mass, this._centerOfMass, this._inertia, this._massData);
         }
         get isAwake() {
             if (this._box2DBody) {
@@ -1597,10 +1689,15 @@
             return this._shapes;
         }
         set shapes(shapes) {
+            const next = shapes || [];
+            for (const shape of this._shapes || []) {
+                if (next.indexOf(shape) < 0)
+                    shape.destroy();
+            }
             this._shapes = shapes;
-            if (!shapes)
-                return;
-            this.applyOwnerColliderComponent = false;
+            if (shapes)
+                this.applyOwnerColliderComponent = false;
+            shapes = next;
             shapes.forEach((shape) => {
                 shape.setCollider(this);
             });
@@ -1786,6 +1883,13 @@
             }
         }
         _destroyAllShape() {
+            if (this._box2DBody) {
+                const colliders = this.owner.getComponents(StaticCollider);
+                for (const collider of colliders || []) {
+                    if (collider.getBox2DBody() === this._box2DBody)
+                        collider._removeShapeAndDestroyData();
+                }
+            }
             if (!this._shapes)
                 return;
             for (let i = 0; i < this._shapes.length; i++) {
@@ -1827,35 +1931,35 @@
             _tempV0$1.y = velocity.y;
             return _tempV0$1;
         }
-        applyForce(position, force) {
+        applyForce(position, force, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidBody_applyForce(this._box2DBody, force, position);
+            Physics2D.I._factory.rigidBody_applyForce(this._box2DBody, force, position, wake);
         }
-        applyForceToCenter(force) {
+        applyForceToCenter(force, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidBody_applyForceToCenter(this._box2DBody, force);
+            Physics2D.I._factory.rigidBody_applyForceToCenter(this._box2DBody, force, wake);
         }
-        applyLinearImpulse(position, impulse) {
+        applyLinearImpulse(position, impulse, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidbody_ApplyLinearImpulse(this._box2DBody, impulse, position);
+            Physics2D.I._factory.rigidbody_ApplyLinearImpulse(this._box2DBody, impulse, position, wake);
         }
-        applyLinearImpulseToCenter(impulse) {
+        applyLinearImpulseToCenter(impulse, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidbody_ApplyLinearImpulseToCenter(this._box2DBody, impulse);
+            Physics2D.I._factory.rigidbody_ApplyLinearImpulseToCenter(this._box2DBody, impulse, wake);
         }
-        applyAngularImpulse(impulse) {
+        applyAngularImpulse(impulse, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidbody_ApplyAngularImpulse(this._box2DBody, impulse);
+            Physics2D.I._factory.rigidbody_ApplyAngularImpulse(this._box2DBody, impulse, wake);
         }
-        applyTorque(torque) {
+        applyTorque(torque, wake = true) {
             if (!this._box2DBody)
                 return;
-            Physics2D.I._factory.rigidbody_applyTorque(this._box2DBody, torque);
+            Physics2D.I._factory.rigidbody_applyTorque(this._box2DBody, torque, wake);
         }
         setVelocity(velocity) {
             if (!this._box2DBody)
@@ -1913,9 +2017,12 @@
             return this._shapes;
         }
         set shapes(value) {
-            this._shapes = value;
-            if (!value)
-                return;
+            const next = value || [];
+            for (const shape of this._shapes || []) {
+                if (next.indexOf(shape) < 0)
+                    shape.destroy();
+            }
+            this._shapes = value = next;
             value.forEach((shape) => {
                 shape.setCollider(this);
             });
@@ -1973,7 +2080,7 @@
         }
         _removeShapeAndDestroyData() {
             if (this._rigidbody) {
-                let body = this._rigidbody.getBox2DBody();
+                let body = this._box2DBody;
                 if (body && !body.destroyed && this._box2DShape) {
                     Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, body, this._box2DShape);
                 }
@@ -2013,10 +2120,13 @@
         createShape(collider) {
             if (!collider)
                 return;
+            const body = collider.getBox2DBody();
+            if (!body || body.destroyed)
+                return;
             this._getPhysicsManager();
             this._setRigidbodyValue(collider);
             this._rigidbody = collider;
-            this._box2DBody = collider.getBox2DBody();
+            this._box2DBody = body;
             if (this._box2DShape) {
                 Physics2D.I._factory.destroyShape(this._physics2DManager.box2DWorld, this._box2DBody, this._box2DShape);
                 if (this._box2DShapeDef && this._box2DShapeDef._shape) {
@@ -2322,7 +2432,7 @@
         _createJoint() {
         }
         _onDisable() {
-            if (this._joint && this._factory.getJoint_userData(this._joint) && !this._factory.getJoint_userData_destroy(this._joint)) {
+            if (this._factory.isValidJoint(this._joint)) {
                 Physics2D.I._factory.removeJoint(this._physics2DManager.box2DWorld, this._joint);
             }
             this._joint = null;
@@ -2420,10 +2530,7 @@
                     this.otherBody.owner.on("shapeChange", this, this._refeahJoint);
                 }
                 else {
-                    if (!Physics2D.I._emptyBody) {
-                        Physics2D.I._emptyBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, null);
-                    }
-                    def.bodyA = Physics2D.I._emptyBody;
+                    def.bodyA = this._physics2DManager.getEmptyBody();
                     def.localAnchorA.setValue(this.otherAnchor[0], this.otherAnchor[1]);
                 }
                 def.dampingRatio = this._dampingRatio;
@@ -2488,7 +2595,7 @@
         set maxMotorForce(value) {
             this._maxMotorForce = value;
             if (this._joint)
-                this._factory.set_Joint_SetMaxMotorTorque(this._joint, value);
+                this._factory.set_Joint_SetMaxMotorForce(this._joint, value);
         }
         get enableLimit() {
             return this._enableLimit;
@@ -2504,7 +2611,7 @@
         set lowerTranslation(value) {
             this._lowerTranslation = value;
             if (this._joint)
-                this._factory.set_Joint_SetLimits(this._joint, value, this._upperTranslation);
+                this._factory.set_Joint_SetTranslationLimits(this._joint, value, this._upperTranslation);
         }
         get upperTranslation() {
             return this._upperTranslation;
@@ -2512,7 +2619,7 @@
         set upperTranslation(value) {
             this._upperTranslation = value;
             if (this._joint)
-                this._factory.set_Joint_SetLimits(this._joint, this._lowerTranslation, value);
+                this._factory.set_Joint_SetTranslationLimits(this._joint, this._lowerTranslation, value);
         }
         get axis() {
             return this._axis;
@@ -2535,10 +2642,7 @@
                     this.selfBody.owner.on("bodyCreated", this, this._createJoint);
                     return;
                 }
-                if (!Physics2D.I._emptyBody) {
-                    Physics2D.I._emptyBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, null);
-                }
-                def.bodyA = this.otherBody ? this.otherBody.getBox2DBody() : Physics2D.I._emptyBody;
+                def.bodyA = this.otherBody ? this.otherBody.getBox2DBody() : this._physics2DManager.getEmptyBody();
                 if (!def.bodyA) {
                     this.otherBody.isConnectedJoint = true;
                     this.otherBody.owner.on("bodyCreated", this, this._createJoint);
@@ -2637,10 +2741,7 @@
                     this.selfBody.owner.on("bodyCreated", this, this._createJoint);
                     return;
                 }
-                if (!Physics2D.I._emptyBody) {
-                    Physics2D.I._emptyBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, null);
-                }
-                def.bodyA = this.otherBody ? this.otherBody.getBox2DBody() : Physics2D.I._emptyBody;
+                def.bodyA = this.otherBody ? this.otherBody.getBox2DBody() : this._physics2DManager.getEmptyBody();
                 if (!def.bodyA) {
                     this.otherBody.isConnectedJoint = true;
                     this.otherBody.owner.on("bodyCreated", this, this._createJoint);
@@ -2699,7 +2800,7 @@
         set ratio(value) {
             this._ratio = value;
             if (this._joint)
-                this._factory.set_GearJoint_SetRatio(this._joint, value);
+                this._factory.set_GearJoint_SetRatio(this._joint, -value);
         }
         _createJoint() {
             var _a, _b;
@@ -2834,7 +2935,7 @@
         set maxForce(value) {
             this._maxForce = value;
             if (this._joint)
-                this._factory.set_MotorJoint_SetMaxForce(this._joint, value);
+                this._factory.set_MouseJoint_MaxForce(this._joint, value);
         }
         get frequency() {
             return this._frequency;
@@ -2875,9 +2976,7 @@
                     anchorPos.x = Physics2D.toPhysicsX(anchorPos.x);
                     anchorPos.y = Physics2D.toPhysicsY(anchorPos.y);
                 }
-                if (!Physics2D.I._emptyBody)
-                    Physics2D.I._emptyBody = Physics2D.I._factory.createBody(this._physics2DManager.box2DWorld, null);
-                def.bodyA = Physics2D.I._emptyBody;
+                def.bodyA = this._physics2DManager.getEmptyBody();
                 def.bodyB = this.selfBody.getBox2DBody();
                 if (!def.bodyB) {
                     this.selfBody.isConnectedJoint = true;
@@ -3050,7 +3149,7 @@
         set frequency(value) {
             this._frequency = value;
             if (this._joint) {
-                this._factory.set_Joint_frequencyAndDampingRatio(this._joint, this._frequency, this._dampingRatio, false);
+                this._factory.set_Joint_frequencyAndDampingRatio(this._joint, this._frequency, this._dampingRatio, false, false);
             }
         }
         get damping() {
@@ -3059,7 +3158,7 @@
         set damping(value) {
             this._dampingRatio = value;
             if (this._joint) {
-                this._factory.set_Joint_frequencyAndDampingRatio(this._joint, this._frequency, this._dampingRatio, true);
+                this._factory.set_Joint_frequencyAndDampingRatio(this._joint, this._frequency, this._dampingRatio, true, false);
             }
         }
         get enableMotor() {
@@ -3100,7 +3199,7 @@
         set lowerTranslation(value) {
             this._lowerTranslation = value;
             if (this._joint)
-                this._factory.set_Joint_SetLimits(this._joint, value, this._upperTranslation);
+                this._factory.set_Joint_SetTranslationLimits(this._joint, value, this._upperTranslation);
         }
         get upperTranslation() {
             return this._upperTranslation;
@@ -3108,7 +3207,7 @@
         set upperTranslation(value) {
             this._upperTranslation = value;
             if (this._joint)
-                this._factory.set_Joint_SetLimits(this._joint, this._lowerTranslation, value);
+                this._factory.set_Joint_SetTranslationLimits(this._joint, this._lowerTranslation, value);
         }
         get axis() {
             return this._axis;
@@ -3192,7 +3291,10 @@
         set density(value) {
             this._density = value;
             this._shapeDef.density = value;
-            this._box2DShape && Physics2D.I._factory.set_shape_density(this._box2DShape, value);
+            if (this._box2DShape) {
+                Physics2D.I._factory.set_shape_density(this._box2DShape, value);
+                this._body._resetMassData();
+            }
         }
         get restitution() {
             return this._restitution;
@@ -3286,6 +3388,15 @@
             this._updateShapeData();
             this._initShape();
         }
+        _refreshShape(update) {
+            const factory = Physics2D.I._factory;
+            update(factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType));
+            if (!this._box2DShape)
+                return;
+            update(factory.getShape(this._box2DShape, this._shapeDef.shapeType));
+            factory.synchronizeShape(this._box2DBody, this._box2DShape);
+            this._body._resetMassData();
+        }
         _initShape() {
             if (!Laya.LayaEnv.isPlaying)
                 return;
@@ -3332,7 +3443,7 @@
         }
         cloneTo(destObject) {
             destObject.density = this.density;
-            destObject.filterData = this.filterData;
+            destObject.filterData = Object.assign(new FilterData(), this.filterData);
             destObject.friction = this.friction;
             destObject.isSensor = this.isSensor;
             destObject.restitution = this.restitution;
@@ -3373,7 +3484,6 @@
         }
         _createShape() {
             this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.BoxShape, this._box2DShapeDef);
-            this._updateShapeData();
         }
         _updateShapeData() {
             if (!Laya.LayaEnv.isPlaying || !this._body || !this._box2DBody)
@@ -3384,8 +3494,9 @@
                 x: helfW + this.pivotoffx,
                 y: helfH + this.pivotoffy
             };
-            let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
-            Physics2D.I._factory.set_collider_SetAsBox(shape, helfW, helfH, center, Math.abs(this.scaleX), Math.abs(this.scaleY));
+            this._refreshShape(shape => {
+                Physics2D.I._factory.set_collider_SetAsBox(shape, helfW, helfH, center, Math.abs(this.scaleX), Math.abs(this.scaleY));
+            });
         }
         clone() {
             let dest = new BoxShape2D();
@@ -3457,7 +3568,7 @@
         }
         cloneTo(destObject) {
             super.cloneTo(destObject);
-            destObject.datas = this.datas;
+            destObject.datas = this.datas.slice();
             destObject.loop = this.loop;
         }
     }
@@ -3479,7 +3590,6 @@
         }
         _createShape() {
             this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.EdgeShape, this._box2DShapeDef);
-            this._updateShapeData();
         }
         _updateShapeData() {
             if (!Laya.LayaEnv.isPlaying || !this._body || !this._box2DBody)
@@ -3487,8 +3597,9 @@
             var len = this._datas.length;
             if (len % 2 == 1)
                 throw "EdgeCollider points lenth must a multiplier of 2";
-            let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
-            Physics2D.I._factory.set_EdgeShape_data(shape, this.pivotoffx, this.pivotoffy, this._datas, this.scaleX, this.scaleY);
+            this._refreshShape(shape => {
+                Physics2D.I._factory.set_EdgeShape_data(shape, this.pivotoffx, this.pivotoffy, this._datas, this.scaleX, this.scaleY);
+            });
         }
         clone() {
             let dest = new EdgeShape2D();
@@ -3497,7 +3608,7 @@
         }
         cloneTo(destObject) {
             super.cloneTo(destObject);
-            destObject.datas = this.datas;
+            destObject.datas = this.datas.slice();
         }
     }
 
@@ -3518,7 +3629,6 @@
         }
         _createShape() {
             this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.PolygonShape, this._box2DShapeDef);
-            this._updateShapeData();
         }
         _updateShapeData() {
             if (!Laya.LayaEnv.isPlaying || !this._body || !this._box2DBody)
@@ -3528,8 +3638,9 @@
                 throw "PolygonCollider points must be greater than 3";
             if (len % 2 == 1)
                 throw "PolygonCollider points lenth must a multiplier of 2";
-            let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
-            Physics2D.I._factory.set_PolygonShape_data(shape, this.pivotoffx, this.pivotoffy, this.datas, this.scaleX, this.scaleY);
+            this._refreshShape(shape => {
+                Physics2D.I._factory.set_PolygonShape_data(shape, this.pivotoffx, this.pivotoffy, this.datas, this.scaleX, this.scaleY);
+            });
         }
         clone() {
             let dest = new PolygonShape2D();
@@ -3538,7 +3649,7 @@
         }
         cloneTo(destObject) {
             super.cloneTo(destObject);
-            destObject.datas = this.datas;
+            destObject.datas = this.datas.slice();
         }
     }
 
@@ -3547,6 +3658,8 @@
             return this._radius;
         }
         set radius(value) {
+            if (this._radius === value)
+                return;
             this._radius = value;
             this._updateShapeData();
         }
@@ -3557,16 +3670,16 @@
         }
         _createShape() {
             this._box2DShape = Physics2D.I._factory.createShape(this._physics2DManager.box2DWorld, this._box2DBody, exports.EPhysics2DShape.CircleShape, this._box2DShapeDef);
-            this._updateShapeData();
         }
         _updateShapeData() {
             if (!Laya.LayaEnv.isPlaying || !this._body || !this._box2DBody)
                 return;
             var scale = Math.max(Math.abs(this.scaleX), Math.abs(this.scaleY));
             let radius = this.radius;
-            let shape = this._box2DShape ? Physics2D.I._factory.getShape(this._box2DShape, this._shapeDef.shapeType) : Physics2D.I._factory.getShapeByDef(this._box2DShapeDef, this._shapeDef.shapeType);
-            Physics2D.I._factory.set_CircleShape_radius(shape, radius, scale);
-            Physics2D.I._factory.set_CircleShape_pos(shape, this.pivotoffx, this.pivotoffy, this.scaleX, this.scaleY);
+            this._refreshShape(shape => {
+                Physics2D.I._factory.set_CircleShape_radius(shape, radius, scale);
+                Physics2D.I._factory.set_CircleShape_pos(shape, this.pivotoffx, this.pivotoffy, this.scaleX, this.scaleY);
+            });
         }
         clone() {
             let dest = new CircleShape2D();

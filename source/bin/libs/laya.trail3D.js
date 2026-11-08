@@ -303,6 +303,7 @@
             super._cloneTo(dest);
             dest.time = this.time;
             dest.minVertexDistance = this.minVertexDistance;
+            dest.widthMultiplier = this.widthMultiplier;
             var widthCurve = [];
             var widthCurveData = this.widthCurve;
             for (let i = 0, n = this.widthCurve.length; i < n; i++) {

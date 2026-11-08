@@ -237,8 +237,12 @@
             });
         }
         saveDirtyManifests() {
-            return Promise.all(this.toSaveManifestFlags.filter(needSave => needSave)
-                .map((_, index) => this.saveManifest(index)));
+            const tasks = [];
+            this.toSaveManifestFlags.forEach((needSave, group) => {
+                if (needSave)
+                    tasks.push(this.saveManifest(group));
+            });
+            return Promise.all(tasks);
         }
         saveManifest(group) {
             let bytes = new Laya.Byte();
@@ -524,7 +528,7 @@
                 return;
             }
             this.ws.onOpen(res => this.onOpen(res));
-            this.ws.onClose(() => this.onClose());
+            this.ws.onClose((res) => this.onClose(res === null || res === void 0 ? void 0 : res.code, res === null || res === void 0 ? void 0 : res.reason));
             this.ws.onError(err => this.onError(err));
             this.ws.onMessage(msg => {
                 if (msg.data) {
@@ -856,6 +860,131 @@
     MgBrowserAdapter.downloaderClass = MgDownloader;
     Laya.PAL.register("browser", MgBrowserAdapter);
 
+    class MgFileSystemAdapter extends Laya.FileSystemAdapter {
+        constructor() {
+            super();
+            this.hasAccess = false;
+            this.fs = Laya.PAL.g.getFileSystemManager();
+            this.hasAccess = Laya.PAL.hasAPI(this.fs, "access");
+        }
+        readFile(path, encoding) {
+            return new Promise((resolve, reject) => {
+                var _a;
+                this.fs.readFile({
+                    filePath: path,
+                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
+                    success: (res) => resolve(res.data),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        writeFile(path, data, encoding) {
+            return new Promise((resolve, reject) => {
+                var _a;
+                this.fs.writeFile({
+                    filePath: path,
+                    data: data,
+                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
+                    success: () => resolve(),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        unlink(path) {
+            return new Promise((resolve, reject) => {
+                this.fs.unlink({
+                    filePath: path,
+                    success: () => resolve(),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        copyFile(srcPath, destPath) {
+            return new Promise((resolve, reject) => {
+                this.fs.copyFile({
+                    srcPath,
+                    destPath,
+                    success: () => resolve(),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        exists(path) {
+            return new Promise(resolve => {
+                if (this.hasAccess) {
+                    this.fs.access({
+                        path,
+                        success: () => resolve(true),
+                        fail: (err) => resolve(false)
+                    });
+                }
+                else {
+                    this.fs.getFileInfo({
+                        filePath: path,
+                        success: (res) => resolve(true),
+                        fail: (err) => resolve(false)
+                    });
+                }
+            });
+        }
+        getFileSize(path) {
+            return new Promise((resolve, reject) => {
+                this.fs.getFileInfo({
+                    filePath: path,
+                    success: (res) => resolve(res.size),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        mkdir(path, options) {
+            return new Promise((resolve, reject) => {
+                this.fs.mkdir({
+                    dirPath: path,
+                    recursive: options === null || options === void 0 ? void 0 : options.recursive,
+                    success: () => resolve(),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        rmdir(path, options) {
+            try {
+                this.fs.rmdirSync(path, options === null || options === void 0 ? void 0 : options.recursive);
+                return Promise.resolve();
+            }
+            catch (e) {
+                return Promise.reject(e);
+            }
+        }
+        readdir(path) {
+            return new Promise((resolve, reject) => {
+                this.fs.readdir({
+                    dirPath: path,
+                    success: (res) => resolve(res.files),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+        unzip(zipFilePath, targetPath) {
+            return new Promise((resolve, reject) => {
+                this.fs.unzip({
+                    zipFilePath,
+                    targetPath,
+                    success: () => resolve(),
+                    fail: (err) => reject(err)
+                });
+            });
+        }
+    }
+    Laya.PAL.register("fs", MgFileSystemAdapter);
+
+    class HwFileSystemAdapter extends MgFileSystemAdapter {
+        writeFile(path, data, encoding) {
+            if (encoding == null && Object.prototype.toString.call(data) === "[object ArrayBuffer]")
+                encoding = "binary";
+            return super.writeFile(path, data, encoding);
+        }
+    }
+    Laya.PAL.register("fs", HwFileSystemAdapter);
     MgBrowserAdapter.beforeInit = function () {
         Laya.Browser.onHWMiniGame = true;
         Laya.PAL.g = window.hbs;
@@ -985,123 +1114,6 @@
         }
     }
     Laya.PAL.register("device", MgDeviceAdapter);
-
-    class MgFileSystemAdapter extends Laya.FileSystemAdapter {
-        constructor() {
-            super();
-            this.hasAccess = false;
-            this.fs = Laya.PAL.g.getFileSystemManager();
-            this.hasAccess = Laya.PAL.hasAPI(this.fs, "access");
-        }
-        readFile(path, encoding) {
-            return new Promise((resolve, reject) => {
-                var _a;
-                this.fs.readFile({
-                    filePath: path,
-                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
-                    success: (res) => resolve(res.data),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        writeFile(path, data, encoding) {
-            return new Promise((resolve, reject) => {
-                var _a;
-                this.fs.writeFile({
-                    filePath: path,
-                    data: data,
-                    encoding: (_a = encoding) !== null && _a !== void 0 ? _a : undefined,
-                    success: () => resolve(),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        unlink(path) {
-            return new Promise((resolve, reject) => {
-                this.fs.unlink({
-                    filePath: path,
-                    success: () => resolve(),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        copyFile(srcPath, destPath) {
-            return new Promise((resolve, reject) => {
-                this.fs.copyFile({
-                    srcPath,
-                    destPath,
-                    success: () => resolve(),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        exists(path) {
-            return new Promise(resolve => {
-                if (this.hasAccess) {
-                    this.fs.access({
-                        path,
-                        success: () => resolve(true),
-                        fail: (err) => resolve(false)
-                    });
-                }
-                else {
-                    this.fs.getFileInfo({
-                        filePath: path,
-                        success: (res) => resolve(true),
-                        fail: (err) => resolve(false)
-                    });
-                }
-            });
-        }
-        getFileSize(path) {
-            return new Promise((resolve, reject) => {
-                this.fs.getFileInfo({
-                    filePath: path,
-                    success: (res) => resolve(res.size),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        mkdir(path, options) {
-            return new Promise((resolve, reject) => {
-                this.fs.mkdir({
-                    dirPath: path,
-                    recursive: options === null || options === void 0 ? void 0 : options.recursive,
-                    success: () => resolve(),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        rmdir(path, options) {
-            try {
-                this.fs.rmdirSync(path, options === null || options === void 0 ? void 0 : options.recursive);
-                return Promise.resolve();
-            }
-            catch (e) {
-                return Promise.reject(e);
-            }
-        }
-        readdir(path) {
-            return new Promise((resolve, reject) => {
-                this.fs.readdir({
-                    dirPath: path,
-                    success: (res) => resolve(res.files),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-        unzip(zipFilePath, targetPath) {
-            return new Promise((resolve, reject) => {
-                this.fs.unzip({
-                    zipFilePath,
-                    targetPath,
-                    success: () => resolve(),
-                    fail: (err) => reject(err)
-                });
-            });
-        }
-    }
-    Laya.PAL.register("fs", MgFileSystemAdapter);
 
     class MgFontAdapter extends Laya.FontAdapter {
         loadFont(task) {

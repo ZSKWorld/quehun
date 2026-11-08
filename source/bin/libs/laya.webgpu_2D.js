@@ -1048,23 +1048,60 @@
     }
 
     BatchManager.registerProvider(Laya.BaseRender2DType.graphics, WebGraphicsBatch);
+    class ReusableStructList extends Laya.FastSinglelist {
+        constructor() {
+            super(...arguments);
+            this.previousLength = 0;
+            this.generation = -1;
+        }
+    }
     class SortedStructs {
         constructor() {
             this.lists = new Map();
             this._indice = new Set;
             this._sortedIndice = [];
+            this._generation = 0;
         }
         add(struct, zIndex) {
             let list = this.lists.get(zIndex);
             if (!list)
-                this.lists.set(zIndex, list = new Laya.FastSinglelist());
+                this.lists.set(zIndex, list = new ReusableStructList());
+            if (list.generation !== this._generation) {
+                list.previousLength = list.length;
+                list.length = 0;
+                list.generation = this._generation;
+            }
             list.add(struct);
             if (list.length === 1)
                 this._indice.add(zIndex);
             return list;
         }
         reset() {
-            this._indice.forEach(i => this.lists.get(i).length = 0);
+            this._generation++;
+            this._sortedIndice.length = 0;
+        }
+        releaseUnused() {
+            this._indice.forEach(i => {
+                let list = this.lists.get(i);
+                if (list.generation !== this._generation) {
+                    list.elements.fill(null, 0, list.length);
+                    list.length = 0;
+                }
+                else if (list.length < list.previousLength) {
+                    list.elements.fill(null, list.length, list.previousLength);
+                }
+                list.previousLength = 0;
+                if (list.length === 0)
+                    this._indice.delete(i);
+            });
+        }
+        clear() {
+            this._indice.forEach(i => {
+                let list = this.lists.get(i);
+                list.elements.fill(null, 0, Math.max(list.length, list.previousLength));
+                list.length = 0;
+                list.previousLength = 0;
+            });
             this._indice.clear();
             this._sortedIndice.length = 0;
         }
@@ -1115,7 +1152,7 @@
             this._renderElements = new Laya.FastSinglelist();
             this._elementGroups = new Laya.FastSinglelist();
             this._structs = new SortedStructs();
-            this._structsPool = Laya.Pool.createPool(SortedStructs, null, obj => obj.reset());
+            this._structsPool = Laya.Pool.createPool(SortedStructs, null, obj => obj.clear());
             this._batchProviders = [];
             this._stencilClip2D = new WebStencilClip2D();
             this._priority = 0;
@@ -1201,6 +1238,9 @@
                 if (this.root) {
                     this._pStructs = this._structs;
                     this.cullAndSort(context, this.root);
+                }
+                this._structs.releaseUnused();
+                if (this.root) {
                     this.fillRenderElements();
                     this._enableBatch && Laya.LayaEnv.isPlaying && this.batch();
                 }
@@ -2197,6 +2237,10 @@
             if (WebGraphicsRenderUnitPool._count >= WebGraphicsRenderUnitPool._maxCount) {
                 unit.destroy();
                 return;
+            }
+            if (unit.primitiveShaderData) {
+                unit.primitiveShaderData.setTexture(Laya.ShaderDefines2D.UNIFORM_SPRITETEXTURE, null);
+                unit.primitiveShaderData.setTexture(Laya.ShaderDefines2D.UNIFORM_SPRITETEXTURE_ARRAY, null);
             }
             let vertexBlockCount = unit.vertexBlockCapacity;
             let indexCount = unit.indexCapacity;
@@ -5246,6 +5290,7 @@
             this.children.length = 0;
             this.children = null;
             this._pass = null;
+            this.owner = null;
         }
     }
 
@@ -6103,6 +6148,8 @@
             this._capabilityMap.set(Laya.RenderCapable.Texture_anisotropic, true);
             this._capabilityMap.set(Laya.RenderCapable.RenderTextureFormat_R16G16B16A16, true);
             this._capabilityMap.set(Laya.RenderCapable.RenderTextureFormat_Depth, true);
+            this._capabilityMap.set(Laya.RenderCapable.RenderTextureFormat_R16, true);
+            this._capabilityMap.set(Laya.RenderCapable.RenderTextureFormat_R16G16, true);
             this._capabilityMap.set(Laya.RenderCapable.RenderTextureFormat_ShadowMap, true);
             this._capabilityMap.set(Laya.RenderCapable.Vertex_VAO, true);
             this._capabilityMap.set(Laya.RenderCapable.DrawElement_Instance, true);
@@ -6123,6 +6170,8 @@
             this._capabilityMap.set(Laya.RenderCapable.ComputeShader, true);
             this._capabilityMap.set(Laya.RenderCapable.StorageBuffer, true);
             this._capabilityMap.set(Laya.RenderCapable.IndirectDraw, true);
+            this._capabilityMap.set(Laya.RenderCapable.Texture_NPOTFull, true);
+            this._capabilityMap.set(Laya.RenderCapable.MRT, true);
             let features = descriptor.requiredFeatures;
             for (const iterator of features) {
                 switch (iterator) {
@@ -6664,7 +6713,7 @@
         }
     `;
     }
-    function blitFramebuffer(device, srcColorTexture, dstColorTexture, dstColorFormat, srcDepthTexture, dstDepthTexture, dstDepthFormat, width, height, invertY) {
+    function blitFramebuffer(device, srcColorTexture, dstColorTexture, dstColorFormat, srcDepthTexture, dstDepthTexture, dstDepthFormat, width, height, invertY, commandEncoder) {
         let perDeviceInfo = byDevice$2.get(device);
         if (!perDeviceInfo) {
             perDeviceInfo = {
@@ -6681,7 +6730,7 @@
             });
         }
         const colorSampler = perDeviceInfo.colorSampler;
-        const encoder = device.createCommandEncoder({ label: 'blitFramebuffer encoder' });
+        const encoder = commandEncoder || device.createCommandEncoder({ label: 'blitFramebuffer encoder' });
         {
             const key = `${dstColorFormat}_${invertY}`;
             if (!perDeviceInfo.colorPipelines[key]) {
@@ -6705,13 +6754,13 @@
                 layout: pipeline.getBindGroupLayout(0),
                 entries: [
                     { binding: 0, resource: colorSampler },
-                    { binding: 1, resource: srcColorTexture.createView() },
+                    { binding: 1, resource: srcColorTexture.createView({ baseMipLevel: 0, mipLevelCount: 1 }) },
                 ],
             });
             const pass = encoder.beginRenderPass({
                 label: 'blitFramebuffer color pass',
                 colorAttachments: [{
-                        view: dstColorTexture.createView(),
+                        view: dstColorTexture.createView({ baseMipLevel: 0, mipLevelCount: 1 }),
                         loadOp: 'clear',
                         storeOp: 'store',
                     }],
@@ -6774,7 +6823,8 @@
             pass.draw(3);
             pass.end();
         }
-        device.queue.submit([encoder.finish()]);
+        if (!commandEncoder)
+            device.queue.submit([encoder.finish()]);
     }
 
     const isTypedArray = (arr) => arr && typeof arr.length === 'number' && arr.buffer instanceof ArrayBuffer && typeof arr.byteLength === 'number';
@@ -6808,32 +6858,32 @@
         switch (textureBindingViewDimension) {
             case '2d':
                 textureSnippet = 'texture_2d<f32>';
-                sampleSnippet = 'textureSample(ourTexture, ourSampler, fsInput.texcoord)';
+                sampleSnippet = 'textureSampleLevel(ourTexture, ourSampler, uv, 0.0)';
                 break;
             case '2d-array':
                 textureSnippet = 'texture_2d_array<f32>';
                 sampleSnippet = `
-          textureSample(
+          textureSampleLevel(
               ourTexture,
               ourSampler,
-              fsInput.texcoord,
-              uni.layer)`;
+              uv,
+              layer, 0.0)`;
                 break;
             case 'cube':
                 textureSnippet = 'texture_cube<f32>';
                 sampleSnippet = `
-          textureSample(
+          textureSampleLevel(
               ourTexture,
               ourSampler,
-              faceMat[uni.layer] * vec3f(fract(fsInput.texcoord), 1))`;
+              faceMat[layer] * vec3f(fract(uv), 1), 0.0)`;
                 break;
             case 'cube-array':
                 textureSnippet = 'texture_cube_array<f32>';
                 sampleSnippet = `
-          textureSample(
+          textureSampleLevel(
               ourTexture,
               ourSampler,
-              faceMat[uni.layer] * vec3f(fract(fsInput.texcoord), 1), uni.layer)`;
+              faceMat[layer % 6u] * vec3f(fract(uv), 1), layer / 6u, 0.0)`;
                 break;
             default:
                 throw new Error(`unsupported view: ${textureBindingViewDimension}`);
@@ -6850,10 +6900,12 @@
         struct VSOutput {
           @builtin(position) position: vec4f,
           @location(0) texcoord: vec2f,
+          @location(1) @interpolate(flat) layer: u32,
         };
 
         @vertex fn vs(
-          @builtin(vertex_index) vertexIndex : u32
+          @builtin(vertex_index) vertexIndex : u32,
+          @builtin(instance_index) layer : u32
         ) -> VSOutput {
           var pos = array<vec2f, 3>(
             vec2f(-1.0, -1.0),
@@ -6865,121 +6917,167 @@
           let xy = pos[vertexIndex];
           vsOutput.position = vec4f(xy, 0.0, 1.0);
           vsOutput.texcoord = xy * vec2f(0.5, -0.5) + vec2f(0.5);
+          vsOutput.layer = layer;
           return vsOutput;
         }
 
-        struct Uniforms {
-          layer: u32,
-        };
-
         @group(0) @binding(0) var ourSampler: sampler;
         @group(0) @binding(1) var ourTexture: ${textureSnippet};
-        @group(0) @binding(2) var<uniform> uni: Uniforms;
+
+        fn sampleAt(uv: vec2f, layer: u32) -> vec4f {
+          return ${sampleSnippet};
+        }
 
         @fragment fn fs(fsInput: VSOutput) -> @location(0) vec4f {
-          _ = uni.layer; // make sure this is used so all pipelines have the same bindings
-          return ${sampleSnippet};
+          return sampleAt(fsInput.texcoord, fsInput.layer);
+        }
+
+        // Floor-halving an odd axis covers up to three source texels per pixel.
+        // Weight their overlap so the last row/column contributes to the mip.
+        // Sampling texel centers retains the format's sRGB decode/encode behavior.
+        @fragment fn fsArea(fsInput: VSOutput) -> @location(0) vec4f {
+          let sourceSize = vec2f(textureDimensions(ourTexture, 0));
+          let targetSize = max(floor(sourceSize * 0.5), vec2f(1.0));
+          let pixel = floor(fsInput.position.xy);
+          let start = pixel * sourceSize / targetSize;
+          let end = (pixel + 1.0) * sourceSize / targetSize;
+          let origin = floor(start);
+          var color = vec4f(0.0);
+          for (var y = 0; y < 3; y++) {
+            for (var x = 0; x < 3; x++) {
+              let texel = origin + vec2f(f32(x), f32(y));
+              let overlap = max(vec2f(0.0), min(end, texel + 1.0) - max(start, texel));
+              let weight = overlap.x * overlap.y;
+              if (weight > 0.0) {
+                color += sampleAt((texel + 0.5) / sourceSize, fsInput.layer) * weight;
+              }
+            }
+          }
+          let area = end - start;
+          return color / (area.x * area.y);
         }
       `;
     }
     const byDevice$1 = new WeakMap();
     function genMipmap(device, texture, textureBindingViewDimension) {
+        if (texture.mipLevelCount <= 1)
+            return;
+        const encoder = device.createCommandEncoder({ label: 'mip gen encoder' });
+        encodeMipmaps(device, encoder, texture, textureBindingViewDimension);
+        device.queue.submit([encoder.finish()]);
+    }
+    function encodeMipmaps(device, encoder, texture, textureBindingViewDimension) {
+        if (texture.mipLevelCount <= 1)
+            return;
+        const dimension = textureBindingViewDimension || guessTextureBindingViewDimensionForTexture$1(texture);
+        const info = getMipmapTextureInfo(device, texture, dimension);
+        for (const step of info.passes) {
+            const pass = encoder.beginRenderPass(step.descriptor);
+            pass.setPipeline(step.pipeline);
+            pass.setBindGroup(0, step.bindGroup);
+            pass.draw(3, 1, 0, step.layer);
+            pass.end();
+        }
+    }
+    function getMipmapTextureInfo(device, texture, textureBindingViewDimension) {
         let perDeviceInfo = byDevice$1.get(device);
         if (!perDeviceInfo) {
             perDeviceInfo = {
-                pipelineByFormatAndView: {},
-                moduleByViewType: {},
+                sampler: device.createSampler({ minFilter: 'linear', magFilter: 'linear' }),
+                pipelineByFormatAndView: new Map(),
+                moduleByViewType: new Map(),
+                textures: new WeakMap(),
             };
             byDevice$1.set(device, perDeviceInfo);
         }
-        let { sampler, uniformBuffer, uniformValues, } = perDeviceInfo;
-        const { pipelineByFormatAndView, moduleByViewType, } = perDeviceInfo;
-        textureBindingViewDimension = textureBindingViewDimension || guessTextureBindingViewDimensionForTexture$1(texture);
-        let module = moduleByViewType[textureBindingViewDimension];
+        let textureInfos = perDeviceInfo.textures.get(texture);
+        if (!textureInfos) {
+            textureInfos = new Map();
+            perDeviceInfo.textures.set(texture, textureInfos);
+        }
+        const cached = textureInfos.get(textureBindingViewDimension);
+        if (cached)
+            return cached;
+        const { sampler, pipelineByFormatAndView, moduleByViewType } = perDeviceInfo;
+        let module = moduleByViewType.get(textureBindingViewDimension);
         if (!module) {
             const code = getMipmapGenerationWGSL(textureBindingViewDimension);
             module = device.createShaderModule({
                 label: `mipLevelGeneration for ${textureBindingViewDimension}`,
                 code,
             });
-            moduleByViewType[textureBindingViewDimension] = module;
+            moduleByViewType.set(textureBindingViewDimension, module);
         }
-        if (!sampler) {
-            sampler = device.createSampler({
-                minFilter: 'linear',
-                magFilter: 'linear',
-            });
-            uniformBuffer = device.createBuffer({
-                size: 16,
-                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-            });
-            uniformValues = new Uint32Array(1);
-            Object.assign(perDeviceInfo, { sampler, uniformBuffer, uniformValues });
-        }
-        const id = `${texture.format}.${textureBindingViewDimension}`;
-        if (!pipelineByFormatAndView[id]) {
-            pipelineByFormatAndView[id] = device.createRenderPipeline({
-                label: `mipLevelGenerator for ${textureBindingViewDimension}`,
-                layout: 'auto',
-                vertex: {
-                    module,
-                    entryPoint: 'vs',
-                },
-                fragment: {
-                    module,
-                    entryPoint: 'fs',
-                    targets: [{ format: texture.format }],
-                },
-            });
-        }
-        const pipeline = pipelineByFormatAndView[id];
-        for (let baseMipLevel = 1; baseMipLevel < texture.mipLevelCount; ++baseMipLevel) {
-            for (let baseArrayLayer = 0; baseArrayLayer < texture.depthOrArrayLayers; ++baseArrayLayer) {
-                uniformValues[0] = baseArrayLayer;
-                device.queue.writeBuffer(uniformBuffer, 0, uniformValues);
-                const bindGroup = device.createBindGroup({
-                    layout: pipeline.getBindGroupLayout(0),
-                    entries: [
-                        { binding: 0, resource: sampler },
-                        {
-                            binding: 1,
-                            resource: texture.createView({
-                                dimension: textureBindingViewDimension,
-                                baseMipLevel: baseMipLevel - 1,
-                                mipLevelCount: 1,
-                            }),
-                        },
-                        { binding: 2, resource: { buffer: uniformBuffer } },
-                    ],
+        const shaderModule = module;
+        const getPipeline = (areaFilter) => {
+            const entryPoint = areaFilter ? 'fsArea' : 'fs';
+            const id = `${texture.format}.${textureBindingViewDimension}.${entryPoint}`;
+            let pipeline = pipelineByFormatAndView.get(id);
+            if (!pipeline) {
+                pipeline = device.createRenderPipeline({
+                    label: `mipLevelGenerator for ${id}`,
+                    layout: 'auto',
+                    vertex: { module: shaderModule, entryPoint: 'vs' },
+                    fragment: { module: shaderModule, entryPoint, targets: [{ format: texture.format }] },
                 });
-                const renderPassDescriptor = {
+                pipelineByFormatAndView.set(id, pipeline);
+            }
+            return pipeline;
+        };
+        const info = { passes: [] };
+        const views = new Map();
+        const bindGroups = new Map();
+        const getView = (dimension, mip, layer) => {
+            const key = `${dimension}.${mip}.${layer}`;
+            let view = views.get(key);
+            if (!view) {
+                view = texture.createView({
+                    dimension,
+                    baseMipLevel: mip,
+                    mipLevelCount: 1,
+                    baseArrayLayer: layer < 0 ? 0 : layer,
+                    arrayLayerCount: layer < 0 ? undefined : 1,
+                });
+                views.set(key, view);
+            }
+            return view;
+        };
+        for (let baseMipLevel = 1; baseMipLevel < texture.mipLevelCount; baseMipLevel++) {
+            const sourceWidth = Math.max(1, texture.width >> (baseMipLevel - 1));
+            const sourceHeight = Math.max(1, texture.height >> (baseMipLevel - 1));
+            const pipeline = getPipeline((sourceWidth > 1 && sourceWidth % 2 !== 0)
+                || (sourceHeight > 1 && sourceHeight % 2 !== 0));
+            const layout = pipeline.getBindGroupLayout(0);
+            for (let baseArrayLayer = 0; baseArrayLayer < texture.depthOrArrayLayers; baseArrayLayer++) {
+                const sourceLayer = textureBindingViewDimension === '2d' ? baseArrayLayer : -1;
+                const key = `${baseMipLevel}.${sourceLayer}`;
+                let bindGroup = bindGroups.get(key);
+                if (!bindGroup) {
+                    bindGroup = device.createBindGroup({
+                        layout,
+                        entries: [
+                            { binding: 0, resource: sampler },
+                            { binding: 1, resource: getView(textureBindingViewDimension, baseMipLevel - 1, sourceLayer) },
+                        ],
+                    });
+                    bindGroups.set(key, bindGroup);
+                }
+                const view = getView('2d', baseMipLevel, baseArrayLayer);
+                const descriptor = {
                     label: 'mip gen renderPass',
                     colorAttachments: [
                         {
-                            view: texture.createView({
-                                dimension: '2d',
-                                baseMipLevel,
-                                mipLevelCount: 1,
-                                baseArrayLayer,
-                                arrayLayerCount: 1,
-                            }),
+                            view,
                             loadOp: 'clear',
                             storeOp: 'store',
                         },
                     ],
                 };
-                const encoder = device.createCommandEncoder({
-                    label: 'mip gen encoder',
-                });
-                const pass = encoder.beginRenderPass(renderPassDescriptor);
-                pass.setPipeline(pipeline);
-                pass.setBindGroup(0, bindGroup);
-                pass.draw(3);
-                pass.end();
-                const commandBuffer = encoder.finish();
-                device.queue.submit([commandBuffer]);
+                info.passes.push({ pipeline, descriptor, bindGroup, layer: baseArrayLayer });
             }
         }
+        textureInfos.set(textureBindingViewDimension, info);
+        return info;
     }
 
     function guessTextureBindingViewDimensionForTexture(texture) {
@@ -7238,8 +7336,29 @@
     }
 
     class WebGPUInternalRT {
-        constructor(colorFormat, depthStencilFormat, isCube, generateMipmap, samples, sRGB) {
+        get _color0Target() {
+            var _a;
+            if (this.destroyed)
+                throw new Error("Cannot access a destroyed MRT color target.");
+            if (!this.colorFormats)
+                return undefined;
+            if (!this._color0TargetCache) {
+                if (!((_a = this._textures[0]) === null || _a === void 0 ? void 0 : _a.resource))
+                    throw new Error("MRT color attachment 0 is unavailable.");
+                const target = new WebGPUInternalRT(this.colorFormat, this.depthStencilFormat, false, false, this._samples, this.isSRGB, undefined, this._device);
+                target._texturesOwnsResources = false;
+                target._depthOwnsResources = false;
+                target._textures = [this._textures[0]];
+                target._depthTexture = this._depthTexture;
+                target._getCacheInfo();
+                this._color0TargetCache = target;
+            }
+            return this._color0TargetCache;
+        }
+        get destroyed() { return this._disposed; }
+        constructor(colorFormat, depthStencilFormat, isCube, generateMipmap, samples, sRGB, colorFormats, device) {
             this._texturesOwnsResources = true;
+            this._depthOwnsResources = true;
             this.isSRGB = false;
             this.gpuMemory = 0;
             this._disposed = false;
@@ -7250,6 +7369,9 @@
             this.isSRGB = sRGB;
             this._generateMipmap = generateMipmap;
             this.colorFormat = colorFormat;
+            if (colorFormats)
+                this.colorFormats = Object.freeze(Array.from(colorFormats, format => format !== null && format !== void 0 ? format : null));
+            this._device = device;
             this.depthStencilFormat = depthStencilFormat;
             this._textures = [];
             if (samples > 1)
@@ -7258,11 +7380,15 @@
             Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_RenderTexture, 1);
         }
         _getCacheInfo() {
+            var _a;
             let id = "";
             if (this._textures && this._textures.length > 0) {
                 for (let i = 0; i < this._textures.length; i++) {
                     if (this._textures[i]) {
-                        id += `c${i}_${this._textures[i].format}_`;
+                        id += `c${i}_${(_a = this._textures[i]._webGPUFormat) !== null && _a !== void 0 ? _a : this._textures[i].format}_`;
+                    }
+                    else {
+                        id += `c${i}_null_`;
                     }
                 }
             }
@@ -7280,13 +7406,16 @@
             }
         }
         dispose(destroyResource = true) {
+            var _a, _b;
             if (this._disposed)
                 return;
             this._disposed = true;
+            (_a = this._color0TargetCache) === null || _a === void 0 ? void 0 : _a.dispose(destroyResource);
+            this._color0TargetCache = undefined;
             if (this._textures) {
                 if (this._texturesOwnsResources) {
                     for (let i = this._textures.length - 1; i > -1; i--)
-                        this._textures[i].dispose(destroyResource);
+                        (_b = this._textures[i]) === null || _b === void 0 ? void 0 : _b.dispose(destroyResource);
                 }
                 this._textures.length = 0;
             }
@@ -7296,9 +7425,13 @@
                 this._texturesResolve.length = 0;
             }
             if (this._depthTexture) {
-                this._depthTexture.dispose(destroyResource);
+                if (this._depthOwnsResources)
+                    this._depthTexture.dispose(destroyResource);
                 this._depthTexture = null;
             }
+            this._renderPassDescriptor = null;
+            this._colorStates.length = 0;
+            this.gpuMemory = 0;
             Laya.LayaGL.statAgent.recordCountData(Laya.StatElement.C_RenderTexture, -1);
         }
     }
@@ -7508,6 +7641,8 @@
         }
         _getGPUTexturePixelByteSize(format) {
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    return 1;
                 case Laya.TextureFormat.R5G6B5:
                     return 2;
                 case Laya.TextureFormat.R8G8B8:
@@ -7528,6 +7663,8 @@
         }
         _getGPURenderTexturePixelByteSize(format) {
             switch (format) {
+                case Laya.RenderTargetFormat.R16: return 2;
+                case Laya.RenderTargetFormat.R16G16: return 4;
                 case Laya.RenderTargetFormat.R8G8B8:
                     return 3;
                 case Laya.RenderTargetFormat.R8G8B8A8:
@@ -7577,6 +7714,8 @@
         _getGPUTextureFormat(format, useSRGB) {
             let webgpuTextureFormat = exports.WebGPUTextureFormat.rgba8uint;
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    return exports.WebGPUTextureFormat.r8unorm;
                 case Laya.TextureFormat.R5G6B5:
                     return null;
                 case Laya.TextureFormat.R8G8B8:
@@ -7653,6 +7792,8 @@
             const engine = WebGPURenderEngine._instance;
             let webgpuTextureFormat = exports.WebGPUTextureFormat.rgba8uint;
             switch (format) {
+                case Laya.RenderTargetFormat.R16: return exports.WebGPUTextureFormat.r16float;
+                case Laya.RenderTargetFormat.R16G16: return exports.WebGPUTextureFormat.rg16float;
                 case Laya.RenderTargetFormat.R8G8B8:
                 case Laya.RenderTargetFormat.R8G8B8A8:
                     if (!storage && engine._preferredFormat == exports.WebGPUTextureFormat.bgra8unorm) {
@@ -7753,6 +7894,10 @@
                 typedSize: 1
             };
             switch (format) {
+                case Laya.TextureFormat.Alpha8:
+                    formatParams.channels = 1;
+                    formatParams.bytesPerPixel = 1;
+                    return formatParams;
                 case Laya.TextureFormat.R8G8B8A8:
                     formatParams.channels = 4;
                     formatParams.bytesPerPixel = 4;
@@ -7807,7 +7952,6 @@
             };
             const canCopy = !isCompressTexture;
             let usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST;
-            const mipLevelCount = generateMipmap ? Math.max(Math.ceil(Math.log2(width)) + 1, Math.ceil(Math.log2(height)) + 1) : 1;
             if (canCopy)
                 usage |= GPUTextureUsage.RENDER_ATTACHMENT;
             let dimensionType;
@@ -7825,7 +7969,7 @@
             }
             const textureDescriptor = {
                 size: textureSize,
-                mipLevelCount,
+                mipLevelCount: generateMipmap && multiSamples === 1 ? numMipLevels(textureSize, dimensionType) : 1,
                 sampleCount: multiSamples,
                 dimension: dimensionType,
                 format: gpuFormat,
@@ -7841,11 +7985,12 @@
                 case Laya.TextureFormat.R8G8B8A8:
                 case Laya.TextureFormat.R5G6B5:
                 case Laya.TextureFormat.Alpha8:
-                case Laya.TextureFormat.R32G32B32A32:
-                case Laya.TextureFormat.R32G32B32:
                 case Laya.TextureFormat.R16G16B16A16:
                 case Laya.TextureFormat.R16G16B16:
                     return true;
+                case Laya.TextureFormat.R32G32B32A32:
+                case Laya.TextureFormat.R32G32B32:
+                    return !!this._engine.getCapable(Laya.RenderCapable.Texture_FloatLinearFiltering);
                 default:
                     return false;
             }
@@ -8199,7 +8344,7 @@
                     premultipliedAlpha: premultiplyAlpha
                 };
                 if (compressed) {
-                    let dataLength = (((Math.max(4, mipmapWidth) / 4) * Math.max(4, mipmapHeight)) / 4) * blockBytes;
+                    let dataLength = Math.ceil(mipmapWidth / 4) * Math.ceil(mipmapHeight / 4) * blockBytes;
                     let sourceData = new Uint8Array(source, dataOffset, dataLength);
                     device.queue.writeTexture(imageCopy, sourceData, dataLayout, size);
                     dataOffset += bpp ? (mipmapWidth * mipmapHeight * (bpp / 8)) : dataLength;
@@ -8211,8 +8356,8 @@
                     device.queue.writeTexture(imageCopy, uploadSource, dataLayout, size);
                     dataOffset += dataLength * channelsByte;
                 }
-                mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             texture.mipmapLoaded = true;
         }
@@ -8377,8 +8522,8 @@
                     dataOffset += imageSize;
                     dataOffset += 3 - ((imageSize + 3) % 4);
                 }
-                mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
             }
             texture.mipmapLoaded = true;
         }
@@ -8413,7 +8558,7 @@
                         }
                     };
                     if (compressed) {
-                        let dataLength = Math.max(4, mipmapWidth) / 4 * Math.max(4, mipmapHeight) / 4 * blockBytes;
+                        let dataLength = Math.ceil(mipmapWidth / 4) * Math.ceil(mipmapHeight / 4) * blockBytes;
                         let sourceData = new Uint8Array(source, dataOffset, dataLength);
                         device.queue.writeTexture(imageCopy, sourceData, dataLayout, size);
                         dataOffset += bpp ? (mipmapWidth * mipmapHeight * (bpp / 8)) : dataLength;
@@ -8425,8 +8570,8 @@
                         device.queue.writeTexture(imageCopy, uploadSource, dataLayout, size);
                         dataOffset += dataLength * channelsByte;
                     }
-                    mipmapWidth = Math.max(1, mipmapWidth * 0.5);
-                    mipmapHeight = Math.max(1, mipmapHeight * 0.5);
+                    mipmapWidth = Math.max(1, Math.floor(mipmapWidth * 0.5));
+                    mipmapHeight = Math.max(1, Math.floor(mipmapHeight * 0.5));
                 }
             }
             texture.mipmapLoaded = true;
@@ -8482,16 +8627,116 @@
                     return false;
             }
         }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat, color0SRGB = false) {
+            if (!this._engine.getCapable(Laya.RenderCapable.MRT))
+                throw new Error("WebGPU MRT is not supported by this engine.");
+            const device = this._engine.getDevice();
+            const limits = device.limits;
+            if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0
+                || width > limits.maxTextureDimension2D || height > limits.maxTextureDimension2D)
+                throw new RangeError(`MRT dimensions must be positive integers no greater than ${limits.maxTextureDimension2D}.`);
+            if (!Array.isArray(colorFormats) || colorFormats.length < 1 || colorFormats.length > limits.maxColorAttachments)
+                throw new RangeError(`MRT requires between 1 and ${limits.maxColorAttachments} color attachments.`);
+            const formats = Array.from(colorFormats, format => format !== null && format !== void 0 ? format : null);
+            if (formats[0] === null)
+                throw new Error("MRT color attachment 0 must be present.");
+            const useSRGBExt = this._isSRGBFormat(formats[0]) || (color0SRGB && this._supportSRGB(formats[0], false));
+            const gpuFormats = Array.from(formats, (format, index) => format === null ? null : this._getGPURenderTargetFormat(format, index === 0 && color0SRGB, false));
+            this._validateMRTColorFormats(gpuFormats);
+            switch (depthStencilFormat) {
+                case Laya.RenderTargetFormat.None:
+                case Laya.RenderTargetFormat.DEPTH_16:
+                case Laya.RenderTargetFormat.DEPTH_32:
+                case Laya.RenderTargetFormat.DEPTHSTENCIL_24_8:
+                case Laya.RenderTargetFormat.DEPTHSTENCIL_24_Plus:
+                case Laya.RenderTargetFormat.STENCIL_8:
+                    break;
+                default:
+                    throw new Error(`Unsupported WebGPU MRT depth/stencil format: ${depthStencilFormat}.`);
+            }
+            const rt = new WebGPUInternalRT(formats[0], depthStencilFormat, false, false, 1, useSRGBExt, formats, device);
+            rt._textures = formats.map(() => null);
+            const allocate = (format, gpuFormat, depth, sRGB = false, index = -1) => {
+                const tex = new WebGPUInternalTex(width, height, 1, Laya.TextureDimension.Tex2D, false, 1, sRGB, 1);
+                if (depth)
+                    rt._depthTexture = tex;
+                else
+                    rt._textures[index] = tex;
+                tex.format = format;
+                tex.statisAsRenderTexture();
+                tex.resource = device.createTexture({
+                    label: depth ? 'MRT depth/stencil' : `MRT color ${index}`,
+                    size: { width, height, depthOrArrayLayers: 1 },
+                    dimension: '2d', format: gpuFormat, mipLevelCount: 1, sampleCount: 1,
+                    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.TEXTURE_BINDING
+                        | (depth ? 0 : GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST)
+                });
+                tex._webGPUFormat = gpuFormat;
+                tex.gpuMemory = this._getGPURenderTextureMemorySize(width, height, gpuFormat, false, this._getGPURenderTexturePixelByteSize(format));
+                rt.gpuMemory += tex.gpuMemory;
+            };
+            for (let i = 0; i < formats.length; i++) {
+                if (formats[i] !== null)
+                    allocate(formats[i], gpuFormats[i], false, i === 0 && useSRGBExt, i);
+            }
+            if (depthStencilFormat !== Laya.RenderTargetFormat.None)
+                allocate(depthStencilFormat, this._getGPURenderTargetFormat(depthStencilFormat, false, false), true);
+            rt._getCacheInfo();
+            return rt;
+        }
+        _validateMRTColorFormats(formats) {
+            let bytes = 0;
+            for (const format of formats) {
+                if (format === null)
+                    continue;
+                let cost, alignment;
+                switch (format) {
+                    case exports.WebGPUTextureFormat.r16float:
+                        cost = 2;
+                        alignment = 2;
+                        break;
+                    case exports.WebGPUTextureFormat.rg16float:
+                        cost = 4;
+                        alignment = 2;
+                        break;
+                    case exports.WebGPUTextureFormat.rgba8unorm:
+                    case exports.WebGPUTextureFormat.bgra8unorm:
+                    case exports.WebGPUTextureFormat.rgba8unorm_srgb:
+                    case exports.WebGPUTextureFormat.bgra8unorm_srgb:
+                        cost = 8;
+                        alignment = 1;
+                        break;
+                    case exports.WebGPUTextureFormat.rgba16float:
+                        cost = 8;
+                        alignment = 2;
+                        break;
+                    case exports.WebGPUTextureFormat.rgba32float:
+                        cost = 16;
+                        alignment = 4;
+                        break;
+                    default:
+                        throw new Error(`Invalid WebGPU MRT color format: ${format}.`);
+                }
+                bytes = Math.ceil(bytes / alignment) * alignment + cost;
+            }
+            const budget = this._engine.getDevice().limits.maxColorAttachmentBytesPerSample;
+            if (bytes > budget)
+                throw new RangeError(`MRT color attachments exceed the ${budget}-byte per-sample budget.`);
+        }
         createRenderTargetInternal(width, height, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
+            generateMipmap = generateMipmap && this._canGenerateMipmapByFormat(colorFormat);
             const useSRGBExt = this._isSRGBFormat(colorFormat) || (sRGB && this._supportSRGB(colorFormat, generateMipmap));
             let gammaCorrection = 1.0;
             const pixelByteSize = this._getGPURenderTexturePixelByteSize(colorFormat);
             const gpuColorFormat = this._getGPURenderTargetFormat(colorFormat, sRGB, storage);
             const gpuColorDescriptor = this._getGPUTextureDescriptor(Laya.TextureDimension.Tex2D, width, height, gpuColorFormat, 1, generateMipmap, multiSamples, false);
-            gpuColorDescriptor.usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
+            gpuColorDescriptor.usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.RENDER_ATTACHMENT;
+            if (multiSamples === 1) {
+                gpuColorDescriptor.usage |= GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
+            }
             if (storage) {
                 let supportStorage = this._supportStorage(gpuColorFormat);
-                if (supportStorage) {
+                if (supportStorage && multiSamples === 1) {
                     gpuColorDescriptor.usage |= GPUTextureUsage.STORAGE_BINDING;
                 }
                 else {
@@ -8500,13 +8745,13 @@
             }
             gpuColorDescriptor.label = 'renderTarget color';
             const gpuColorTexture = this._engine.getDevice().createTexture(gpuColorDescriptor);
-            const internalRT = new WebGPUInternalRT(colorFormat, depthStencilFormat, false, generateMipmap, multiSamples, useSRGBExt);
+            const internalRT = new WebGPUInternalRT(colorFormat, depthStencilFormat, false, generateMipmap, multiSamples, useSRGBExt, undefined, this._engine.getDevice());
             internalRT._textures.push(new WebGPUInternalTex(width, height, 1, Laya.TextureDimension.Tex2D, generateMipmap, multiSamples, useSRGBExt, gammaCorrection));
             internalRT._textures[0].format = colorFormat;
             internalRT._textures[0].resource = gpuColorTexture;
             internalRT._textures[0]._webGPUFormat = gpuColorFormat;
             internalRT._textures[0].statisAsRenderTexture();
-            internalRT._textures[0].gpuMemory = this._getGPURenderTextureMemorySize(width, height, gpuColorFormat, generateMipmap, pixelByteSize) * multiSamples;
+            internalRT._textures[0].gpuMemory = this._getGPURenderTextureMemorySize(width, height, gpuColorFormat, internalRT._textures[0].mipmap, pixelByteSize) * multiSamples;
             if (multiSamples > 1) {
                 const gpuColorDescriptor = this._getGPUTextureDescriptor(Laya.TextureDimension.Tex2D, width, height, gpuColorFormat, 1, generateMipmap, 1, false);
                 gpuColorDescriptor.usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC | GPUTextureUsage.COPY_DST;
@@ -8521,11 +8766,11 @@
             if (depthStencilFormat !== Laya.RenderTargetFormat.None) {
                 const pixelByteSize = this._getGPURenderTexturePixelByteSize(depthStencilFormat);
                 const gpuDepthFormat = this._getGPURenderTargetFormat(depthStencilFormat, false, storage);
-                const gpuDepthDescriptor = this._getGPUTextureDescriptor(Laya.TextureDimension.Tex2D, width, height, gpuDepthFormat, 1, generateMipmap, multiSamples, false);
+                const gpuDepthDescriptor = this._getGPUTextureDescriptor(Laya.TextureDimension.Tex2D, width, height, gpuDepthFormat, 1, false, multiSamples, false);
                 gpuDepthDescriptor.usage = GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.RENDER_ATTACHMENT;
                 gpuDepthDescriptor.label = 'renderTarget depth';
                 const gpuDepthTexture = this._engine.getDevice().createTexture(gpuDepthDescriptor);
-                internalRT._depthTexture = new WebGPUInternalTex(width, height, 1, Laya.TextureDimension.Tex2D, false, 1, false, 1);
+                internalRT._depthTexture = new WebGPUInternalTex(width, height, 1, Laya.TextureDimension.Tex2D, false, multiSamples, false, 1);
                 internalRT._depthTexture.format = depthStencilFormat;
                 internalRT._depthTexture.resource = gpuDepthTexture;
                 internalRT._depthTexture._webGPUFormat = gpuDepthFormat;
@@ -8534,6 +8779,21 @@
             }
             internalRT._getCacheInfo();
             return internalRT;
+        }
+        encodeRenderTargetMipmaps(renderTarget, encoder) {
+            if (!renderTarget || !renderTarget._generateMipmap)
+                return;
+            const textures = renderTarget._samples > 1 ? renderTarget._texturesResolve : renderTarget._textures;
+            for (const texture of textures) {
+                if (!texture)
+                    continue;
+                const resource = texture.resource;
+                if (texture.mipmap && texture.baseMipmapLevel === 0 && resource.mipLevelCount > 1
+                    && resource.sampleCount === 1 && resource.dimension === '2d'
+                    && this._canGenerateMipmapByFormat(texture.format)) {
+                    encodeMipmaps(this._engine.getDevice(), encoder, resource);
+                }
+            }
         }
         createScreenRenderTargetInternal(width, height, colorFormat, sRGB) {
             const useSRGBExt = this._isSRGBFormat(colorFormat) || (sRGB && this._supportSRGB(colorFormat, false));
@@ -8605,7 +8865,10 @@
             const srcDepthRes = source._depthTexture ? source._depthTexture.resource : null;
             const dstDepthRes = dest._depthTexture ? dest._depthTexture.resource : null;
             const dstDepthFormat = dest._depthTexture ? dest._depthTexture._webGPUFormat : null;
-            blitFramebuffer(device, srcColorTex.resource, dstColorTex.resource, dstColorTex._webGPUFormat, srcDepthRes, dstDepthRes, dstDepthFormat, srcColorTex.width, srcColorTex.height, invertY);
+            const encoder = device.createCommandEncoder({ label: 'blitFramebuffer encoder' });
+            blitFramebuffer(device, srcColorTex.resource, dstColorTex.resource, dstColorTex._webGPUFormat, srcDepthRes, dstDepthRes, dstDepthFormat, srcColorTex.width, srcColorTex.height, invertY, encoder);
+            this.encodeRenderTargetMipmaps(dest, encoder);
+            device.queue.submit([encoder.finish()]);
         }
         createRenderTargetArrayInternal(width, height, depth, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
             throw new Laya.NotImplementedError();
@@ -8625,7 +8888,11 @@
         readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out) {
             throw new Laya.NotImplementedError();
         }
-        async readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out) {
+        async readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if ((renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.colorFormats) || (renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.colorFormat) === Laya.RenderTargetFormat.R16 || (renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.colorFormat) === Laya.RenderTargetFormat.R16G16)
+                return this._readMultiRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex);
+            if (attachmentIndex !== 0)
+                throw new Error("WebGPU readRenderTargetPixelDataAsync currently only supports color attachment 0.");
             const texture = renderTarget._textures[0].resource;
             const device = this._engine.getDevice();
             let bytesPerPixel = 4;
@@ -8691,6 +8958,79 @@
                 return out;
             });
         }
+        async _readMultiRenderTargetPixelData(rt, x, y, width, height, out, index) {
+            var _a, _b;
+            if (!Number.isInteger(index) || index < 0 || index >= ((_b = (_a = rt.colorFormats) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 1))
+                throw new RangeError(`MRT color attachment index out of range: ${index}.`);
+            const device = this._engine.getDevice();
+            if (rt.destroyed || rt._device !== device)
+                throw new Error("Cannot read a destroyed MRT or an MRT from another WebGPU device.");
+            const tex = rt._textures[index];
+            if (!tex)
+                throw new RangeError(`MRT color attachment ${index} is not bound.`);
+            if (!tex.resource || rt._samples !== 1)
+                throw new Error("MRT readback requires a valid single-sampled color attachment.");
+            if (!Number.isInteger(x) || !Number.isInteger(y) || !Number.isInteger(width) || !Number.isInteger(height)
+                || x < 0 || y < 0 || width <= 0 || height <= 0 || x + width > tex.width || y + height > tex.height)
+                throw new RangeError("MRT readback rectangle must be positive-sized and within the attachment.");
+            const format = tex._webGPUFormat;
+            const isHalf = format === exports.WebGPUTextureFormat.rgba16float || format === exports.WebGPUTextureFormat.r16float || format === exports.WebGPUTextureFormat.rg16float;
+            const channels = format === exports.WebGPUTextureFormat.r16float ? 1 : format === exports.WebGPUTextureFormat.rg16float ? 2 : 4;
+            const isFloat32 = format === exports.WebGPUTextureFormat.rgba32float;
+            const isFloat = isHalf || isFloat32;
+            const isBGRA = format === exports.WebGPUTextureFormat.bgra8unorm || format === exports.WebGPUTextureFormat.bgra8unorm_srgb;
+            if (!isFloat && !isBGRA && format !== exports.WebGPUTextureFormat.rgba8unorm && format !== exports.WebGPUTextureFormat.rgba8unorm_srgb)
+                throw new Error(`Unsupported WebGPU MRT readback format: ${format}.`);
+            if (isFloat ? !(out instanceof Float32Array) : !(out instanceof Uint8Array) && !(out instanceof Uint8ClampedArray))
+                throw new TypeError(isFloat ? "Floating-point MRT readback requires Float32Array." : "RGBA8 MRT readback requires Uint8Array or Uint8ClampedArray.");
+            const requiredBytes = width * height * channels * (isFloat ? 4 : 1);
+            if (out.byteLength < requiredBytes)
+                throw new RangeError(`MRT readback output requires at least ${requiredBytes} bytes.`);
+            const rowBytes = width * channels * (isFloat32 ? 4 : isHalf ? 2 : 1);
+            const bytesPerRow = Math.ceil(rowBytes / 256) * 256;
+            const bufferSize = bytesPerRow * height;
+            if (!Number.isSafeInteger(bufferSize) || bufferSize > device.limits.maxBufferSize)
+                throw new RangeError("MRT readback staging buffer exceeds the device buffer size limit.");
+            const buffer = device.createBuffer({ label: 'MRT readback', size: bufferSize, usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+            const encoder = device.createCommandEncoder();
+            encoder.copyTextureToBuffer({ texture: tex.resource, origin: [x, y, 0] }, { buffer, bytesPerRow }, { width, height, depthOrArrayLayers: 1 });
+            device.queue.submit([encoder.finish()]);
+            await buffer.mapAsync(GPUMapMode.READ).then(undefined, error => {
+                buffer.destroy();
+                throw error;
+            });
+            const data = buffer.getMappedRange();
+            if (isHalf) {
+                const source = new Uint16Array(data);
+                const dest = out;
+                for (let row = 0; row < height; row++)
+                    for (let i = 0; i < width * channels; i++)
+                        dest[row * width * channels + i] = Laya.HalfFloatUtils.convertToNumber(source[row * bytesPerRow / 2 + i]);
+            }
+            else if (isFloat32) {
+                const source = new Float32Array(data);
+                const dest = out;
+                for (let row = 0; row < height; row++)
+                    dest.set(source.subarray(row * bytesPerRow / 4, row * bytesPerRow / 4 + width * 4), row * width * 4);
+            }
+            else {
+                const source = new Uint8Array(data);
+                const dest = new Uint8Array(out.buffer, out.byteOffset, out.byteLength);
+                for (let row = 0; row < height; row++) {
+                    dest.set(source.subarray(row * bytesPerRow, row * bytesPerRow + rowBytes), row * rowBytes);
+                    if (isBGRA) {
+                        for (let i = row * rowBytes; i < (row + 1) * rowBytes; i += 4) {
+                            const red = dest[i + 2];
+                            dest[i + 2] = dest[i];
+                            dest[i] = red;
+                        }
+                    }
+                }
+            }
+            buffer.unmap();
+            buffer.destroy();
+            return out;
+        }
         initVideoTextureData(texture) { }
         async updateVideoTexture(texture, video, premultiplyAlpha, invertY) {
             if (!video || video.readyState < 2)
@@ -8711,6 +9051,8 @@
             device.queue.copyExternalImageToTexture(image, textureCopyView, copySize);
         }
         getRenderTextureDataAsync(internalTex, x, y, width, height) {
+            if (internalTex.colorFormat === Laya.RenderTargetFormat.R16 || internalTex.colorFormat === Laya.RenderTargetFormat.R16G16)
+                return this.readRenderTargetPixelDataAsync(internalTex, x, y, width, height, new Float32Array(width * height * (internalTex.colorFormat === Laya.RenderTargetFormat.R16 ? 1 : 2)));
             let bytesPerRow = 0;
             switch (internalTex.colorFormat) {
                 case Laya.RenderTargetFormat.R8G8B8A8:
@@ -8747,10 +9089,36 @@
                     this._onStateChange();
             }
         }
+        get baseMipmapLevel() {
+            return this._baseMipmapLevel;
+        }
+        set baseMipmapLevel(value) {
+            if (this._baseMipmapLevel !== value) {
+                this._baseMipmapLevel = value;
+                this._invalidateMipmapViews();
+            }
+        }
+        get maxMipmapLevel() {
+            return this._maxMipmapLevel;
+        }
+        set maxMipmapLevel(value) {
+            if (this._maxMipmapLevel !== value) {
+                this._maxMipmapLevel = value;
+                this._invalidateMipmapViews();
+            }
+        }
         _onStateChange() {
             this.shaderDatas.forEach((value, key) => {
                 key.bindGroupUpdateTex(value, this);
             });
+        }
+        _invalidateMipmapViews() {
+            this.samplerView = null;
+            this.attachmentView = null;
+            if (this._resource) {
+                this.resourceVersion++;
+                this._onStateChange();
+            }
         }
         get filterMode() {
             return this._filterMode;
@@ -8875,8 +9243,8 @@
             if (dimension === Laya.TextureDimension.Tex3D) {
                 this.isPotSize = this.isPotSize && _isPot(this.depth);
             }
-            this.mipmap = mipmap && this.isPotSize;
-            this.mipmapCount = this.mipmap ? Math.max(Math.ceil(Math.log2(width)) + 1, Math.ceil(Math.log2(height)) + 1) : 1;
+            this.mipmap = mipmap && multiSamples === 1;
+            this.mipmapCount = this.mipmap ? numMipLevels([width, height, depth], dimension === Laya.TextureDimension.Tex3D ? '3d' : '2d') : 1;
             this.maxMipmapLevel = this.mipmapCount - 1;
             this.baseMipmapLevel = 0;
             this.useSRGBLoad = useSRGBLoader;
@@ -8978,6 +9346,7 @@
         }
         getAttachmentView(descriptor) {
             descriptor.aspect = 'all';
+            descriptor.mipLevelCount = 1;
             this.attachmentView = this.resource.createView(descriptor);
             return this.attachmentView;
         }
@@ -9277,12 +9646,16 @@
                 depthCompare: stateDepthCompare,
                 depthWriteEnabled: depthTestOff ? false : depthStencilParam.depthWrite,
             };
-            if (depthStencilParam.depthWrite && depthStencilParam.depthBias) {
+            if (format === Laya.RenderTargetFormat.STENCIL_8) {
+                delete state.depthCompare;
+                delete state.depthWriteEnabled;
+            }
+            if (format !== Laya.RenderTargetFormat.STENCIL_8 && depthStencilParam.depthWrite && depthStencilParam.depthBias) {
                 state.depthBias = depthStencilParam.depthBiasConstant;
                 state.depthBiasSlopeScale = depthStencilParam.depthBiasSlopeScale;
                 state.depthBiasClamp = depthStencilParam.depthBiasClamp;
             }
-            if (depthStencilParam.stencilEnable) {
+            if (depthStencilParam.stencilEnable && (format === Laya.RenderTargetFormat.STENCIL_8 || format === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8)) {
                 let stateStencilCompare;
                 let stateFailOp = getGPUStencilOperation(depthStencilParam.stencilOp.x);
                 let stateDepthFailOp = getGPUStencilOperation(depthStencilParam.stencilOp.y);
@@ -9433,7 +9806,7 @@
         {
             const stencilParam = depthStencilParam;
             const stencilTest = (_k = ((_j = renderState.stencilTest) !== null && _j !== void 0 ? _j : data[Laya.Shader3D.STENCIL_TEST])) !== null && _k !== void 0 ? _k : Laya.RenderState.Default.stencilTest;
-            let formatHasStencil = dest.depthStencilFormat === Laya.RenderTargetFormat.STENCIL_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_Plus;
+            let formatHasStencil = dest.depthStencilFormat === Laya.RenderTargetFormat.STENCIL_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8;
             const stencilRef = (_m = (_l = renderState.stencilRef) !== null && _l !== void 0 ? _l : data[Laya.Shader3D.STENCIL_Ref]) !== null && _m !== void 0 ? _m : Laya.RenderState.Default.stencilRef;
             const stencilWrite = (_p = (_o = renderState.stencilWrite) !== null && _o !== void 0 ? _o : data[Laya.Shader3D.STENCIL_WRITE]) !== null && _p !== void 0 ? _p : Laya.RenderState.Default.stencilWrite;
             const stencilOp = stencilWrite ? ((_r = (_q = renderState.stencilOp) !== null && _q !== void 0 ? _q : data[Laya.Shader3D.STENCIL_Op]) !== null && _r !== void 0 ? _r : Laya.RenderState.Default.stencilOp) : Laya.RenderState.Default.stencilOp;
@@ -9463,7 +9836,7 @@
         depthStencilParam.depthBiasConstant = depthBiasConstant;
         depthStencilParam.depthBiasSlopeScale = depthBiasSlopeScale;
         depthStencilParam.depthBiasClamp = depthBiasClamp;
-        let formatHasStencil = dest.depthStencilFormat === Laya.RenderTargetFormat.STENCIL_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_Plus;
+        let formatHasStencil = dest.depthStencilFormat === Laya.RenderTargetFormat.STENCIL_8 || dest.depthStencilFormat === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8;
         const stencilTest = (_g = data[Laya.Shader3D.STENCIL_TEST]) !== null && _g !== void 0 ? _g : Laya.RenderState.Default.stencilTest;
         const stencilRef = (_h = data[Laya.Shader3D.STENCIL_Ref]) !== null && _h !== void 0 ? _h : Laya.RenderState.Default.stencilRef;
         const stencilWrite = (_j = data[Laya.Shader3D.STENCIL_WRITE]) !== null && _j !== void 0 ? _j : Laya.RenderState.Default.stencilWrite;
@@ -10637,6 +11010,7 @@ ${Object.entries(struct)
             this._borrowedSubBuffers.clear();
         }
         clearData() {
+            var _a;
             for (const index in this._data) {
                 if (this._data[index] instanceof Laya.Resource)
                     this._data[index]._removeReference();
@@ -10646,6 +11020,10 @@ ${Object.entries(struct)
                     this._data[index].shaderDatas.delete(this);
             }
             this._data = {};
+            const textures = this._textureData;
+            this._textureData = {};
+            for (const index in textures)
+                (_a = textures[index]) === null || _a === void 0 ? void 0 : _a._removeReference();
             this._uniformBuffers.forEach((buffer, name) => {
                 let id = Laya.Shader3D.propertyNameToID(name);
                 this._data[id] = buffer;
@@ -10746,6 +11124,12 @@ ${Object.entries(struct)
         }
     }
     class WebGPURenderEngine extends Laya.EventDispatcher {
+        get reduceWriteBufferCalls() {
+            return this.gpuBufferMgr.reduceWriteBufferCalls;
+        }
+        set reduceWriteBufferCalls(value) {
+            this.gpuBufferMgr.reduceWriteBufferCalls = value;
+        }
         constructor(config, canvas) {
             super();
             this._screenResized = false;
@@ -10815,6 +11199,8 @@ ${Object.entries(struct)
                     maxTextureDimension2D: al.maxTextureDimension2D,
                     maxTextureDimension3D: al.maxTextureDimension3D,
                     maxTextureArrayLayers: al.maxTextureArrayLayers,
+                    maxColorAttachments: al.maxColorAttachments,
+                    maxColorAttachmentBytesPerSample: al.maxColorAttachmentBytesPerSample,
                     maxBufferSize: al.maxBufferSize,
                     maxStorageBufferBindingSize: al.maxStorageBufferBindingSize,
                     maxUniformBufferBindingSize: al.maxUniformBufferBindingSize,
@@ -10968,6 +11354,10 @@ ${Object.entries(struct)
                     return 1024;
                 case Laya.RenderParams.MaxComputeElement:
                     return this._device.limits.maxComputeWorkgroupSizeX * this._device.limits.maxComputeWorkgroupsPerDimension;
+                case Laya.RenderParams.Max_Color_Attachment_Count:
+                    return this._device.limits.maxColorAttachments;
+                case Laya.RenderParams.Max_Color_Attachment_Bytes_Per_Sample:
+                    return this._device.limits.maxColorAttachmentBytesPerSample;
             }
             return 0;
         }
@@ -12247,6 +12637,10 @@ ${Object.entries(struct)
             }
             let vertexCode = vs.join('\n');
             let fragmentCode = fs.join('\n');
+            const mrtTargetCount = Laya.ShaderMRT.getTargetCount(defines);
+            const mrt = mrtTargetCount > 0 || defines.indexOf(Laya.ShaderMRT.defineName) !== -1;
+            if (mrtTargetCount)
+                fragmentCode = Laya.ShaderMRT.prepare(fragmentCode, mrtTargetCount);
             const vsImagesExtract = extractStorageImages(vertexCode);
             const fsImagesExtract = extractStorageImages(fragmentCode);
             vertexCode = vsImagesExtract.stripped;
@@ -12276,8 +12670,7 @@ ${vertexCode}
                 vertexCode = renameMainFunction(vertexCode, "main_vs");
                 let fs = `layout(std140, column_major) uniform;
 #define varying in
-out highp vec4 pc_fragColor;
-#define gl_FragColor pc_fragColor
+${mrt ? "" : "out highp vec4 pc_fragColor;\n#define gl_FragColor pc_fragColor"}
 #define gl_FragDepthEXT gl_FragDepth
 #define texture2D texture
 #define textureCube texture
@@ -12297,6 +12690,8 @@ ${fragmentCode}
 `;
                 let resFS = engine.shaderCompiler.glslang.glsl300es_preprocess(fs, "fragment");
                 if (!resFS.success) {
+                    if (mrt)
+                        throw new Error(`LAYA_MRT fragment preprocessing failed: ${resFS.info_log}`);
                     console.error("fragment shader preprocess error", resFS.info_log);
                 }
                 fragmentCode = resFS.preprocessed_code;
@@ -12309,7 +12704,10 @@ ${fragmentCode}
             for (const v of vsOnlyVaryings) {
                 vsOnlyGlobalStrs += `${v}\n`;
             }
-            const fragmentOutStrs = fragmentOutString();
+            const mrtOutputs = mrt ? Laya.ShaderMRT.extract(fragmentCode, mrtTargetCount > 0) : null;
+            const fragmentOutStrs = mrtOutputs ? mrtOutputs.declarations : fragmentOutString();
+            if (mrtOutputs)
+                fragmentCode = mrtOutputs.source;
             let collectionUniforms = new Map();
             const uniformCollect = (match, precision, type, name, arrayDecl, arrayLength) => {
                 let u = {
@@ -12399,7 +12797,8 @@ ${fragmentCode}
             fragmentCode = fragmentCode.replace(uniformBlockRegex, '\n');
             vertexCode = vertexCode.replace(vertexVaryingRegex, '\n');
             fragmentCode = fragmentCode.replace(fragmentVaryingRegex, '\n');
-            fragmentCode = fragmentCode.replace(vertexVaryingRegex, "");
+            if (!mrt)
+                fragmentCode = fragmentCode.replace(vertexVaryingRegex, "");
             vertexCode = replaceTextureSampler(vertexCode, useTexArray);
             fragmentCode = replaceTextureSampler(fragmentCode, useTexArray);
             vertexCode = vertexCode.replace(/gl_VertexID/g, "gl_VertexIndex");
@@ -13250,10 +13649,11 @@ ${computeCode}
             this._engine = WebGPURenderEngine._instance;
             this._device = this._engine.getDevice();
         }
-        startRender(renderPassDesc) {
+        startRender(renderPassDesc, renderTarget) {
             this._commandEncoder = this._device.createCommandEncoder();
             this.encoder = this._commandEncoder.beginRenderPass(renderPassDesc);
             this.renderPassDesc = renderPassDesc;
+            this._renderTarget = renderTarget;
         }
         setViewport(x, y, width, height, minDepth, maxDepth) {
             this.encoder.setViewport(x, y, width, height, minDepth, maxDepth);
@@ -13266,6 +13666,8 @@ ${computeCode}
         }
         end() {
             this.encoder.end();
+            this._engine.getTextureContext().encodeRenderTargetMipmaps(this._renderTarget, this._commandEncoder);
+            this._renderTarget = null;
         }
         finish() {
             this.onFinish();
@@ -13284,7 +13686,9 @@ ${computeCode}
     }
 
     class WebGPURenderPassHelper {
-        static getDescriptor(rt, clearflag, clearColor = null, clearDepthValue = 1, clearStencilValue = 0) {
+        static getDescriptor(rt, clearflag, clearColor = null, clearDepthValue = 1, clearStencilValue = 0, clearColorValues) {
+            if (rt.destroyed)
+                throw new Error("Cannot begin a render pass with a destroyed WebGPU render target.");
             clearColor = clearColor || Laya.Color.BLACK;
             let colorAttachments = [];
             let desc = {
@@ -13298,58 +13702,58 @@ ${computeCode}
                 if (tex.multiSamplers > 1) {
                     tex = rt._texturesResolve[0];
                 }
-                desc.depthStencilAttachment = {
-                    view: tex.getTextureView(true),
-                    depthClearValue: isClearDepth ? clearDepthValue : 1,
-                    depthLoadOp: isClearDepth ? 'clear' : 'load',
-                    depthStoreOp: 'store'
-                };
-                if (rt.colorFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_8 || rt.colorFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_Plus || rt.colorFormat == Laya.RenderTargetFormat.STENCIL_8) {
-                    desc.depthStencilAttachment.stencilClearValue = isClearStencil ? clearStencilValue : 0;
-                    desc.depthStencilAttachment.stencilLoadOp = isClearStencil ? 'clear' : 'load';
-                    desc.depthStencilAttachment.stencilStoreOp = 'store';
-                }
+                desc.depthStencilAttachment = this._depthStencilAttachment(tex.getTextureView(true), rt.colorFormat, isClearDepth, isClearStencil, clearDepthValue, clearStencilValue);
             }
             else {
                 for (let index = 0; index < rt._textures.length; index++) {
                     let tex = rt._textures[index];
+                    if (!tex) {
+                        colorAttachments.push(null);
+                        continue;
+                    }
                     let view = tex.dimension === 3 && rt._arrayLayerIndex >= 0
                         ? tex.getTextureViewForArrayLayer(rt._arrayLayerIndex)
                         : tex.getTextureView(true);
+                    const color = clearColorValues ? clearColorValues[index] : clearColor;
+                    const clear = isClearColor && color != null;
                     let attachment = {
                         view: view,
-                        loadOp: isClearColor ? 'clear' : 'load',
+                        loadOp: clear ? 'clear' : 'load',
                         storeOp: 'store'
                     };
                     if (tex.multiSamplers > 1) {
                         attachment.resolveTarget = rt._texturesResolve[index].getTextureView(true);
                     }
-                    if (isClearColor) {
+                    if (clear) {
                         attachment.clearValue = {
-                            r: clearColor.r,
-                            g: clearColor.g,
-                            b: clearColor.b,
-                            a: clearColor.a
+                            r: color.r,
+                            g: color.g,
+                            b: color.b,
+                            a: color.a
                         };
                     }
                     colorAttachments.push(attachment);
                 }
                 if (rt._depthTexture) {
-                    desc.depthStencilAttachment = {
-                        view: rt._depthTexture.getTextureView(true),
-                        depthClearValue: isClearDepth ? clearDepthValue : 1,
-                        depthLoadOp: isClearDepth ? 'clear' : 'load',
-                        depthStoreOp: 'store'
-                    };
-                    if (rt.depthStencilFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_8 || rt.depthStencilFormat == Laya.RenderTargetFormat.DEPTHSTENCIL_24_Plus || rt.depthStencilFormat == Laya.RenderTargetFormat.STENCIL_8) {
-                        desc.depthStencilAttachment.stencilClearValue = isClearStencil ? clearStencilValue : 0;
-                        desc.depthStencilAttachment.stencilLoadOp = isClearStencil ? 'clear' : 'load';
-                        desc.depthStencilAttachment.stencilStoreOp = 'store';
-                    }
+                    desc.depthStencilAttachment = this._depthStencilAttachment(rt._depthTexture.getTextureView(true), rt.depthStencilFormat, isClearDepth, isClearStencil, clearDepthValue, clearStencilValue);
                 }
             }
             rt._renderPassDescriptor = desc;
             return desc;
+        }
+        static _depthStencilAttachment(view, format, clearDepth, clearStencil, depth, stencil) {
+            const attachment = { view };
+            if (format !== Laya.RenderTargetFormat.STENCIL_8) {
+                attachment.depthClearValue = clearDepth ? depth : 1;
+                attachment.depthLoadOp = clearDepth ? 'clear' : 'load';
+                attachment.depthStoreOp = 'store';
+            }
+            if (format === Laya.RenderTargetFormat.DEPTHSTENCIL_24_8 || format === Laya.RenderTargetFormat.STENCIL_8) {
+                attachment.stencilClearValue = clearStencil ? stencil : 0;
+                attachment.stencilLoadOp = clearStencil ? 'clear' : 'load';
+                attachment.stencilStoreOp = 'store';
+            }
+            return attachment;
         }
     }
 
@@ -13493,7 +13897,7 @@ ${computeCode}
             this._destRT = this._destRT || WebGPURenderEngine._instance._screenRT;
             const clearFlag = this._needClearColor ? Laya.RenderClearFlag.Color | Laya.RenderClearFlag.Stencil : Laya.RenderClearFlag.Nothing;
             const renderPassDesc = WebGPURenderPassHelper.getDescriptor(this._destRT, clearFlag, this._clearColor);
-            this.renderCommand.startRender(renderPassDesc);
+            this.renderCommand.startRender(renderPassDesc, this._destRT);
             this.renderCommand.setViewport(this._viewport.x, this._viewport.y, this._viewport.width, this._viewport.height, 0, 1);
             this._needClearColor = false;
         }
@@ -13518,7 +13922,6 @@ ${computeCode}
                 elements[i]._prepare(this);
             }
             this._ensurePassBindGroupValid();
-            WebGPURenderEngine._instance.gpuBufferMgr.upload();
             Laya.LayaGL.statAgent.recordTimeData(Laya.StatElement.T_2DContextPre, Laya.Browser.now() - time);
             time = Laya.Browser.now();
             for (let i = 0, n = list.length; i < n; i++) {
@@ -13567,7 +13970,6 @@ ${computeCode}
             this._prepareContext();
             node._prepare(this);
             this._ensurePassBindGroupValid();
-            WebGPURenderEngine._instance.gpuBufferMgr.upload();
             node._render(this, this.renderCommand);
             this._submit();
             Laya.LayaGL.statAgent.recordCTData(Laya.StatElement.CT_2DDrawCall, 1);
@@ -14288,6 +14690,8 @@ ${computeCode}
         }
         getPipeline(bindGroups, info, shaderInstance, renderTarget) {
             var _a, _b;
+            if (renderTarget.destroyed)
+                throw new Error("Cannot create or reuse a pipeline for a destroyed WebGPU render target.");
             const device = WebGPURenderEngine._instance.getDevice();
             let layout = this.getPipelinelayout(bindGroups);
             const descKey = `${info.geometry.getStateCacheID()}_${info.blendState.key}_${((_a = info.depthStencilState) === null || _a === void 0 ? void 0 : _a.id) || 0}_${info.cullMode}_${info.frontFace}_${shaderInstance._id}_${layout.id}_${renderTarget.stateCacheID}`;
@@ -14327,22 +14731,21 @@ ${computeCode}
                 renderTarget._colorStates.length = 0;
             }
             else {
-                if (renderTarget._colorStates.length === textureNum) {
-                    for (let i = renderTarget._colorStates.length - 1; i > -1; i--) {
-                        delete renderTarget._colorStates[i].blend;
-                        renderTarget._colorStates[i].format = renderTarget._textures[i]._webGPUFormat;
-                        blendState && (renderTarget._colorStates[i].blend = blendState);
+                renderTarget._colorStates.length = textureNum;
+                for (let i = 0; i < textureNum; i++) {
+                    const texture = renderTarget._textures[i];
+                    if (!texture) {
+                        renderTarget._colorStates[i] = null;
+                        continue;
                     }
-                }
-                else {
-                    renderTarget._colorStates.length = textureNum;
-                    for (let i = 0; i < textureNum; i++) {
-                        renderTarget._colorStates[i] = {
-                            format: renderTarget._textures[i]._webGPUFormat,
-                            writeMask: GPUColorWrite.ALL,
-                        };
-                        blendState && (renderTarget._colorStates[i].blend = blendState);
-                    }
+                    const state = renderTarget._colorStates[i] || (renderTarget._colorStates[i] = {
+                        format: texture._webGPUFormat,
+                        writeMask: GPUColorWrite.ALL,
+                    });
+                    state.format = texture._webGPUFormat;
+                    delete state.blend;
+                    if (blendState)
+                        state.blend = blendState;
                 }
             }
             descriptor.fragment.targets = renderTarget._colorStates;
@@ -16137,6 +16540,10 @@ ${computeCode}
                 const colorFormats = desc.colorFormats;
                 colorFormats.length = rt._textures.length;
                 for (let i = 0, len = rt._textures.length; i < len; i++) {
+                    if (!rt._textures[i]) {
+                        colorFormats[i] = null;
+                        continue;
+                    }
                     if (rt._textures[0]._webGPUFormat === 'depth16unorm'
                         || rt._textures[0]._webGPUFormat === 'depth24plus-stencil8'
                         || rt._textures[0]._webGPUFormat === 'depth32float') {
@@ -18149,6 +18556,7 @@ ${computeCode}
     exports.coverCahceFlag = coverCahceFlag;
     exports.createWebGEGLSLShaderModule = createWebGEGLSLShaderModule;
     exports.doPremultiplyAlpha = doPremultiplyAlpha;
+    exports.encodeMipmaps = encodeMipmaps;
     exports.genMipmap = genMipmap;
     exports.getDepthStencilParamFromMaterial = getDepthStencilParamFromMaterial;
     exports.getDepthStencilParamFromShader = getDepthStencilParamFromShader;

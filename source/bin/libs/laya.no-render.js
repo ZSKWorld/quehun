@@ -895,35 +895,68 @@
     NoRenderEngine._defineCounter = 0;
     NoRenderEngine._maskMap = [];
     class NoInternalTexture {
+        constructor() {
+            this.filterMode = Laya.FilterMode.Bilinear;
+            this.wrapU = Laya.WrapMode.Repeat;
+            this.wrapV = Laya.WrapMode.Repeat;
+            this.wrapW = Laya.WrapMode.Repeat;
+            this.anisoLevel = 1;
+            this.baseMipmapLevel = 0;
+            this.maxMipmapLevel = 0;
+            this.compareMode = Laya.TextureCompareMode.None;
+            this.gpuMemory = 0;
+            this.useSRGBLoad = false;
+            this.gammaCorrection = 1;
+        }
         dispose() {
         }
     }
     class NoInternalRT {
         constructor() {
+            this._isCube = false;
+            this._samples = 1;
+            this._generateMipmap = false;
             this._textures = [];
+            this.gpuMemory = 0;
         }
         dispose() {
+            var _a;
+            for (const texture of this._textures)
+                texture.dispose();
+            this._textures.length = 0;
+            (_a = this._depthTexture) === null || _a === void 0 ? void 0 : _a.dispose();
+            this._depthTexture = null;
         }
     }
     class NoTextureContext {
-        createRenderTargetArrayInternal(width, height, depth, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
-            let texture = this.createTextureInternal(Laya.TextureDimension.Texture2DArray, width, height, Laya.TextureFormat.R8G8B8A8, generateMipmap, sRGB, false);
-            texture.depth = depth;
-            let renderTarget = new NoInternalRT();
+        constructor() {
+            this.needBitmap = false;
+        }
+        _createRenderTarget(dimension, width, height, depth, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
+            const texture = this.createTexture3DInternal(dimension, width, height, depth, colorFormat, generateMipmap, sRGB, false);
+            const renderTarget = new NoInternalRT();
             renderTarget._textures.push(texture);
+            renderTarget._isCube = dimension === Laya.TextureDimension.Cube;
+            renderTarget._samples = Math.max(1, multiSamples);
+            renderTarget._generateMipmap = texture.mipmap;
             renderTarget.colorFormat = colorFormat;
             renderTarget.depthStencilFormat = depthStencilFormat;
             renderTarget.isSRGB = sRGB;
             return renderTarget;
+        }
+        createRenderTargetArrayInternal(width, height, depth, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
+            return this._createRenderTarget(Laya.TextureDimension.Texture2DArray, width, height, depth, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples);
         }
         createTextureInternal(dimension, width, height, format, generateMipmap, sRGB, premultipliedAlpha) {
             let internalTex = new NoInternalTexture();
             internalTex.width = width;
             internalTex.height = height;
             internalTex.depth = 1;
-            internalTex.mipmapCount = 1;
-            internalTex.mipmap = false;
-            internalTex.isPotSize = true;
+            internalTex.isPotSize = width > 0 && height > 0 && (width & (width - 1)) === 0 && (height & (height - 1)) === 0;
+            internalTex.mipmap = generateMipmap;
+            internalTex.mipmapCount = generateMipmap ? 1 + Math.floor(Math.log2(Math.max(1, width, height))) : 1;
+            internalTex.maxMipmapLevel = internalTex.mipmapCount - 1;
+            internalTex.gammaCorrection = sRGB ? 2.2 : 1;
             return internalTex;
         }
         setTextureImageData(texture, source, premultiplyAlpha, invertY) {
@@ -953,29 +986,22 @@
         setCubeKTXData(texture, ktxInfo) {
         }
         setTextureCompareMode(texture, compareMode) {
-            return Laya.TextureCompareMode.None;
+            texture.compareMode = compareMode;
+            return compareMode;
+        }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat) {
+            throw new Error("NoRender createMultiRenderTargetInternal is not implemented.");
         }
         createRenderTargetInternal(width, height, format, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
-            let texture = this.createTextureInternal(Laya.TextureDimension.Tex2D, width, height, Laya.TextureFormat.R8G8B8A8, generateMipmap, sRGB, false);
-            let renderTarget = new NoInternalRT();
-            renderTarget._textures.push(texture);
-            return renderTarget;
+            return this._createRenderTarget(Laya.TextureDimension.Tex2D, width, height, 1, format, depthStencilFormat, generateMipmap, sRGB, multiSamples);
         }
         createRenderTargetCubeInternal(size, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples) {
-            let texture = this.createTextureInternal(Laya.TextureDimension.Cube, size, size, Laya.TextureFormat.R8G8B8A8, generateMipmap, sRGB, false);
-            let renderTarget = new NoInternalRT();
-            renderTarget._textures.push(texture);
-            return renderTarget;
+            return this._createRenderTarget(Laya.TextureDimension.Cube, size, size, 1, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples);
         }
         createRenderTargetDepthTexture(renderTarget, dimension, width, height) {
-            let internalTex = new NoInternalTexture();
-            internalTex.width = width;
-            internalTex.height = height;
-            internalTex.depth = 1;
-            internalTex.mipmapCount = 1;
-            internalTex.mipmap = false;
-            internalTex.isPotSize = true;
-            return internalTex;
+            const texture = this.createTextureInternal(dimension, width, height, renderTarget.depthStencilFormat, false, false, false);
+            renderTarget._depthTexture = texture;
+            return texture;
         }
         bindRenderTarget(renderTarget, faceIndex) {
         }
@@ -984,22 +1010,32 @@
         unbindRenderTarget(renderTarget) {
         }
         readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out) {
-            return new Float32Array();
+            if (!out) {
+                const format = renderTarget.colorFormat;
+                const floatFormat = format === Laya.RenderTargetFormat.R16G16B16 || format === Laya.RenderTargetFormat.R16G16B16A16 ||
+                    format === Laya.RenderTargetFormat.R32G32B32 || format === Laya.RenderTargetFormat.R32G32B32A32;
+                const channels = format === Laya.RenderTargetFormat.R8G8B8 || format === Laya.RenderTargetFormat.R16G16B16 ||
+                    format === Laya.RenderTargetFormat.R32G32B32 ? 3 : 4;
+                out = floatFormat ? new Float32Array(width * height * channels) : new Uint8Array(width * height * channels);
+            }
+            new Uint8Array(out.buffer, out.byteOffset, out.byteLength).fill(0);
+            return out;
         }
-        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out) {
-            return Promise.resolve(new Float32Array());
+        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if (attachmentIndex !== 0)
+                return Promise.reject(new Error("NoRender readRenderTargetPixelDataAsync currently only supports color attachment 0."));
+            return Promise.resolve(this.readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out));
         }
         updateVideoTexture(texture, video, premultiplyAlpha, invertY) {
         }
         createTexture3DInternal(dimension, width, height, depth, format, generateMipmap, sRGB, premultipliedAlpha) {
-            let internalTex = new NoInternalTexture();
-            internalTex.width = width;
-            internalTex.height = height;
-            internalTex.depth = 1;
-            internalTex.mipmapCount = 1;
-            internalTex.mipmap = false;
-            internalTex.isPotSize = true;
-            return internalTex;
+            const texture = this.createTextureInternal(dimension, width, height, format, generateMipmap, sRGB, premultipliedAlpha);
+            texture.depth = depth;
+            if (generateMipmap && dimension === Laya.TextureDimension.Tex3D) {
+                texture.mipmapCount = 1 + Math.floor(Math.log2(Math.max(1, width, height, depth)));
+                texture.maxMipmapLevel = texture.mipmapCount - 1;
+            }
+            return texture;
         }
         setTexture3DImageData(texture, source, depth, premultiplyAlpha, invertY) {
         }
@@ -1118,6 +1154,9 @@
         }
     }
     class NoRenderDeviceFactory {
+        constructor() {
+            this._uniformMaps = new Map();
+        }
         createShaderInstance(shaderProcessInfo, shaderPass) {
             return new NoRenderShaderInstance();
         }
@@ -1131,7 +1170,7 @@
             return new NoRenderBufferState();
         }
         createRenderGeometryElement(mode, drawType) {
-            return new NoRenderGeometryElement();
+            return new NoRenderGeometryElement(mode, drawType);
         }
         createEngine(config, canvas) {
             let engine = new NoRenderEngine();
@@ -1141,19 +1180,35 @@
             return Promise.resolve();
         }
         createGlobalUniformMap(blockName) {
-            return new NoRenderCommandUnifojrmMap(blockName);
+            let map = this._uniformMaps.get(blockName);
+            if (!map) {
+                map = new NoRenderCommandUnifojrmMap(blockName);
+                this._uniformMaps.set(blockName, map);
+            }
+            return map;
         }
         createShaderData(ownerResource) {
-            return new NoRenderShaderData();
+            return new NoRenderShaderData(ownerResource);
         }
     }
     class NoRenderCommandUnifojrmMap extends Laya.CommandUniformMap {
         constructor(stateName) {
             super(stateName);
+            this._idata = new Map();
+            this._defaultTextures = new Map();
+            this._stateID = Laya.LayaGL.renderEngine.propertyNameToID(stateName);
+        }
+        hasPtrID(propertyID) {
+            return this._stateID === propertyID || this._idata.has(propertyID);
         }
         addShaderUniform(propertyID, propertyKey, uniformtype, options) {
+            this._idata.set(propertyID, Object.assign({ id: propertyID, propertyName: propertyKey, uniformtype, arrayLength: 0 }, options));
         }
         addShaderUniformArray(propertyID, propertyName, uniformtype, arrayLength, block = "") {
+            this._idata.set(propertyID, { id: propertyID, propertyName, uniformtype, arrayLength });
+        }
+        setDefaultTextureData(key, defaultTex) {
+            this._defaultTextures.set(key, defaultTex);
         }
     }
     class NoRenderShaderInstance {
@@ -1201,15 +1256,29 @@
         }
     }
     class NoRenderGeometryElement {
+        constructor(mode = Laya.MeshTopology.Triangles, drawType = Laya.DrawType.DrawElement) {
+            this.instanceCount = 1;
+            this.drawParams = new Laya.FastSinglelist();
+            this.mode = mode;
+            this.drawType = drawType;
+        }
         getDrawDataParams(out) {
+            out && this.drawParams.cloneTo(out);
         }
         setDrawArrayParams(first, count) {
+            this.drawParams.add(first);
+            this.drawParams.add(count);
         }
         setDrawElemenParams(count, offset) {
+            this.drawParams.add(offset);
+            this.drawParams.add(count);
         }
         clearRenderParams() {
+            this.drawParams.clear();
         }
         destroy() {
+            this.drawParams.clear();
+            this.bufferState = null;
         }
     }
     class NoRenderShaderData extends Laya.ShaderData {
@@ -1247,6 +1316,7 @@
                 }
             }
             this._data = {};
+            this.clearDefine();
         }
         getBool(index) {
             return this._data[index];
@@ -1270,37 +1340,61 @@
             return this._data[index];
         }
         setVector2(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Vector2)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getVector3(index) {
             return this._data[index];
         }
         setVector3(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Vector3)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getVector(index) {
             return this._data[index];
         }
         setVector(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Vector4)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getColor(index) {
             return this._data[index];
         }
         setColor(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Color)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getMatrix4x4(index) {
             return this._data[index];
         }
         setMatrix4x4(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Matrix4x4)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getMatrix3x3(index) {
             return this._data[index];
         }
         setMatrix3x3(index, value) {
-            this._data[index] = value;
+            const current = this._data[index];
+            if (value && current instanceof Laya.Matrix3x3)
+                value.cloneTo(current);
+            else
+                this._data[index] = value ? value.clone() : value;
         }
         getBuffer(index) {
             return this._data[index];
@@ -1309,7 +1403,13 @@
             this._data[index] = value;
         }
         setTexture(index, value) {
+            const previous = this._data[index];
+            if (previous === value)
+                return;
+            value && value._addReference();
             this._data[index] = value;
+            if (previous instanceof Laya.Resource)
+                previous._removeReference();
         }
         getTexture(index) {
             return this._data[index];
@@ -1390,49 +1490,32 @@
             }
         }
         _setInternalTexture(index, value) {
+            const previous = this._data[index];
+            this._data[index] = value;
+            if (previous instanceof Laya.Resource)
+                previous._removeReference();
+        }
+        update(name) {
         }
         cloneTo(destObject) {
-            let destData = destObject._data;
-            for (let k in this._data) {
-                let value = this._data[k];
-                if (value != null) {
-                    if (typeof value == "number") {
-                        destData[k] = value;
-                    }
-                    else if (typeof value == "boolean") {
-                        destData[k] = value;
-                    }
-                    else if (value instanceof Laya.Vector2) {
-                        let v2 = destData[k] || (destData[k] = new Laya.Vector2());
-                        value.cloneTo(v2);
-                    }
-                    else if (value instanceof Laya.Vector3) {
-                        let v3 = destData[k] || (destData[k] = new Laya.Vector3());
-                        value.cloneTo(v3);
-                    }
-                    else if (value instanceof Laya.Vector4) {
-                        let color = this.getColor(parseInt(k));
-                        if (color) {
-                            let clonecolor = color.clone();
-                            destObject.setColor(parseInt(k), clonecolor);
-                        }
-                        else {
-                            let v4 = destData[k] || (destData[k] = new Laya.Vector4());
-                            value.cloneTo(v4);
-                        }
-                    }
-                    else if (value instanceof Laya.Matrix3x3) {
-                        let mat = destData[k] || (destData[k] = new Laya.Matrix3x3());
-                        value.cloneTo(mat);
-                    }
-                    else if (value instanceof Laya.Matrix4x4) {
-                        let mat = destData[k] || (destData[k] = new Laya.Matrix4x4());
-                        value.cloneTo(mat);
-                    }
-                    else if (value instanceof Laya.Resource) {
-                        destData[k] = value;
-                        value._addReference();
-                    }
+            if (destObject === this)
+                return;
+            destObject.clearData();
+            for (const key in this._data) {
+                const value = this._data[key];
+                if (value instanceof Laya.Resource) {
+                    value._addReference();
+                    destObject._data[key] = value;
+                }
+                else if (value instanceof Float32Array) {
+                    destObject._data[key] = value.slice();
+                }
+                else if (value instanceof Laya.Color || value instanceof Laya.Vector2 || value instanceof Laya.Vector3 ||
+                    value instanceof Laya.Vector4 || value instanceof Laya.Matrix3x3 || value instanceof Laya.Matrix4x4) {
+                    destObject._data[key] = value.clone();
+                }
+                else {
+                    destObject._data[key] = value;
                 }
             }
             this._defineDatas.cloneTo(destObject._defineDatas);
@@ -1443,14 +1526,11 @@
             return dest;
         }
         destroy() {
+            if (!this._data)
+                return;
+            this.clearData();
             this._defineDatas.destroy();
             this._defineDatas = null;
-            for (var k in this._data) {
-                var value = this._data[k];
-                if (value instanceof Laya.Resource) {
-                    value._removeReference();
-                }
-            }
             this._data = null;
         }
     }
@@ -1477,6 +1557,7 @@
             return this._value;
         }
         set value(value) {
+            this._value = value;
         }
         constructor() {
             super();
@@ -1735,14 +1816,23 @@
         }
     }
     class NoRenderContext2D {
+        constructor() {
+            this._renderTarget = null;
+            this._offscreenView = new Laya.Vector4();
+            this.invertY = false;
+            this.pipelineMode = "Forward";
+        }
         getRenderTarget() {
-            return null;
+            return this._renderTarget;
         }
         setRenderTarget(value, clear, clearColor) {
+            this._renderTarget = value;
         }
-        setOffscreenView(width, height, x, y) {
+        setOffscreenView(width, height, x = 0, y = 0) {
+            this._offscreenView.setValue(x, y, width, height);
         }
         getOffscreenView(out) {
+            this._offscreenView.cloneTo(out);
         }
         drawRenderElementOne(node) {
         }
@@ -1807,6 +1897,7 @@
     }
     class NoRenderBaseRenderNode {
         constructor() {
+            this.renderOrder = 0;
             this.additionShaderData = new Map();
             this.ismoved = new Laya.Vector2();
             this.perCameraUpdate = false;
@@ -1972,7 +2063,7 @@
         }
         setScissor(value) {
         }
-        setClearData(clearFlag, clolor, depth, stencil) {
+        setClearData(clearFlag, color, depth, stencil, colorValues) {
             return 0;
         }
         drawRenderElementList(list) {
@@ -1989,6 +2080,9 @@
         }
     }
     class NoRenderRenderElement3D {
+        constructor() {
+            this.sortIndex = 0;
+        }
         destroy() {
         }
     }
@@ -2134,6 +2228,7 @@
         }
         set clearColorValue(value) {
             value.cloneTo(this._clearColorValue);
+            this._clearColorValues = null;
         }
         get clearDepthValue() {
             return this._clearDepthValue;
@@ -2161,6 +2256,12 @@
     });
 
     class NoRenderShaderPass {
+        _cacheKey(define) {
+            let length = define._length;
+            while (length > 0 && !define._mask[length - 1])
+                length--;
+            return define._mask.slice(0, length).join(",");
+        }
         get validDefine() { return this._validDefine; }
         set validDefine(value) { this._validDefine = value; }
         get renderState() { return this._renderState; }
@@ -2168,20 +2269,40 @@
         constructor(pass) {
             this._validDefine = new NoRenderDefineDatas();
             this._renderState = new Laya.RenderState();
+            this._cacheShaders = new Map();
             this._renderState.setNull();
         }
         setCacheShader(compileDefine, shader) {
+            const key = this._cacheKey(compileDefine);
+            if (shader)
+                this._cacheShaders.set(key, shader);
+            else
+                this._cacheShaders.delete(key);
         }
         getCacheShader(compileDefine) {
-            return null;
+            compileDefine._intersectionDefineDatas(this._validDefine);
+            return this._cacheShaders.get(this._cacheKey(compileDefine)) || null;
         }
         destroy() {
+            for (const shader of new Set(this._cacheShaders.values()))
+                shader._disposeResource();
+            this._cacheShaders.clear();
+            this._validDefine.destroy();
         }
     }
     class NoRenderSubShader {
-        addShaderPass(pass) { }
-        setUniformMap(_uniformMap) { }
-        destroy() { }
+        constructor() {
+            this.shaderPasses = [];
+            this.uniformMap = new Map();
+        }
+        addShaderPass(pass) { this.shaderPasses.push(pass); }
+        setUniformMap(uniformMap) { this.uniformMap = new Map(uniformMap); }
+        destroy() {
+            for (const pass of this.shaderPasses)
+                pass.destroy();
+            this.shaderPasses.length = 0;
+            this.uniformMap.clear();
+        }
     }
     class NoRenderUnitModuleDataFactory {
         createSubShader() {

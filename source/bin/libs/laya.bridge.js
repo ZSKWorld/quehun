@@ -1081,6 +1081,7 @@
             this._orthographicCamera = true;
             this._updatingCameraProjection = false;
             this._bridge3DLightTexture = null;
+            this.hideFlags = Laya.HideFlags.HideAndDontSave;
             this._holder = holder;
             if (Laya.Config3D._multiLighting) {
                 const width = 4;
@@ -1881,6 +1882,7 @@
             this._bounds3D = new Laya.Bounds(new Laya.Vector3(), new Laya.Vector3());
             this._bounds2DRect = new Laya.Rectangle();
             this._containerSprite3D = new BridgeContainerSprite3D();
+            this._containerSprite3D.active = false;
             this._containerSprite3D.name = "Bridge3DContainer";
             this._containerSprite3D._ownerBridge = this;
             this._setContainer(this._containerSprite3D);
@@ -1933,6 +1935,14 @@
         _onAdded() {
             this.on(Laya.Event.TRANSFORM_CHANGED, this, this._syncTransform2DTo3D);
             super._onAdded();
+        }
+        _onActive() {
+            super._onActive();
+            this._containerSprite3D.active = true;
+        }
+        _onInActive() {
+            this._containerSprite3D.active = false;
+            super._onInActive();
         }
         _regsiterScene() {
             if (!this._scene)

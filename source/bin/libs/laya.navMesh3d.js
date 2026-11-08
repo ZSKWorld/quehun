@@ -91,6 +91,26 @@
             this._onWorldMatNeedChange();
             this.owner.transform.on(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatNeedChange);
         }
+        _onDisable() {
+            this.owner.transform.off(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatNeedChange);
+            const data = this._modifierData;
+            if (data instanceof Laya.NavMeshLinkData)
+                data.destroy();
+            else if (data instanceof Laya.NavModifleData)
+                data._destory();
+            super._onDisable();
+        }
+        _onDestroy() {
+            if (this._modifierData instanceof Laya.NavModifleData)
+                this._modifierData._destory();
+            super._onDestroy();
+        }
+        _cloneTo(dest) {
+            const modifier = dest;
+            modifier.agentType = this.agentType;
+            modifier.areaFlag = this.areaFlag;
+            super._cloneTo(dest);
+        }
         _onWorldMatNeedChange() {
             this._refeashTranfrom(this.owner.transform.worldMatrix, this._modifierData._min, this._modifierData._max);
             this._modifierData._refeahTransfrom();
@@ -281,6 +301,12 @@
                 modiferData.datas = null;
             }
         }
+        _onDestroy() {
+            var _a;
+            (_a = this._oriTiles) === null || _a === void 0 ? void 0 : _a.destroy();
+            this._oriTiles = null;
+            super._onDestroy();
+        }
         _cloneTo(dest) {
             dest.datas = this.datas;
             super._cloneTo(dest);
@@ -324,8 +350,8 @@
         _onEnable() {
             super._onEnable();
             this._onWorldMatNeedChange();
-            Laya.Vector3.min(this._data._startPoint, this._data._endPoint, tempVec3);
-            Laya.Vector3.max(this._data._startPoint, this._data._endPoint, tempVec31);
+            Laya.Vector3.min(this._data.globalStart, this._data.globalEnd, tempVec3);
+            Laya.Vector3.max(this._data.globalStart, this._data.globalEnd, tempVec31);
             let surface = this._manager.getNavMeshSurfacesByBound(tempVec3, tempVec31, this._modifierData.agentType);
             this._data._initSurface(surface);
         }
@@ -339,7 +365,7 @@
         _cloneTo(dest) {
             dest.start = this.start;
             dest.end = this.end;
-            dest.agentType = this._agentType;
+            dest.agentType = this.agentType;
             dest.areaFlag = this.areaFlag;
             dest.width = this.width;
             dest.bidirectional = this.bidirectional;
@@ -388,6 +414,7 @@
             this.owner.transform.on(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatNeedChange);
         }
         _onDisable() {
+            this.owner.transform.off(Laya.Event.TRANSFORM_CHANGED, this, this._onWorldMatNeedChange);
             this._volumeData._destory();
         }
         _onWorldMatNeedChange() {
@@ -526,6 +553,9 @@
             }
         }
         _onDestroy() {
+            if (this._oriTiles)
+                this._oriTiles.destroy();
+            this._oriTiles = null;
             super._onDestroy();
         }
         _cloneTo(dest) {
@@ -535,6 +565,7 @@
             this.size.cloneTo(obstacles.size);
             obstacles.radius = this.radius;
             obstacles.height = this.height;
+            obstacles.datas = this.datas;
             super._cloneTo(dest);
         }
     }
@@ -575,7 +606,7 @@
         }
         _getradius() {
             let scale = this.owner.transform.getWorldLossyScale();
-            return this._radius * Math.max(scale.x, scale.y);
+            return this._radius * Math.max(Math.abs(scale.x), Math.abs(scale.z));
         }
         _updatePosition(pos, dir) {
             let transform = this.owner.transform;

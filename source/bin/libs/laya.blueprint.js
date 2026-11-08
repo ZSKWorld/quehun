@@ -1062,30 +1062,20 @@
         }
         _getConstByNode(node) {
             if (null != node.dataId) {
-                let id = node.cid + "_" + node.dataId + "_" + node.target;
-                if (this.isStartCatch && null != this.autoCreateData[id])
-                    return this.autoCreateData[id];
                 let cdata = this._getConstData(node.cid, node.target);
                 if ("static_get" == node.cid || "static_set" == node.cid || 'get' == node.cid || 'set' == node.cid || 'tmp_get' == node.cid || 'tmp_set' == node.cid)
                     return cdata;
-                let data = null;
-                if (null == data) {
-                    let obj = _a.allDataMap.get(node.target);
-                    if (obj) {
-                        data = obj[node.dataId];
-                        if (!data) {
-                            let dataId = node.dataId;
-                            let findIndex = dataId.lastIndexOf("_");
-                            if (findIndex === dataId.length - 1) {
-                                dataId = dataId.substring(0, findIndex);
-                                data = obj[dataId];
-                                if (data) {
-                                    node.dataId = dataId;
-                                }
-                            }
-                        }
-                    }
+                const obj = _a.allDataMap.get(node.target);
+                let data = obj && obj[node.dataId];
+                if (!data && typeof node.dataId === "string" && node.dataId.endsWith("_")) {
+                    const dataId = node.dataId.slice(0, -1);
+                    data = obj && obj[dataId];
+                    if (data)
+                        node.dataId = dataId;
                 }
+                const id = node.cid + "_" + node.dataId + "_" + node.target;
+                if (this.isStartCatch && null != this.autoCreateData[id])
+                    return this.autoCreateData[id];
                 if (null == data) {
                     data = this.getConstDataById(node.target, node.dataId);
                 }

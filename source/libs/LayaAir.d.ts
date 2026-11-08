@@ -3135,6 +3135,8 @@ declare namespace Laya {
          * @protected
          */
         protected _onAdded(): void;
+        protected _onActive(): void;
+        protected _onInActive(): void;
         private _regsiterScene;
         private _removeRegister;
         /**
@@ -3570,7 +3572,7 @@ declare namespace Laya {
      *   render (元素级：前向渲染，由每个 element 的 _render 调用)
      *
      * Web 实现: WebBridge3DRenderProcess (纯TS逻辑)
-     * Native 实现: LayaXBridge3DRenderProcess (委托 C++ conchLayaXBridge3DProcess → Rust wgpu)
+     * Native 实现: LayaXBridge3DRenderProcess (委托 C++ conchLayaXBridge3DProcess → C++ wgpu)
      */
     interface IBridge3DRenderProcess {
         /** 场景渲染管理器（与 IRender3DProcess.render3DManager 对称） */
@@ -3601,7 +3603,7 @@ declare namespace Laya {
      * LayaXBridge3DContext - LayaX (wgpu) native wrapper for Bridge3D rendering context
      *
      * Uses conchLayaXBridge3DContext native class.
-     * Each setter syncs to C++ via _nativeObj, C++ calls Rust FFI.
+     * Each setter syncs to C++ via _nativeObj, C++ calls LayaX C API.
      */
     class LayaXBridge3DContext {
         _nativeObj: any;
@@ -3655,7 +3657,7 @@ declare namespace Laya {
      * LayaXBridge3DRenderElement - LayaX (wgpu) native implementation of IBridgeRenderElement
      *
      * Wraps the C++ LayaXBridge3DRenderElement2D_JS which handles all rendering logic
-     * (projection correction, clip transform, 3D queue rendering) via Rust FFI.
+     * (projection correction, clip transform, 3D queue rendering) via LayaX C API.
      */
     class LayaXBridge3DRenderElement implements IBridgeRenderElement {
         type: number;
@@ -3729,7 +3731,7 @@ declare namespace Laya {
         /**
          * 统一渲染入口（对标 LayaXRender3DProcess.fowardRender）
          * 由 Bridge3DCamera.render() 调用，编排完整流程：
-         *   1. syncProjection (同步相机参数到Rust ECS)
+         *   1. syncProjection (同步相机参数到 C++ ECS)
          *   2. Bridge3D context 准备（单次 C++ 调用）
          *   3. 元素 context3d 设置
          *   4. 阴影渲染（条件）
@@ -4260,6 +4262,11 @@ declare namespace Laya {
          * @zh 帧循环
          */
         onUpdate(): void;
+        private _clearCrossFade;
+        private _blendValue;
+        /** Advance a clip without checking its outgoing transitions. */
+        private _advanceCrossState;
+        private _updateCrossFade;
         /**
          * @en Adds an animator controller layer.
          * @param controllerLayer The animator controller layer to be added.
@@ -4450,6 +4457,15 @@ declare namespace Laya {
          * @zh 混合模式_叠加。
          */
         static readonly BLENDINGMODE_ADDTIVE: number;
+        /** Transition duration in seconds. */
+        _crossDuration: number;
+        _crossElapsedTime: number;
+        _crossNodes: KeyframeNode2D[];
+        /** Values for tracks missing from either clip. */
+        _crossDefaultValues: AnimatorState2D["_realtimeDatas"];
+        /** Last blended pose, also used when interrupting a transition. */
+        _crossValues: AnimatorState2D["_realtimeDatas"];
+        _crossFixedValues: AnimatorState2D["_realtimeDatas"];
         /**
          * @en layer name
          * @zh 层的名字
@@ -4655,11 +4671,36 @@ declare namespace Laya {
      */
     class AnimatorPlayState2D {
         _finish: boolean;
+        _startPlayTime: number;
+        _lastElapsedTime: number;
+        /**
+         * @en Animation playback time
+         * @zh 动画播放时间
+         */
+        _elapsedTime: number;
+        /**
+         * @en Playback count
+         * @zh 播放的次数
+         */
+        _playNum: number;
         /**
          * @en Total play time, not affected by negative speed values.
          * @zh 总播放时间，不受速度为负数的影响。
          */
         _playAllTime: number;
+        /**
+         * @en Normalized time for a single playback.
+         * @zh 单次播放的归一化时间。
+         */
+        _normalizedPlayTime: number;
+        _duration: number;
+        /**
+         * @en The time of the last playback, used by event events.
+         * @zh 上次播放的时间，用于event事件。
+         */
+        _parentPlayTime: number;
+        _lastIsFront: boolean;
+        _currentState: AnimatorState2D | null;
         /**
          * @en Indicates if the playback is in forward direction.
          * @zh 表示播放是否为正向。
@@ -4680,6 +4721,8 @@ declare namespace Laya {
          * @zh AnimatorPlayState2D类的构造方法
          */
         constructor();
+        _resetPlayState(startTime: number, clipDuration: number): void;
+        _cloneTo(dest: AnimatorPlayState2D): void;
     }
     /**
      * @en The Animator class is used to create animation components.
@@ -5349,6 +5392,11 @@ declare namespace Laya {
          */
         repeatDelay: number;
         /**
+         * @en Whether to repeat frameDelays using its array length as the period. Default is false. Matching uses absolute delay indices and does not restart at rangeStart.
+         * @zh 是否以 frameDelays 数组长度为周期循环匹配延迟，默认为 false。按绝对延迟索引匹配，不会在 rangeStart 处重新对齐。
+         */
+        frameDelaysLoop: boolean;
+        /**
          * @en Playback speed.
          * @zh 播放速率。
          */
@@ -5366,7 +5414,10 @@ declare namespace Laya {
         private _color;
         private _atlas;
         private _playing;
+        private _activeStart;
         private _count;
+        private _rangeStart;
+        private _rangeEnd;
         private _index;
         private _elapsed;
         private _reversed;
@@ -5381,11 +5432,28 @@ declare namespace Laya {
          */
         constructor();
         /**
-         * @en The index of the current frame in the animation.
-         * @zh 动画当前帧的索引。
+         * @en The index of the current frame within the active playback range.
+         * @zh 当前有效播放区间内的帧索引。
          */
         get frame(): number;
         set frame(value: number);
+        /**
+         * @en The inclusive start index in the full frame list. Default is 0. Changing the range resets the frame and elapsed time without changing the playing state.
+         * @zh 完整帧列表中的开始帧索引，包含此帧，默认为 0。修改范围会重置当前帧和累计时间，但不改变播放状态。
+         */
+        get rangeStart(): number;
+        set rangeStart(value: number);
+        /**
+         * @en The inclusive end index in the full frame list. Default is -1, meaning the last frame. Bounds are clamped when frames are available; an end before the start resolves to a single frame at the start. The configured values are retained for later resource loads.
+         * @zh 完整帧列表中的结束帧索引，包含此帧。默认为 -1，表示最后一帧。资源就绪后会限制实际播放边界；结束帧小于开始帧时只播放开始帧。配置值会保留，供后续加载资源时使用。
+         */
+        get rangeEnd(): number;
+        set rangeEnd(value: number);
+        /**
+         * @en The number of frames in the active playback range.
+         * @zh 当前有效播放区间的帧数。
+         */
+        get count(): number;
         /**
          * @en The current animation frame image array.
          * @zh 当前动画的帧图像数组。
@@ -5393,8 +5461,8 @@ declare namespace Laya {
         get frames(): ReadonlyArray<Texture>;
         set frames(value: ReadonlyArray<Texture>);
         /**
-         * @en The delay time of each frame, in milliseconds.
-         * @zh 每帧的延迟时间，单位为毫秒。
+         * @en Extra transition delays, in milliseconds, indexed in the full frame list. Forward playback uses the current absolute index; reverse playback uses the preceding index. frameDelaysLoop optionally repeats this array.
+         * @zh 按完整帧列表索引配置的额外切换延迟，单位为毫秒。正序使用当前绝对索引，倒序使用前一绝对索引。可通过 frameDelaysLoop 循环复用此数组。
          */
         get frameDelays(): Array<number>;
         /**
@@ -5440,6 +5508,8 @@ declare namespace Laya {
         set color(value: Color);
         get width(): number;
         get height(): number;
+        private updateActiveRange;
+        private updateSizeToFit;
         private applyStretchMode;
         /**
          * @en Play the animation.
@@ -5457,6 +5527,7 @@ declare namespace Laya {
          * @ignore
          */
         onUpdate(): void;
+        private getFrameDelay;
         protected drawFrame(): void;
         /**
          * @en Atlas path.
@@ -5966,6 +6037,7 @@ declare namespace Laya {
         static AWAKED: number;
         static DISPLAY: number;
         static HAS_ZORDER: number;
+        static RENDERERS_CACHE: number;
         static DISPLAYED_INSTAGE: number;
         static CHECK_INPUT: number;
         static DEMAND_TRANS_EVENT: number;
@@ -7452,12 +7524,13 @@ declare namespace Laya {
          * 单个 Animator 的逐帧推进。
          * 步骤：
          *   1) 取 delta 并按 updateMode 调整（LowFrame 抽帧 / UnScaleTime 等）；
-         *   2) speed=0 / delta=0 / Stat 关闭 → 全 layer 置 Idle 并提前返回；
+         *   2) speed=0 / delta=0 / Stat 关闭 / 完全裁剪 → 全 layer 置 Idle 并提前返回；
          *   3) bump slot._updateMark（applier 同帧多 layer 合并要用）；
          *   4) 遍历 controllerLayers：disable 或 sleep+finished+playType==0 → Idle；
          *      否则按 _playType 分派给 _tickPlayTypeNormal / Cross / FixedCross。
          */
         tickOne(animator: Animator): void;
+        private _isCulled;
         /**
          * playType=0：正常播放一个 state。
          * 步骤：state 已 finish → 触发 transition 判定（可能引发 LateUpdate crossFade）；未 finish → _updatePlayer
@@ -8719,6 +8792,24 @@ declare namespace Laya {
          */
         destroy(destroyChild?: boolean): void;
     }
+    /** 相机不透明队列的辅助颜色输出，索引 i 对应 location i + 1；索引 3 留给运动矢量。 */
+    interface CameraOpaqueMRTOptions {
+        readonly auxiliaryAttachments: readonly ({
+            readonly format: RenderTargetFormat;
+            /** 可选的查询别名，不改变 Shader 输出位置。 */
+            readonly name?: string;
+            /** 线性数据清除值，默认透明黑色，每帧清除。 */
+            readonly clearColor?: Color;
+        } | null)[];
+    }
+    /** 后处理效果需要的固定辅助附件；name 只用于查询，不参与附件重排或资源池匹配。 */
+    interface CameraOpaqueMRTRequirement {
+        /** 辅助索引，Shader 输出 location 等于 index + 1。 */
+        readonly index: number;
+        readonly name: string;
+        readonly format: RenderTargetFormat;
+        readonly clearColor?: Color;
+    }
     /**
      * @en Camera clear flags.
      * @zh 相机清除标记。
@@ -8967,12 +9058,47 @@ declare namespace Laya {
          */
         set msaa(value: boolean);
         get msaa(): boolean;
+        private _manualOpaqueMRTOptions;
+        private _opaqueMRTOptions;
+        private _opaqueMRTKey;
+        private _opaqueMRTClearColors;
+        /**
+         * 手动指定的不透明队列 MRT 配置。null 仅撤回手动配置，不覆盖启用效果的自动需求。
+         * 配置按固定 location 保存，在下次 render 准备目标时生效，当前目标保持不变。
+         */
+        get opaqueMRT(): CameraOpaqueMRTOptions | null;
+        set opaqueMRT(value: CameraOpaqueMRTOptions | null);
+        /** 最近一次 render 准备的实际布局，包含该次的手动配置与后处理需求。 */
+        get effectiveOpaqueMRT(): CameraOpaqueMRTOptions | null;
+        /** 保存清除值快照，避免调用方修改当前配置。 */
+        private _createOpaqueMRTAttachment;
+        private _normalizeOpaqueMRTOptions;
+        private _sameOpaqueMRTClearColor;
+        /** 固定槽位合并：只申请声明过的附件，中间空槽保留 null，不推测数据语义或重排。 */
+        private _mergeOpaqueMRTOptions;
+        /** 格式不变时复用整组，只更新名称和清除值。 */
+        private _setEffectiveOpaqueMRT;
+        private _updateOpaqueMRTRequirements;
+        /**
+         * 按辅助索引或查询别名获取附件，未分配时为 null；数值索引 i 对应 Shader location i + 1。
+         * 返回值借用相机整组资源，请勿销毁。布局、尺寸或深度缓存切换可能更换整组，须每帧重新获取。
+         * 后处理录制阶段即可获取，内容由本帧不透明队列写入；撤回需求后旧借用不再有效。
+         */
+        getOpaqueAuxiliaryTexture(index: number | string): BaseTexture | null;
+        /** 只有相机归还整组；附件采样视图和仅主颜色绑定均不独立入池。 */
+        private _releaseOpaqueMRT;
+        private _createInternalRenderTexture;
         /**
          * @en Space anti-aliasing.
          * @zh 空间抗锯齿
          */
         set fxaa(value: boolean);
         get fxaa(): boolean;
+        /** 时域抗锯齿开关，默认关闭。 */
+        set taa(value: boolean);
+        get taa(): boolean;
+        /** TAA 质量、锐化与历史设置。 */
+        get taaSettings(): CameraTAA;
         /**
          * @en The viewport in clip space.
          * @zh 裁剪空间的视口。
@@ -9132,7 +9258,7 @@ declare namespace Laya {
         /**
          * @en Destroy the Camera node.
          * @param destroyChild Whether to destroy child nodes.
-         * @zh 删除Camera节点。
+         * @zh 删除Camera节点。应在本相机的渲染回调之外调用，避免释放正在使用的目标。
          * @param destroyChild 是否删除子节点
          */
         destroy(destroyChild?: boolean): void;
@@ -10172,6 +10298,9 @@ declare namespace Laya {
          * @zh 默认材质，禁止修改
          */
         static defaultMaterial: PBRStandardMaterial;
+        /** MRT 内置输出，默认 All；1～3 固定为法线、底色、材质参数，关闭项不改变槽位。 */
+        get gBufferOutputs(): GBufferOutput;
+        set gBufferOutputs(value: GBufferOutput);
         /**
          * @en Metallic gloss texture.
          * @zh 金属光滑度贴图。
@@ -11013,6 +11142,19 @@ declare namespace Laya {
         set visibalMax(value: number);
         get visibalMax(): number;
         /**
+         * @en Renderer order within the same camera and render phase. Defaults to 0.
+         * Lower values are submitted first, before material queue and distance sorting.
+         * Does not change depth, stencil or blending states.
+         * Supported by WebGL, WebGPU and matching Native/LayaX runtimes.
+         * Opaque batching may reorder draws; use this property primarily for transparent renderers.
+         * @zh 同一相机、同一渲染阶段内的渲染顺序，默认为 0，主要用于透明渲染器。
+         * 值越小越先提交，优先于材质队列和距离排序。
+         * 不改变深度、模板或混合状态。支持 WebGL、WebGPU 和配套的 Native/LayaX 运行时。
+         * 不透明合批可能重排绘制项，不保证不透明物体的完整提交顺序。
+         */
+        get renderOrder(): number;
+        set renderOrder(value: number);
+        /**
          * @en The sorting fudge value.
          * @zh 排序矫正值。
          */
@@ -11189,6 +11331,79 @@ declare namespace Laya {
         get distanceForSort(): number;
         set distanceForSort(value: number);
     }
+    /** 相机 TAA 设置与渲染状态。 */
+    class CameraTAA {
+        private _camera;
+        private static readonly _registrations;
+        /** 当前使用的效果；为空时不抖动投影。 */
+        effect: TemporalAAEffect;
+        frameIndex: number;
+        newFrame: boolean;
+        /** 以物理像素为单位的抖动量。 */
+        readonly jitter: Vector2;
+        /** 未抖动的 GPU 视图投影矩阵。 */
+        readonly viewProjection: Matrix4x4;
+        readonly previousViewProjection: Matrix4x4;
+        readonly invViewProjection: Matrix4x4;
+        readonly renderProjection: Matrix4x4;
+        readonly renderViewProjection: Matrix4x4;
+        private _gpuProjection;
+        private _lastViewProjection;
+        private _committedFrame;
+        private readonly _descriptor;
+        private _motionOutputDefined;
+        private _warning;
+        private _motionParams;
+        private readonly _budgetFormats;
+        private _enabled;
+        private _quality;
+        private _sharpening;
+        private _history;
+        private _prepared;
+        private _registeredPostProcess;
+        private _registeredEffect;
+        constructor(_camera: Camera);
+        get active(): boolean;
+        /** 开启 TAA 时关闭 MSAA。 */
+        get enabled(): boolean;
+        set enabled(value: boolean);
+        /** 混合质量，默认 High。 */
+        get quality(): TemporalAAQuality;
+        set quality(value: TemporalAAQuality);
+        /** RCAS 锐化强度 [0,1]；0 表示关闭。 */
+        get sharpening(): number;
+        set sharpening(value: number);
+        /** 只复制设置，历史由新相机独立生成。 */
+        cloneTo(target: CameraTAA): void;
+        /** 切镜或场景跳变后清除历史。 */
+        resetHistory(): void;
+        private _getOrCreateEffect;
+        private _bindPostProcess;
+        private _unregisterEffect;
+        /** 将运动矢量绑定到 MRT 槽 4。 */
+        collectRequirements(requirements: readonly CameraOpaqueMRTRequirement[] | null, manualOptions: CameraOpaqueMRTOptions | null): readonly CameraOpaqueMRTRequirement[] | null;
+        /** 准备历史矩阵，并设置本帧渲染矩阵。 */
+        setupFrame(context: RenderContext3D): boolean;
+        prepare(context: RenderContext3D): void;
+        /** 将相同的像素抖动应用于场景或天空投影。 */
+        jitterProjection(projection: Matrix4x4, destination: Matrix4x4, invertY: boolean): Matrix4x4;
+        beforeRender(context: RenderContext3D): void;
+        afterRender(success: boolean): void;
+        private _prepareHistory;
+        /** 按历史尺寸和格式分配；失败时回收本次资源。 */
+        private _createHistory;
+        private _finishHistory;
+        private _releaseHistory;
+        /** 完整释放相机的 TAA 资源。 */
+        release(): void;
+        destroy(): void;
+        private _clearsColorAndDepth;
+        private _fitsMotionBudget;
+        private static _fitsColorAttachmentBudget;
+        private _warn;
+        private _setDefines;
+        private static _halton;
+    }
     /**
      * @en Class used for creating instructions to output from a render source to a render target.
      * @zh 类用于创建从渲染源输出到渲染目标的指令。
@@ -11288,10 +11503,12 @@ declare namespace Laya {
          * @param subShader subshader的节点
          * @param screenType 渲染的屏幕类型
          * @param commandbuffer 命令缓冲
+         * @param color0Only 是否仅绑定目标的颜色附件 0。
          */
-        static create(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number, screenType?: number, commandbuffer?: CommandBuffer): BlitScreenQuadCMD;
+        static create(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number, screenType?: number, commandbuffer?: CommandBuffer, color0Only?: boolean): BlitScreenQuadCMD;
         private _source;
         private _dest;
+        private _color0Only;
         private _offsetScale;
         private _shader;
         private _shaderData;
@@ -11589,8 +11806,9 @@ declare namespace Laya {
          * @param shader 着色器。如果为null，则使用内部拷贝着色器，不进行任何处理。
          * @param shaderData 着色器数据。如果为null，只接受sourceTexture。
          * @param subShader SubShader索引，默认值为0。
+         * @param color0Only 是否仅绑定颜色附件 0；默认相机目标为 true，显式目标为 false。
          */
-        blitScreenQuad(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number): void;
+        blitScreenQuad(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number, color0Only?: boolean): void;
         /**
          * @en Add a command to render the source texture to the target texture through a full screen quadrilateral.
          * @param source The source texture. If null, the previous render result is used as the original texture.
@@ -11604,8 +11822,9 @@ declare namespace Laya {
          * @param offsetScale 偏移缩放。
          * @param material 材质。
          * @param subShader Shader索引。
+         * @param color0Only 是否仅绑定颜色附件 0；默认相机目标为 true，显式目标为 false。
          */
-        blitScreenQuadByMaterial(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, material?: Material, subShader?: number): void;
+        blitScreenQuadByMaterial(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, material?: Material, subShader?: number, color0Only?: boolean): void;
         /**
          * @en Add a command to render the source texture to the target texture through full screen triangles.
          * @param source The source texture.
@@ -11621,24 +11840,28 @@ declare namespace Laya {
          * @param shader 着色器。如果为null，则使用内部拷贝着色器，不进行任何处理。
          * @param shaderData 着色器数据。如果为null，只接受sourceTexture。
          * @param subShader SubShader索引，默认值为0。
+         * @param color0Only 是否仅绑定颜色附件 0；默认相机目标为 true，显式目标为 false。
          */
-        blitScreenTriangle(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number): void;
+        blitScreenTriangle(source: BaseTexture, dest: RenderTexture, offsetScale?: Vector4, shader?: Shader3D, shaderData?: ShaderData, subShader?: number, color0Only?: boolean): void;
         appatchComputeCommand(source: ComputeCommandBuffer): void;
         /**
          * @en Sets the render target for the command buffer.
-         * @param renderTexture The render target texture.
+         * @param renderTexture The render target texture. RenderTextureMRT binds all color attachments;
+         * drawing requires a matching shader with the LAYA_MRT define enabled explicitly.
          * @param clearColor Whether to clear the color buffer.
          * @param clearDepth Whether to clear the depth buffer.
-         * @param backgroundColor The background color when clearing. Defaults to black.
+         * @param backgroundColor One clear color for all attachments, or one color per attachment in binding order.
+         * Arrays must match the color attachment count. Values are copied when recording. Ignored when clearColor is false.
          * @param depth The depth value when clearing. Defaults to 1.
          * @zh 设置命令缓冲区的渲染目标。
-         * @param renderTexture 渲染目标纹理。
+         * @param renderTexture 渲染目标纹理。RenderTextureMRT 绑定全部颜色附件；绘制时须显式启用 LAYA_MRT 并提供匹配的多输出 Shader。
          * @param clearColor 是否清除颜色缓冲区。
          * @param clearDepth 是否清除深度缓冲区。
-         * @param backgroundColor 清除时的背景颜色，默认为黑色。
+         * @param backgroundColor 统一清屏颜色（默认黑色），或按绑定顺序提供每个颜色附件的清屏颜色。
+         * 数组长度须与颜色附件数一致，录制时复制颜色值；clearColor 为 false 时忽略。
          * @param depth 清除时的深度值，默认为1。
          */
-        setRenderTarget(renderTexture: RenderTexture, clearColor: boolean, clearDepth: boolean, backgroundColor?: Color, depth?: number): void;
+        setRenderTarget(renderTexture: RenderTexture, clearColor: boolean, clearDepth: boolean, backgroundColor?: Color | readonly (Color | null)[], depth?: number): void;
         /**
          * @en Renders a Mesh.
          * @param mesh The original mesh information.
@@ -12022,6 +12245,55 @@ declare namespace Laya {
          */
         recover(): void;
     }
+    /** 内置 GBuffer 数据的输出开关，位置固定，不随组合重新排列。 */
+    enum GBufferOutput {
+        None = 0,
+        Normal = 1,
+        Albedo = 2,
+        Surface = 4,
+        All = 7
+    }
+    /** Shader 输出位置；自定义数据从 CustomStart 开始，不压缩未使用的中间位置。 */
+    enum GBufferLocation {
+        Color = 0,
+        Normal = 1,
+        Albedo = 2,
+        Surface = 3,
+        MotionVectors = 4,
+        CustomStart = 5
+    }
+    /** 内置附件的查询名称。 */
+    enum GBufferAttachment {
+        Normal = "normal",
+        Albedo = "albedo",
+        Surface = "surface",
+        MotionVectors = "MotionVectors"
+    }
+    /** 内置输出功能宏；与 GLSL include 中的协议保持一致。 */
+    enum GBufferShaderDefine {
+        Configured = "GBUFFER_OUTPUTS_CONFIGURED",
+        Normal = "GBUFFER_NORMAL",
+        Albedo = "GBUFFER_ALBEDO",
+        Surface = "GBUFFER_SURFACE"
+    }
+    /** GBuffer 上层协议：0 为主色，1～3 为内置数据，4 为运动矢量，自定义从 5 开始。 */
+    class GBuffer {
+        /** 世界法线编码为 RGB = normalWS × 0.5 + 0.5，A 为几何覆盖标记。 */
+        static readonly Normal: CameraOpaqueMRTRequirement;
+        /** 线性底色，不包含光照、雾或输出颜色变换，A 为几何覆盖标记。 */
+        static readonly Albedo: CameraOpaqueMRTRequirement;
+        /** R 为金属度，G 为感知粗糙度，B 为遮蔽系数，A 为几何覆盖标记。 */
+        static readonly Surface: CameraOpaqueMRTRequirement;
+        /** 按需选择固定槽位；无辅助附件时返回 null，4 为运动矢量保留。 */
+        static createCameraOptions(outputs?: GBufferOutput, customAttachments?: CameraOpaqueMRTOptions["auxiliaryAttachments"]): CameraOpaqueMRTOptions | null;
+        /** 为独立 MRT 生成包含主色的同一布局。 */
+        static createColorFormats(mainFormat: RenderTargetFormat, outputs?: GBufferOutput, customFormats?: readonly (RenderTargetFormat | null)[]): (RenderTargetFormat | null)[];
+        private static _validateOutputs;
+        /** 设置材质输出功能，不改变相机附件布局。 */
+        static applyShaderOutputs(shaderData: ShaderData, outputs: GBufferOutput): void;
+        /** 未显式配置时使用标准 PBR 的全部输出；已配置时读取实际宏，兼容材质克隆。 */
+        static getShaderOutputs(shaderData: ShaderData): GBufferOutput;
+    }
     /**
      * @en The `InstanceRenderElement` is used for instanced rendering.
      * @zh `InstanceRenderElement` 类用于实例化渲染。
@@ -12062,6 +12334,7 @@ declare namespace Laya {
          * 重新计算CameraFlag
          */
         private recaculateCameraFlag;
+        private _rebuildTAAEffectOrder;
         /**
          * @en Add a post-process effect.
          * @zh 构造方法，添加后期处理效果。
@@ -12136,6 +12409,14 @@ declare namespace Laya {
          * @zh 根据后期处理设置获取摄像机深度纹理模式标志。
          */
         getCameraDepthTextureModeFlag(): number;
+        /**
+         * 声明本效果需要的相机不透明 MRT 数据，无需求时返回 null。
+         * index 是辅助附件下标，对应 Shader location = index + 1；名称用于查询，不改变输出位置。
+         * 此声明只安排附件，材质 Shader 仍须写入约定的数据与编码，未提供的输出不会自动生成。
+         * 此方法须为纯查询；相机分配目标前与效果执行前均会读取，影响布局的参数应在相机渲染开始前设置。
+         * 中途启用或修改效果时，当前附件满足声明即可执行，否则本次跳过该效果。
+         */
+        getCameraOpaqueMRTRequirements(): readonly CameraOpaqueMRTRequirement[] | null;
         /**
          * @en Called when added to the post-processing stack.
          * @param postprocess The post-processing component.
@@ -13059,6 +13340,7 @@ declare namespace Laya {
          */
         static load(url: string, complete: Handler): void;
         private _id;
+        private _renderers;
         _children: Sprite3D[];
         _scene: Scene3D;
         /**
@@ -13100,6 +13382,20 @@ declare namespace Laya {
         protected _onInActive(): void;
         protected _onActiveInScene(): void;
         protected _onInActiveInScene(): void;
+        /**
+         * @en Gets a cached, read-only snapshot of renderers on this node and its descendants,
+         * including inactive nodes and disabled renderers. Call again after hierarchy or renderer
+         * changes to obtain the updated snapshot. Do not modify the returned array.
+         * @returns The renderers on this node and its descendants.
+         * @zh 获取自身及所有子节点的渲染组件缓存快照，包含未激活节点和禁用的渲染组件。
+         * 层级或渲染组件变化后，应重新调用以获取最新快照。请勿修改返回的数组。
+         * @returns 自身及所有子节点的渲染组件列表。
+         */
+        getRenderersInChildren(): ReadonlyArray<BaseRender>;
+        private static _collectRenderers;
+        private _invalidateRenderers;
+        protected _childChanged(child?: Node): void;
+        protected _componentsChanged(comp: Component, _action: 0 | 1 | 2): void;
         protected _onAdded(): void;
         protected _onRemoved(): void;
         protected onStartListeningToType(type: string): void;
@@ -13440,7 +13736,6 @@ declare namespace Laya {
         private _shellSprite;
         private _uisprite;
         private _ui3DMat;
-        private _rendertexure2D;
         private _geometry;
         private _size;
         private _sizeChange;
@@ -13630,6 +13925,8 @@ declare namespace Laya {
         static SHADOW_BIAS: Vector4;
         private _zBufferParams;
         static __init__(): void;
+        /** 非空时仅借用相机缓存；否则深度目标由本 Pass 回收。 */
+        private _borrowedDepthCamera;
         /** @ignore */
         constructor();
         /**
@@ -14228,6 +14525,13 @@ declare namespace Laya {
      * @zh 用于创建包围体。
      */
     class Bounds implements IClone {
+        /**
+         * @en Sets a batch of min/max pairs. Each record contains six doubles in
+         * minXYZ/maxXYZ order. Duplicate targets are applied in input order.
+         * Invalid target/range arguments are rejected before any bounds is changed.
+         * @zh 按输入顺序批量设置包围盒，六个值一组（minXYZ/maxXYZ）。
+         */
+        static setMinMaxBatch(targets: readonly Bounds[], values: Float64Array, count?: number): void;
         /**
          * @en Merges two bounding boxes into one.
          * @param box1 The first bounding box.
@@ -15639,6 +15943,7 @@ declare namespace Laya {
          */
         get angularSlerpDriveDamp(): number;
         set angularSlerpDriveDamp(value: number);
+        _initAllConstraintInfo(): void;
     }
     /**
      * @en ConstraintComponent class is the base class for creating constraints.
@@ -15654,6 +15959,9 @@ declare namespace Laya {
         protected _ownColliderLocalPos: Vector3;
         protected _connectColliderLocalPos: Vector3;
         private _isJointInit;
+        protected _jointReady: boolean;
+        private _boundOwnCollider;
+        private _boundConnectCollider;
         readonly owner: Sprite3D;
         /**
          * @en Initializes the joint instance.
@@ -15730,6 +16038,9 @@ declare namespace Laya {
          * @param enable 是否启用约束。
          */
         setConstraintEnabled(enable: boolean): void;
+        private _syncJointBodies;
+        protected _onJointReady(): void;
+        onStart(): void;
         protected _onEnable(): void;
         protected _onDestroy(): void;
     }
@@ -15751,6 +16062,7 @@ declare namespace Laya {
         /** @ignore */
         constructor();
         protected _initJoint(): void;
+        protected _onJointReady(): void;
         protected _onEnable(): void;
         protected _onDisable(): void;
         /**
@@ -16022,8 +16334,8 @@ declare namespace Laya {
         get restitution(): number;
         set restitution(value: number);
         /**
-         * @en The friction of the collider.
-         * @zh 碰撞器的摩擦力。
+         * @en The friction of the collider. PhysX uses this for static and dynamic friction unless individually overridden.
+         * @zh 碰撞器的摩擦力。PhysX 将其用于未单独设置的静摩擦和动摩擦。
          */
         get friction(): number;
         set friction(value: number);
@@ -16147,6 +16459,84 @@ declare namespace Laya {
     class PhysicsUpdateList extends SingletonList<ICollider> {
         /** @ignore */
         constructor();
+    }
+    enum VehicleLifecycleState {
+        Uninitialized = 0,
+        WaitingForDependencies = 1,
+        Active = 2,
+        Disabled = 3,
+        Rebuilding = 4,
+        Error = 5,
+        Destroyed = 6
+    }
+    /** High-level vehicle aggregate built on one Rigidbody3D and multiple WheelColliders. */
+    class PhysicsVehicleComponent extends Component {
+        readonly owner: Sprite3D;
+        private _vehicle;
+        private _vehicleBody;
+        private _wheels;
+        private _physicsManager;
+        private _requestedEnabled;
+        private _listenerRegistered;
+        private _autoDiscoverAttempted;
+        private _forceReinitialize;
+        private _resetPending;
+        private _lastReportedError;
+        private _state;
+        private _initializationError;
+        private _captureFailureKind;
+        private _tempWheelCenter;
+        private _desiredDesc;
+        private _appliedDesc;
+        private _changes;
+        private _inputs;
+        private _states;
+        private _stepListener;
+        get vehicleBody(): Rigidbody3D;
+        set vehicleBody(value: Rigidbody3D);
+        /** Explicit, serialized wheel order. Direct array edits are detected by snapshot comparison. */
+        get wheels(): WheelCollider[];
+        set wheels(value: WheelCollider[]);
+        get isInitialized(): boolean;
+        get lifecycleState(): VehicleLifecycleState;
+        get initializationError(): string;
+        addWheel(wheel: WheelCollider): boolean;
+        removeWheel(wheel: WheelCollider): boolean;
+        /** Explicitly initializes or reinitializes after structural dependency changes. */
+        initVehicle(): void;
+        /** Clears wheel history and inputs on the next safe fixed step. */
+        reset(): void;
+        protected _onEnable(): void;
+        protected _onDisable(): void;
+        protected _onDestroy(): void;
+        private _bindPhysicsManager;
+        private _registerStepListener;
+        private _beforePhysicsStep;
+        private _afterPhysicsStep;
+        private _synchronizeConfig;
+        private _rebuildVehicle;
+        private _deferDestroyVehicle;
+        private _captureDesiredDesc;
+        private _structureError;
+        private _configError;
+        private _stopCurrentVehicle;
+        private _validateWheelDesc;
+        private _hasTopologyChanged;
+        private _collectChanges;
+        private _wheelDescEquals;
+        private _nearlyEqual;
+        private _copyDesc;
+        private _clearDesc;
+        private _createEmptyWheelDesc;
+        private _captureInputs;
+        private _captureInputsFromDesc;
+        private _ensureRuntimeArrays;
+        private _bindAppliedWheels;
+        private _unbindAppliedWheels;
+        private _collectWheelColliders;
+        private _findClonedWheel;
+        private _setError;
+        private _clearError;
     }
     /**
      * @en Rigidbody3D is a component that creates a rigidbody collider.
@@ -16430,60 +16820,71 @@ declare namespace Laya {
         cloneTo(destObject: CapsuleColliderShape): void;
     }
     /**
-     * @en use to create compound collider.
+     * @en Used to create a compound collider.
      * @zh 用于创建组合碰撞器。
      */
     class CompoundColliderShape extends Physics3DColliderShape {
         /**
-         * @en create a new instance of CompoundColliderShape.
-         * @zh 创建一个新的组合碰撞形状实例。
+         * @en Whether to create mesh collider shapes from the owner's descendant meshes.
+         * @zh 是否根据所属节点的后代网格自动创建网格组合碰撞子形状。
          */
+        get autoDetectChildShapes(): boolean;
+        set autoDetectChildShapes(value: boolean);
+        get physicsComponent(): PhysicsColliderComponent;
+        set physicsComponent(value: PhysicsColliderComponent);
+        /** @ignore */
         constructor();
         protected _createShape(): void;
         /**
-         * @en set the physics shape array.
-         * @zh 设置物理形状数组。
+         * @en Sets the explicitly configured child shapes.
+         * @zh 设置显式配置的子形状。
          */
         set shapes(value: Physics3DColliderShape[]);
         get shapes(): Physics3DColliderShape[];
         /**
-         * @en add a child collider shape.
-         * @param shape The shape to be added as a child collider.
-         * @zh 添加一个子碰撞器形状。
-         * @param shape 子碰撞器形状。
+         * @en Adds a child collider shape.
+         * @param shape The shape to add.
+         * @zh 添加子碰撞器形状。
+         * @param shape 要添加的形状。
          */
         addChildShape(shape: Physics3DColliderShape): void;
+        private _addChildShape;
         /**
-         * @en remove a child collider shape.
-         * @param shape The shape to be removed from the child collider.
-         * @zh 移除一个子碰撞器形状。
-         * @param shape 子碰撞器形状。
+         * @en Removes a child collider shape.
+         * @param shape The shape to remove.
+         * @zh 移除子碰撞器形状。
+         * @param shape 要移除的形状。
          */
         removeChildShape(shape: Physics3DColliderShape): void;
         /**
-         * @en clear the child collider shape.
-         * @zh 清空子碰撞器形状。
+         * @en Clears all child collider shapes.
+         * @zh 清空所有子碰撞器形状。
          */
         clearChildShape(): void;
+        private _refreshMassProperties;
+        private _removeChildShapeAt;
         /**
-         * @en get the child shape count.
+         * @en Gets the number of child shapes.
          * @zh 获取子形状数量。
          */
         getChildShapeCount(): number;
         /**
-         * @en clone the data to the destination node.
-         * @zh 将数据克隆到目标节点。
+         * @en Rebuilds mesh collider shapes from the owner's current descendant meshes.
+         * @returns Whether at least one child shape was generated.
+         * @zh 根据所属节点当前的后代网格重新生成网格碰撞子形状。
+         * @returns 是否生成了至少一个子形状。
          */
+        rebuildAutoDetectedChildShapes(): boolean;
+        private _addAutoDetectedChildShape;
+        private _clearAutoDetectedChildShapes;
+        private _collectAutoColliderSources;
+        private _createAutoColliderChild;
+        private _getNodePath;
+        /** @inheritDoc */
         cloneTo(destObject: CompoundColliderShape): void;
-        /**
-         * @en clone the data to the destination node.
-         * @zh 将数据克隆到目标节点。
-         */
+        /** @inheritDoc */
         clone(): CompoundColliderShape;
-        /**
-         * @en destroy the instance.
-         * @zh 销毁实例。
-         */
+        /** @inheritDoc */
         destroy(): void;
     }
     /**
@@ -16774,6 +17175,80 @@ declare namespace Laya {
          * @return 一个新的 球形碰撞器 对象。
          */
         clone(): SphereColliderShape;
+    }
+    /**
+     * Pure vehicle configuration resolver shared by runtime backends and editor previews.
+     * The output uses the public vehicle SI contract: metres, newtons, N/m and N*s/m.
+     */
+    class VehicleConfigResolver {
+        /**
+         * Captures one wheel into the canonical backend descriptor without creating native state.
+         * `uniformScale` must be the already validated positive uniform chassis world scale.
+         */
+        static captureWheelDesc(chassis: Sprite3D, wheel: WheelCollider, uniformScale: number, out: VehicleWheelDesc, tempCenter: Vector3): void;
+    }
+    enum WheelCenterMode {
+        OwnerLocalPosition = 0,
+        Explicit = 1
+    }
+    /** Vehicle wheel configuration, input and read-only runtime state. */
+    class WheelCollider extends Component {
+        readonly owner: Sprite3D;
+        private _centerMode;
+        private _center;
+        private _radius;
+        private _suspensionRestLength;
+        private _maxSuspensionTravel;
+        private _springStiffness;
+        private _compressionDamping;
+        private _reboundDamping;
+        private _maxSuspensionForce;
+        private _frictionStiffness;
+        private _motorForce;
+        private _brakeForce;
+        private _steerAngle;
+        get centerMode(): WheelCenterMode;
+        set centerMode(value: WheelCenterMode);
+        /** Explicit chassis-local suspension connection point. */
+        get center(): Vector3;
+        set center(value: Vector3);
+        get radius(): number;
+        set radius(value: number);
+        get suspensionRestLength(): number;
+        set suspensionRestLength(value: number);
+        get maxSuspensionTravel(): number;
+        set maxSuspensionTravel(value: number);
+        get springStiffness(): number;
+        set springStiffness(value: number);
+        get compressionDamping(): number;
+        set compressionDamping(value: number);
+        get reboundDamping(): number;
+        set reboundDamping(value: number);
+        get maxSuspensionForce(): number;
+        set maxSuspensionForce(value: number);
+        get frictionStiffness(): number;
+        set frictionStiffness(value: number);
+        /** Per-step linear drive force in newtons. */
+        get motorForce(): number;
+        set motorForce(value: number);
+        /**
+         * Per-step longitudinal brake force in newtons.
+         * Same numeric value is not guaranteed to feel identical on Bullet vs PhysX;
+         * tune against the active physics backend.
+         */
+        get brakeForce(): number;
+        set brakeForce(value: number);
+        /** Per-step steering angle in degrees. */
+        get steerAngle(): number;
+        set steerAngle(value: number);
+        get isGrounded(): boolean;
+        get angularSpeed(): number;
+        get rpm(): number;
+        get suspensionForce(): number;
+        get skidInfo(): number;
+        getGroundHit(): WheelCastInfo;
+        getWorldTransform(outPosition: Vector3, outRotation: Quaternion): void;
+        protected _onDestroy(): void;
     }
     /**
      * @en The BloomEffect class is used to create a flood effect.
@@ -17139,8 +17614,8 @@ declare namespace Laya {
         get farEnd(): number;
         set farEnd(value: number);
         /**
-         * @en The maximum blur radius.
-         * @zh 最大模糊半径。
+         * @en The maximum blur radius, clamped to [0, 2].
+         * @zh 最大模糊半径，限制在 [0, 2] 范围内。
          */
         get maxRadius(): number;
         set maxRadius(value: number);
@@ -17417,6 +17892,24 @@ declare namespace Laya {
         load(task: ILoadTask): Promise<LensFlareData>;
     }
     /**
+     * @en Applies a material with a post-processing shader as a fullscreen effect.
+     * The source image is supplied as u_MainTex. Multiple instances can be chained.
+     * @zh 使用后处理着色器材质执行全屏效果。输入图像通过 u_MainTex 提供，可叠加多个实例。
+     * @blueprintable
+     */
+    class MaterialPostProcessEffect extends PostProcessEffect {
+        private _material;
+        private _postProcess;
+        constructor();
+        /**
+         * @en The shared material. Its shader must have shaderType: PostProcess.
+         * The effect uses subshader 0 and does not destroy the material.
+         * @zh 共享材质，其着色器类型必须为 PostProcess。使用子着色器 0，效果不会销毁该材质。
+         */
+        get material(): Material | null;
+        set material(value: Material | null);
+    }
+    /**
      * @en The quality of AO.
      * @zh AO质量
      */
@@ -17494,6 +17987,43 @@ declare namespace Laya {
     }
     class ACESShaderLib {
         static init(): void;
+    }
+    /** 时域抗锯齿质量，对应 Unity URP 17.3。 */
+    enum TemporalAAQuality {
+        VeryLow = 0,
+        Low = 1,
+        Medium = 2,
+        High = 3,
+        VeryHigh = 4
+    }
+    /** 相机时域抗锯齿：调色前混合历史，后期处理后执行 RCAS 锐化，锐化结果不进入历史。 */
+    class TemporalAAEffect extends PostProcessEffect {
+        private static _initialized;
+        private static _historyTexture;
+        private static _motionTexture;
+        private static _depthTexture;
+        private static _params;
+        private static _screenYSign;
+        private static _inverseViewProjection;
+        private static _viewProjection;
+        private static _previousViewProjection;
+        private static _filterWeights0;
+        private static _filterWeights1;
+        private static _filterWeights2;
+        private static _rcasSharpness;
+        private static _lowPrecision;
+        private static readonly _copyPass;
+        private static readonly _sharpenPass;
+        private static readonly _filterOffsets;
+        private static _addPass;
+        private _shader;
+        private _paramsValue;
+        private _weights;
+        private _weights0;
+        private _weights1;
+        private _weights2;
+        getCameraDepthTextureModeFlag(): DepthTextureMode;
+        private _setFilterWeights;
     }
     class Laya3DRender {
         static Render3DPassFactory: I3DRenderPassFactory;
@@ -19796,14 +20326,26 @@ declare namespace Laya {
         get interval(): number;
         set interval(value: number);
         /**
-         * @en The index of the current frame in the animation.
-         * @zh 动画当前帧的索引。
+         * @en The inclusive start index in the full frame list. Default is 0.
+         * @zh 完整帧列表中的开始帧索引，包含此帧，默认为 0。
+         */
+        get rangeStart(): number;
+        set rangeStart(value: number);
+        /**
+         * @en The inclusive end index in the full frame list. Default is -1, meaning the last frame.
+         * @zh 完整帧列表中的结束帧索引，包含此帧。默认为 -1，表示最后一帧。
+         */
+        get rangeEnd(): number;
+        set rangeEnd(value: number);
+        /**
+         * @en The index of the current frame within the active playback range.
+         * @zh 当前有效播放区间内的帧索引。
          */
         get index(): number;
         set index(value: number);
         /**
-         * @en The total number of frames in the current animation.
-         * @zh 当前动画中帧的总数。
+         * @en The number of frames in the active playback range.
+         * @zh 当前有效播放区间中的帧数。
          */
         get count(): number;
         /**
@@ -19834,12 +20376,12 @@ declare namespace Laya {
         * When the corresponding resources are loaded, the animation frame filling method (set frames) is called, or the instance is displayed on the stage,
         * it will check if it's currently playing, and if so, it will start playing.
         * Combined with the wrapMode property, you can set the animation playback order type.
-        * @param start (Optional) Specifies the starting index (int) or frame label (String) for animation playback. Frame labels can be added and removed using addLabel(...) and removeLabel(...).
+        * @param start (Optional) Specifies the starting local frame index (int) or frame label (String) for animation playback. Frame labels can be added and removed using addLabel(...) and removeLabel(...).
         * @param loop (Optional) Whether to loop playback.
         * @param name (Optional) Animation name.
         * @zh 开始播放动画。play(...)方法被设计为在创建实例后的任何时候都可以被调用，当相应的资源加载完毕、调用动画帧填充方法(set frames)或者将实例显示在舞台上时，会判断是否正在播放中，如果是，则进行播放。
         * 配合wrapMode属性，可设置动画播放顺序类型。
-        * @param start （可选）指定动画播放开始的索引(int)或帧标签(String)。帧标签可以通过addLabel(...)和removeLabel(...)进行添加和删除。
+        * @param start （可选）指定动画播放开始的区间内帧索引(int)或帧标签(String)。帧标签可以通过addLabel(...)和removeLabel(...)进行添加和删除。
         * @param loop （可选）是否循环播放。
         * @param name （可选）动画名称。
         */
@@ -19858,18 +20400,18 @@ declare namespace Laya {
         stop(): void;
         /**
          * @en Switch the animation to the specified frame and stop there.
-         * @param position Frame index or frame label.
+         * @param position Local frame index or frame label.
          * @zh 将动画切换到指定帧并停在那里。
-         * @param position 帧索引或帧标签。
+         * @param position 区间内帧索引或帧标签。
          */
         gotoAndStop(position: number | string): void;
         /**
          * @en Add a frame label to the specified frame index. When the animation plays to this frame, it will dispatch an Event.LABEL event after updating the current frame.
          * @param label The name of the frame label.
-         * @param index The frame index.
+         * @param index The frame index relative to the playback range.
          * @zh 增加一个帧标签到指定索引的帧上。当动画播放到此索引的帧时会派发Event.LABEL事件，派发事件是在完成当前帧画面更新之后。
          * @param label 帧标签名称。
-         * @param index 帧索引。
+         * @param index 相对于播放区间的帧索引。
          */
         addLabel(label: string, index: number): void;
         /**
@@ -20208,16 +20750,6 @@ declare namespace Laya {
          */
         static readonly ID: string;
         /**
-         * @en The texture to be drawn
-         * @zh 要绘制的纹理
-         */
-        get texture(): Texture;
-        /**
-         * @en The texture to be drawn
-         * @zh 要绘制的纹理
-         */
-        set texture(val: Texture);
-        /**
          * @en (Optional) X-axis offset
          * @zh （可选）X轴偏移量
          */
@@ -20286,6 +20818,16 @@ declare namespace Laya {
          * @zh 将实例回收到对象池
          */
         recover(): void;
+        /**
+         * @en The texture to be drawn
+         * @zh 要绘制的纹理
+         */
+        get texture(): Texture;
+        /**
+         * @en The texture to be drawn
+         * @zh 要绘制的纹理
+         */
+        set texture(val: Texture);
         /**
          * @en Execute the draw nine-grid texture command in the given context
          * @param runner The rendering context
@@ -21374,16 +21916,6 @@ declare namespace Laya {
          */
         static readonly ID: string;
         /**
-         * @en The texture to be drawn.
-         * @zh 要绘制的纹理。
-         */
-        get texture(): Texture | null;
-        /**
-         * @en The texture to be drawn.
-         * @zh 要绘制的纹理。
-         */
-        set texture(val: Texture);
-        /**
          * @en (Optional) X-axis offset.
          * @zh （可选）X轴偏移量。
          */
@@ -21465,6 +21997,16 @@ declare namespace Laya {
          * @zh 回收到对象池
          */
         recover(): void;
+        /**
+         * @en The texture to be drawn.
+         * @zh 要绘制的纹理。
+         */
+        get texture(): Texture | null;
+        /**
+         * @en The texture to be drawn.
+         * @zh 要绘制的纹理。
+         */
+        set texture(val: Texture);
         /**
          * @en Execute the draw texture command.
          * @param runner The rendering context.
@@ -21572,11 +22114,6 @@ declare namespace Laya {
          */
         static readonly ID: string;
         /**
-         * @en The texture to be drawn.
-         * @zh 要绘制的纹理。
-         */
-        texture: Texture | null;
-        /**
          * @en X-axis offset.
          * @zh X轴偏移量。
          */
@@ -21673,6 +22210,12 @@ declare namespace Laya {
          * @zh 回收到对象池
          */
         recover(): void;
+        /**
+         * @en The texture to be drawn.
+         * @zh 要绘制的纹理。
+         */
+        get texture(): Texture | null;
+        set texture(val: Texture | null);
         /**
          * @en Execute the drawing triangles command
          * @param runner The rendering context
@@ -21860,11 +22403,6 @@ declare namespace Laya {
          */
         static readonly ID: string;
         /**
-         * @en The texture to be filled.
-         * @zh 要填充的纹理。
-         */
-        texture: Texture;
-        /**
          * @en X-axis offset.
          * @zh X轴偏移量。
          */
@@ -21932,6 +22470,12 @@ declare namespace Laya {
          * @zh 回收到对象池
          */
         recover(): void;
+        /**
+         * @en The texture to be filled.
+         * @zh 要填充的纹理。
+         */
+        get texture(): Texture;
+        set texture(val: Texture);
         /**
          * @en Execute the fill texture command
          * @param runner The rendering context
@@ -27205,6 +27749,13 @@ declare namespace Laya {
          */
         setResolution(width: number, height: number, fullscreen?: boolean): boolean;
         /**
+         * Enters or leaves non-exclusive borderless desktop fullscreen mode without changing the display resolution.
+         * Unsupported platforms return `false` without changing the Stage.
+         * @param enabled Whether to enable borderless desktop fullscreen mode.
+         * @returns Whether the current platform accepted the request.
+         */
+        setWindowedFullscreen(enabled: boolean): boolean;
+        /**
          * @zh Exit full screen mode
          * @en 退出全屏模式
          */
@@ -30036,11 +30587,14 @@ declare namespace Laya {
         private _shape;
         private _rects;
         private _rectCnt;
+        private _savedCursor;
         /**
          * @en Creates a new instance of the `HtmlLink` class.
          * @zh 创建  HtmlLink 类的新实例
          */
         constructor();
+        private onMouseOver;
+        private onMouseOut;
         /**
          * @en The associated HTML element.
          * @zh 关联的 HTML 元素。
@@ -39568,12 +40122,12 @@ declare namespace Laya {
      * - The engine has two default sound schemes: WebAudio and H5Audio.
      * - For playing sound effects, WebAudio is prioritized. If WebAudio is not available, H5Audio is used. H5Audio may have compatibility issues on some devices (such as inability to mix sounds or playback delays).
      * - For playing background music, H5Audio is used (using WebAudio would significantly increase memory usage and cause a delay as it needs to wait for the sound to load completely before playing).
-     * - It is recommended to use mp3 format for background music and wav or mp3 format for sound effects (if packaging as an app, only wav format can be used for sound effects).
+     * - It is recommended to use mp3 format for background music and wav or mp3 format for sound effects. WAV is preferred for short sound effects to reduce decoding overhead, but mp3/ogg are also supported when packaging as an app.
      * @zh `SoundManager` 是一个声音管理类。提供了对背景音乐、音效的播放控制方法。
      * - 引擎默认有两套声音方案：WebAudio和H5Audio。
      * - 播放音效时，优先使用WebAudio播放声音，如果WebAudio不可用，则用H5Audio播放。H5Audio在部分机器上有兼容问题（比如不能混音，播放有延迟等）。
      * - 播放背景音乐时，则使用H5Audio播放（使用WebAudio会增加特别大的内存，并且要等加载完毕后才能播放，有延迟）。
-     * - 建议背景音乐用mp3类型，音效用wav或者mp3类型（如果打包为app，音效只能用wav格式）。
+     * - 建议背景音乐用mp3类型，音效用wav或者mp3类型。短音效推荐使用wav以减少解码开销，但打包为app时mp3、ogg格式同样支持。
      * @blueprintable
      */
     class SoundManager {
@@ -40166,6 +40720,8 @@ declare namespace Laya {
         pause(): void;
         private _load;
         private _vtReady;
+        private _vtEnded;
+        private _vtError;
         private _unload;
         /**
          * @ignore
@@ -40610,6 +41166,7 @@ declare namespace Laya {
          * @ignore
          */
         onAwake(): void;
+        protected _onDestroy(): void;
         protected _crateNavMesh(config: RecastConfig, min: Vector3, max: Vector3): NavMesh2D;
     }
     enum NavObstacles2DType {
@@ -40826,6 +41383,9 @@ declare namespace Laya {
         set areaFlag(value: string);
         get areaFlag(): string;
         constructor();
+        protected _onDisable(): void;
+        protected _onDestroy(): void;
+        _cloneTo(dest: Component): void;
     }
     class NavAgent extends BaseNavAgent {
         readonly owner: Sprite3D;
@@ -40942,6 +41502,7 @@ declare namespace Laya {
         */
         set datas(value: TextResource);
         get datas(): TextResource;
+        protected _onDestroy(): void;
         _cloneTo(dest: NavMeshModifileSurface): void;
     }
     /**
@@ -41180,6 +41741,9 @@ declare namespace Laya {
      * @zh 类用来实例化一个寻路代理
      */
     class BaseNavAgent extends Component {
+        private _hasTarget;
+        private _brakingTarget;
+        private _arrivalStopped;
         /**
          * @en Radius of the agent.
          * @zh 代理的半径。
@@ -41204,6 +41768,18 @@ declare namespace Laya {
          */
         set maxAcceleration(value: number);
         get maxAcceleration(): number;
+        /**
+         * @en Automatically slow down before the end of a path. Defaults to true.
+         * @zh 是否在路径终点前自动减速。默认为 true。
+         */
+        get autoBraking(): boolean;
+        set autoBraking(value: boolean);
+        /**
+         * @en Remaining path distance within which the agent stops, in world units. Defaults to zero.
+         * @zh 代理允许停止的剩余路径距离，使用世界单位。默认为 0。
+         */
+        get stopDistance(): number;
+        set stopDistance(value: number);
         /**
          * @en Angular speed of the agent.
          * @zh 代理的转身速度。
@@ -41427,6 +42003,7 @@ declare namespace Laya {
         _updateStartPoint(value: Vector3): void;
         _updateEndPoint(value: Vector3): void;
         private _updateData;
+        private _clearRegistrations;
         destroy(): void;
     }
     class NavModifleData extends BaseData {
@@ -41544,9 +42121,7 @@ declare namespace Laya {
          * free Crowd
          */
         static _freeCrowd(data: any): void;
-        /**
-         * free any other
-         */
+        /** Free an Embind-owned native object through its registered destructor. */
         static _free(data: any): void;
         /**
         * free any layaData
@@ -41983,7 +42558,7 @@ declare namespace Laya {
      */
     interface IWebSocket {
         onOpen: (result: any) => void;
-        onClose: () => void;
+        onClose: (code?: number, reason?: string) => void;
         onError: (e: any) => void;
         onMessage: (data: string | ArrayBuffer) => void;
         open(url: string, options?: IWebSocketConnectOptions): void;
@@ -42668,13 +43243,13 @@ declare namespace Laya {
      * -  To use Socket class methods, first create a Socket object using the constructor new Socket. Socket transmits and receives data asynchronously.
      * - Event.OPEN event: dispatched after successful connection establishment.
      * - Event.MESSAGE event: dispatched after receiving data.
-     * - Event.CLOSE event: dispatched after connection closed.
+     * - Event.CLOSE event: dispatched after connection closed. The callback receives the close code and reason as parameters.
      * - Event.ERROR event: dispatched after an error occurred.
      * @zh Socket 封装了 HTML5 WebSocket，允许服务器端与客户端进行全双工（full-duplex）的实时通信，并且允许跨域通信。在建立连接后，服务器和 Browser/Client Agent 都能主动的向对方发送或接收文本和二进制数据。
      * - 要使用Socket 类的方法，请先使用构造函数 new Socket 创建一个 Socket 对象。 Socket 以异步方式传输和接收数据。
      * - Event.OPEN 事件：连接建立成功后调度。
      * - Event.MESSAGE 事件：接收到数据后调度。
-     * - Event.CLOSE 事件：连接被关闭后调度。
+     * - Event.CLOSE 事件：连接被关闭后调度，回调参数为关闭的 code 和 reason。
      * - Event.ERROR 事件：出现异常后调度。
      * @blueprintable
      */
@@ -42723,13 +43298,13 @@ declare namespace Laya {
         set endian(value: string);
         /**
          * @en Connect to the specified host and port.
-         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed; Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
+         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed (the callback receives the close code and reason); Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
          * @param host The server address.
          * @param port The server port.
          * @param isSecure Whether to use the WebSocket secure protocol wss, default (false) uses the ordinary protocol ws.
          * @param protocols Subprotocol names. A string or an array of strings of subprotocol names.
          * @zh 连接到指定的主机和端口。
-         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
+         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件（回调参数为关闭的 code 和 reason）；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
          * @param host 服务器地址。
          * @param port 服务器端口。
          * @param isSecure 是否使用WebSocket安全协议wss，默认（false）使用普通协议ws。
@@ -42738,13 +43313,13 @@ declare namespace Laya {
         connect(host: string, port: number, isSecure?: boolean, protocols?: string[]): void;
         /**
          * @en Connect to the specified host and port.
-         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed; Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
+         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed (the callback receives the close code and reason); Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
          * @param host The server address.
          * @param port The server port.
          * @param isSecure Whether to use the WebSocket secure protocol wss, default (false) uses the ordinary protocol ws.
          * @param options Options for the WebSocket connection.
          * @zh 连接到指定的主机和端口。
-         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
+         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件（回调参数为关闭的 code 和 reason）；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
          * @param host 服务器地址。
          * @param port 服务器端口。
          * @param isSecure 是否使用WebSocket安全协议wss，默认（false）使用普通协议ws。
@@ -42753,22 +43328,22 @@ declare namespace Laya {
         connect(host: string, port: number, isSecure?: boolean, options?: IWebSocketConnectOptions): void;
         /**
          * @en Connect to the specified server WebSocket URL. The URL is similar to ws://yourdomain:port.
-         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed; Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
+         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed (the callback receives the close code and reason); Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
          * @param url The server WebSocket URL to connect to. The URL is similar to ws://yourdomain:port.
          * @param protocols Subprotocol names. A string or an array of strings of subprotocol names.
          * @zh 连接到指定的服务端 WebSocket URL。 URL 类似 ws://yourdomain:port。
-         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
+         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件（回调参数为关闭的 code 和 reason）；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
          * @param url 要连接的服务端 WebSocket URL。 URL 类似 ws://yourdomain:port。
          * @param protocols 子协议名称。子协议名称字符串，或由多个子协议名称字符串构成的数组。
          */
         connectByUrl(url: string, protocols?: string[]): void;
         /**
          * @en Connect to the specified server WebSocket URL. The URL is similar to ws://yourdomain:port.
-         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed; Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
+         * - Dispatches Event.OPEN on successful connection; Event.ERROR on connection failure; Event.CLOSE when the connection is closed (the callback receives the close code and reason); Event.MESSAGE when data is received. Except for Event.MESSAGE where the event parameter is the data content, other event parameters are native HTML DOM Event objects.
          * @param url The server WebSocket URL to connect to. The URL is similar to ws://yourdomain:port.
          * @param options Options for the WebSocket connection.
          * @zh 连接到指定的服务端 WebSocket URL。 URL 类似 ws://yourdomain:port。
-         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
+         * - 连接成功派发 Event.OPEN 事件；连接失败派发 Event.ERROR 事件；连接被关闭派发 Event.CLOSE 事件（回调参数为关闭的 code 和 reason）；接收到数据派发 Event.MESSAGE 事件； 除了 Event.MESSAGE 事件参数为数据内容，其他事件参数都是原生的 HTML DOM Event 对象。
          * @param url 要连接的服务端 WebSocket URL。 URL 类似 ws://yourdomain:port。
          * @param options WebSocket 连接的选项。
          */
@@ -43440,6 +44015,11 @@ declare namespace Laya {
     class Shape2DModule implements IClone {
         enable: boolean;
         shape: Base2DShape;
+        /**
+         * @en Align the particle's initial rotation to its initial direction of travel (evaluated once at spawn, added on top of startRotation).
+         * @zh 出生时将粒子的初始旋转对齐到其初始运动方向（仅在发射时计算一次，叠加在 startRotation 之上）。
+         */
+        alignToDirection: boolean;
         constructor();
         cloneTo(destObject: Shape2DModule): void;
         clone(): Shape2DModule;
@@ -43549,6 +44129,7 @@ declare namespace Laya {
         destroy(): void;
     }
     class Particle2DShader {
+        static GradientKeyCount8Def: ShaderDefine;
         static ColorOverLifetimeDef: ShaderDefine;
         static ColorOverLifetimeRandom: ShaderDefine;
         static ColorOVerLifetimeColorKey_8: ShaderDefine;
@@ -43717,6 +44298,10 @@ declare namespace Laya {
     class ShurikenParticle2DSystem extends ParticleControler implements IClone {
         owner: Sprite;
         _dirtyFlags: number;
+        private _gradientKeyCount8;
+        /** Whether numeric lifetime curves use eight keys instead of the default four. */
+        get gradientKeyCount8(): boolean;
+        set gradientKeyCount8(value: boolean);
         private _rand;
         private _randomSeeds;
         private _main;
@@ -46508,8 +47093,8 @@ declare namespace Laya {
         get inertia(): number;
         set inertia(value: number);
         /**
-         * @en The center of mass of the rigid body. (Only valid when not using automatic mass calculation)
-         * @zh 刚体质心（只在未开启自动质量计算时才有效）
+         * @en Manual center of mass retains Box2D units (meters); automatic mode returns pixels. getCenter() always returns pixels.
+         * @zh 手动质心沿用 Box2D 物理单位（米）；自动质量模式返回像素。getCenter() 始终返回像素偏移。
          */
         get centerOfMass(): IV2 | Vector2;
         set centerOfMass(value: IV2 | Vector2);
@@ -46990,7 +47575,7 @@ declare namespace Laya {
         get_RigibBody_Transform(body: any): any;
         get_rigidBody_WorldVector(body: any, value: Vector2): Vector2;
         get_rigidBody_LocalVector(body: any, value: Vector2): Vector2;
-        rigidbody_ApplyAngularImpulse(body: any, impulse: number): void;
+        rigidbody_ApplyAngularImpulse(body: any, impulse: number, wake?: boolean): void;
         get_rigidBody_type(body: any): string;
         get_rigidBody_gravityScale(body: any): number;
         get_rigidBody_allowSleep(body: any): boolean;
@@ -47141,7 +47726,7 @@ declare namespace Laya {
          * @param dampingRatio 阻尼比。
          * @param isdamping 是否应用阻尼。
          */
-        set_Joint_frequencyAndDampingRatio(joint: any, frequency: number, dampingRatio: number, isdamping: boolean): void;
+        set_Joint_frequencyAndDampingRatio(joint: any, frequency: number, dampingRatio: number, isdamping: boolean, isAngular?: boolean): void;
         /**
          * @en Set the length of a distance joint.
          * @param joint The distance joint.
@@ -47401,11 +47986,11 @@ declare namespace Laya {
         set_RigibBody_Transform(body: any, x: number, y: number, angle: any): void;
         get_rigidBody_WorldPoint(body: any, x: number, y: number): IV2;
         get_rigidBody_LocalPoint(body: any, x: number, y: number): IV2;
-        rigidBody_applyForce(body: any, force: IV2, position: IV2): void;
-        rigidBody_applyForceToCenter(body: any, force: IV2): void;
-        rigidbody_ApplyLinearImpulse(body: any, impulse: IV2, position: IV2): void;
-        rigidbody_ApplyLinearImpulseToCenter(body: any, impulse: IV2): void;
-        rigidbody_applyTorque(body: any, torque: number): void;
+        rigidBody_applyForce(body: any, force: IV2, position: IV2, wake?: boolean): void;
+        rigidBody_applyForceToCenter(body: any, force: IV2, wake?: boolean): void;
+        rigidbody_ApplyLinearImpulse(body: any, impulse: IV2, position: IV2, wake?: boolean): void;
+        rigidbody_ApplyLinearImpulseToCenter(body: any, impulse: IV2, wake?: boolean): void;
+        rigidbody_applyTorque(body: any, torque: number, wake?: boolean): void;
         set_rigidbody_Velocity(body: any, velocity: IV2): void;
         set_rigidbody_Awake(body: any, awake: boolean): void;
         get_rigidbody_Mass(body: any): number;
@@ -47574,7 +48159,7 @@ declare namespace Laya {
         get_RigibBody_Transform(body: any): any;
         get_rigidBody_WorldVector(body: any, value: Vector2): Vector2;
         get_rigidBody_LocalVector(body: any, value: Vector2): Vector2;
-        rigidbody_ApplyAngularImpulse(body: any, impulse: number): void;
+        rigidbody_ApplyAngularImpulse(body: any, impulse: number, wake?: boolean): void;
         set_rigidBody_Awake(body: any, awake: boolean): void;
         get_rigidBody_Mass(body: any): number;
         get_rigidBody_Inertia(body: any): number;
@@ -47755,8 +48340,8 @@ declare namespace Laya {
          */
         collideConnected: boolean;
         /**
-         * @en The offset from the other body's coordinates, which is also the target position for the self body.
-         * @zh 基于 otherBody 坐标位置的偏移量，也是 selfBody 的目标位置。
+         * @en The position of otherBody relative to selfBody, expressed in selfBody's local coordinate system, in pixels.
+         * @zh otherBody 相对 selfBody 的位置偏移，使用 selfBody 的局部坐标系，单位为像素。
          */
         get linearOffset(): any[];
         set linearOffset(value: any[]);
@@ -48144,6 +48729,17 @@ declare namespace Laya {
         _factory: IPhysics2DFactory;
         private _update;
         /**
+         * @en Advances the 2D physics simulation by the specified time and synchronizes physics transforms to render objects.
+         * When updating physics manually, set `Physics2DOption.customUpdate` to `true` before initializing the engine to avoid automatic updates.
+         * Non-positive steps do not advance the simulation, but Box2D still updates contacts and clears forces when auto-clear is enabled.
+         * @param deltaTime The simulation time step in seconds. It must be a finite number.
+         * @zh 按指定时间推进 2D 物理模拟，并将物理变换同步到渲染对象。
+         * 手动更新物理时，应在初始化引擎前将 `Physics2DOption.customUpdate` 设置为 `true`，以避免与自动更新重复执行。
+         * 非正时间步不推进模拟，但 Box2D 仍更新接触，并在启用自动清力时清除力。
+         * @param deltaTime 模拟时间步长，单位为秒。必须是有限数。
+         */
+        update(deltaTime: number): void;
+        /**
          * @en Enables the physics world. This method initializes the physics engine and starts the simulation.
          * @zh 开启物理世界。此方法初始化物理引擎并启动模拟。
          */
@@ -48301,8 +48897,8 @@ declare namespace Laya {
          */
         static drawCenterOfMass: boolean;
         /**
-         * @zh 子步数，用于定义物理世界中每个模拟步（Step）的时间长度（秒），保证物理计算在不同帧率下具有一致性和稳定性。步长越小，物理精度越高，但 CPU 开销增加。
-         * @en Specifies the duration of a single physics simulation step (in seconds), ensuring consistent and stable physics results across different frame rates. Smaller values increase simulation accuracy at the cost of higher CPU usage.
+         * @zh 旧版子步配置值。为保留旧项目的模拟效果，该配置不自动启用子步；需通过场景 Physics2DWorldManager.setSubStep 显式设置运行时子步数。
+         * @en Legacy substep setting. To preserve existing simulations, this configuration does not automatically enable substeps; explicitly call the scene Physics2DWorldManager.setSubStep at runtime.
          */
         static subStep: number;
     }
@@ -48318,6 +48914,7 @@ declare namespace Laya {
         static __managerName: string;
         name: string;
         private _box2DWorld;
+        private _emptyBody;
         private _pixelRatio;
         private _RePixelRatio;
         private _scene;
@@ -48373,8 +48970,8 @@ declare namespace Laya {
          */
         getRootSprite(): Scene | Sprite;
         /**
-         * @zh 平移整个物理世界的远点
-         * @en Shift the far point of the entire physics world
+         * @zh 平移物理世界原点（物理单位）。当前绑定不支持时警告并保持世界不变。
+         * @en Shift the world origin in physics units. Unsupported bindings warn and leave the world unchanged.
          * @param newOrigin 新的物理世界原点
          * @en New physics world origin
          */
@@ -48403,9 +49000,9 @@ declare namespace Laya {
          */
         getPixel_Ratio(): number;
         /**
-         * @zh 设置物理世界子步迭代次数
+         * @zh 显式设置运行时子步数。旧项目保存的 subStep 配置保留原先单步行为。
          * @param subStep 设置物理世界子步迭代次数
-         * @en Set the number of substeps in the physics world
+         * @en Explicitly opt into runtime substeps. Saved legacy subStep settings retain single-step behavior.
          * @param subStep The number of substeps in the physics world
          */
         setSubStep(subStep: number): void;
@@ -48516,6 +49113,8 @@ declare namespace Laya {
          * @en Destroy the physics world.
          */
         destroy(): void;
+        private _subStepStayEvents;
+        private _queueContactEvent;
         private _worldBeginContactCallback;
         private _worldEndContactCallback;
         private _worldPreSolveCallback;
@@ -48845,15 +49444,17 @@ declare namespace Laya {
          * @zh 对刚体施加力。
          * @param position 施加力的点，如 {x: 100, y: 100}，全局坐标。
          * @param force 施加的力，如 {x: 0.1, y: 0.1}。
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyForce(position: IV2, force: IV2): void;
+        applyForce(position: IV2, force: IV2, wake?: boolean): void;
         /**
          * @en Apply force to the center of the rigid body to prevent object rotation.
          * @param force The force to be applied, such as {x: 0.1, y: 0.1}.
          * @zh 从中心点对刚体施加力，防止对象旋转。
          * @param force 施加的力，如 {x: 0.1, y: 0.1}。
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyForceToCenter(force: IV2): void;
+        applyForceToCenter(force: IV2, wake?: boolean): void;
         /**
          * @en Apply linear impulse. The added velocity impulse will be combined with the rigid body's original velocity to produce a new velocity.
          * @param position The point where the impulse is applied, such as {x: 100, y: 100}, in global coordinates.
@@ -48861,29 +49462,33 @@ declare namespace Laya {
          * @zh 施加速度冲量，添加的速度冲量会与刚体原有的速度叠加，产生新的速度。
          * @param position 施加力的点，如 {x: 100, y: 100}，全局坐标。
          * @param impulse 施加的速度冲量，如 {x: 0.1, y: 0.1}。
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyLinearImpulse(position: IV2, impulse: IV2): void;
+        applyLinearImpulse(position: IV2, impulse: IV2, wake?: boolean): void;
         /**
          * @en Apply linear impulse to the center. The added velocity impulse will be combined with the rigid body's original velocity to produce a new velocity.
          * @param impulse The velocity impulse to be applied, such as {x: 0.1, y: 0.1}.
          * @zh 施加速度冲量，添加的速度冲量会与刚体原有的速度叠加，产生新的速度。
          * @param impulse 施加的速度冲量，如 {x: 0.1, y: 0.1}。
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyLinearImpulseToCenter(impulse: IV2): void;
+        applyLinearImpulseToCenter(impulse: IV2, wake?: boolean): void;
         /**
          * @zh 施加角速度冲量
          * @param impulse 角速度冲量
          * @en Apply angular velocity impulse
          * @param impulse angular impulse
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyAngularImpulse(impulse: number): void;
+        applyAngularImpulse(impulse: number, wake?: boolean): void;
         /**
          * @en Apply torque to the rigid body to make it rotate.
          * @param torque The torque to be applied.
          * @zh 对刚体施加扭矩，使其旋转。
          * @param torque 施加的扭矩。
+         * @param wake Whether to wake the body. Defaults to true. 是否唤醒刚体，默认为 true。
          */
-        applyTorque(torque: number): void;
+        applyTorque(torque: number, wake?: boolean): void;
         /**
          * @en Set the velocity, such as {x: 10, y: 10}.
          * @param velocity The velocity to be set.
@@ -49389,6 +49994,7 @@ declare namespace Laya {
          * @returns 创建的凸包网格，如果创建失败则返回 null。
          */
         createCorveMesh(mesh: Mesh): Mesh;
+        createVehicle(manager: btPhysicsManager, desc: VehicleDesc): btVehicle;
     }
     /**
      * @en The `btPhysicsManager` class is the core class for managing the Bullet physics engine.
@@ -49594,7 +50200,7 @@ declare namespace Laya {
          * @zh 添加碰撞体。
          * @param collider 要添加的碰撞体。
          */
-        addCollider(collider: ICollider): void;
+        addCollider(collider: ICollider, deriveTransform?: boolean): void;
         /**
          * @en Removes a collider.
          * @param collider The collider to be removed.
@@ -49713,6 +50319,9 @@ declare namespace Laya {
          * @zh 销毁物理管理器并释放所有相关资源。
          */
         destroy(): void;
+        removePhysicsStepListener(listener: IPhysicsStepListener): void;
+        deferPhysicsOperation(operation: () => void): void;
+        private _flushPendingPhysicsOperations;
     }
     class btStatics {
         static bt: any;
@@ -49807,6 +50416,21 @@ declare namespace Laya {
      * @zh btCharacterCollider 类用于处理3D物理角色碰撞器。
      */
     class btCharacterCollider extends btCollider implements ICharacterController {
+        private static _btGroundFrom;
+        private static _btGroundTo;
+        private static _btGroundCallback;
+        private _walkDirection;
+        private _gravitySuppressed;
+        private _characterShape;
+        private static _btSupportRayFrom;
+        private static _btSupportRayTo;
+        private static _btSupportRayCallback;
+        private _supportObject;
+        private _supportPoint;
+        private _supportTransform;
+        private _supportBodyTransform;
+        private _supportMoved;
+        private static _supportBodyTransform;
         static __init__(): void;
         /**
          * @en Check if the character is capable of a specific action.
@@ -49930,6 +50554,9 @@ declare namespace Laya {
          * @param disp 位移向量。
          */
         move(disp: Vector3): void;
+        private _hasStaticSupport;
+        private _readSupportBodyTransform;
+        private _checkSupportRay;
         /**
          * @en Make the character jump with a given velocity.
          * @param velocity The jump velocity vector.
@@ -50313,6 +50940,7 @@ declare namespace Laya {
          * @zh 是否处于睡眠状态。
          */
         isSleeping(): boolean;
+        allowSleep(value: boolean): void;
         protected _initCollider(): void;
         protected _onShapeChange(): void;
         /**
@@ -50590,6 +51218,16 @@ declare namespace Laya {
      * @zh 类`btCustomJoint`用于实现关节的详细控制。
      */
     class btCustomJoint extends btJoint implements ID6Joint {
+        private _linearDrives;
+        private _drivePosition;
+        private _driveVelocity;
+        private _drivesEnabled;
+        private _driveRegistered;
+        private _driveScratch;
+        private static readonly _driveKeys;
+        private _driveStep;
+        isEnable(value: boolean): void;
+        private _applyLinearDrives;
         /**
          * @en Initializes the joint.
          * @zh 初始化关节。
@@ -50789,6 +51427,8 @@ declare namespace Laya {
      * @zh 类 `btHingeJoint` 表示两个刚体之间的摆动关节。
      */
     class btHingeJoint extends btJoint implements IHingeJoint {
+        readonly supportsContactDistance = false;
+        private _driveVelocity;
         protected _createJoint(): void;
         /**
          * @ignore
@@ -50957,6 +51597,8 @@ declare namespace Laya {
      * @zh 类`btJoint`用于实现物理关节的基类。
      */
     class btJoint implements IJoint {
+        _id: number;
+        private _destroyed;
         _manager: btPhysicsManager;
         /**
          * @en Whether to perform collision detection between the two connected objects.
@@ -51201,8 +51843,11 @@ declare namespace Laya {
      */
     class btCapsuleColliderShape extends btColliderShape implements ICapsuleColliderShape {
         private static _tempVector30;
+        private _characterResizing;
+        private _dimensionSign;
         constructor();
         protected _createShape(): void;
+        private _applyDimensions;
         protected _getType(): number;
         /**
          * @en Sets the radius of the capsule.
@@ -51301,6 +51946,7 @@ declare namespace Laya {
      * @zh 用于创建组合碰撞器。
      */
     class btCompoundColliderShape extends btColliderShape implements ICompoundColliderShape {
+        private _nativeChildShapes;
         /**
          * @en create a new instance of btCompoundColliderShape.
          * @zh 创建一个新的组合碰撞形状实例。
@@ -51309,7 +51955,9 @@ declare namespace Laya {
         clearChildShape(): void;
         protected _getType(): number;
         addChildShape(shape: btColliderShape): void;
+        addChildShapeWithTransform(shape: btColliderShape, localPosition: Vector3, localRotation: Quaternion, localScale: Vector3): void;
         removeChildShape(shape: btColliderShape, index: number): void;
+        refreshMassProperties(mass: number): void;
         setShapeData(component: PhysicsColliderComponent): void;
         getChildShapeCount(): number;
         /**
@@ -51395,6 +52043,7 @@ declare namespace Laya {
      * @zh `btMeshColliderShape` 类用于创建和管理基于网格的碰撞形状。
      */
     class btMeshColliderShape extends btColliderShape implements IMeshColliderShape {
+        private static _meshGeometryCache;
         private _limitvertex;
         private _convex;
         /**
@@ -51438,6 +52087,7 @@ declare namespace Laya {
          * @param value 缩放向量。
          */
         setWorldScale(value: Vector3): void;
+        destroy(): void;
     }
     /**
      * @en The `btSphereColliderShape` class is used to create and manage spherical collision shapes.
@@ -51459,6 +52109,31 @@ declare namespace Laya {
          * @en Destroys the sphere collider shape and cleans up resources.
          * @zh 销毁球形碰撞体形状并清理资源。
          */
+        destroy(): void;
+    }
+    /** Bullet implementation using native btRaycastVehicle. */
+    class btVehicle implements IPhysicsVehicle {
+        private _physicsManager;
+        private _btVehicle;
+        private _btPhysicsWorld;
+        private _vehicleBody;
+        private _wheels;
+        private _inputs;
+        private _enabled;
+        private _destroyed;
+        private _wakeRequested;
+        private _fixedDeltaTime;
+        constructor(_physicsManager: btPhysicsManager, desc: VehicleDesc);
+        private _build;
+        setEnabled(value: boolean): void;
+        applyConfig(desc: VehicleDesc, changes: VehicleChanges): VehicleApplyResult;
+        private _validateDesc;
+        private _validateWheel;
+        setInputs(inputs: readonly VehicleWheelInput[]): void;
+        beforePhysicsStep(fixedDeltaTime: number): void;
+        afterPhysicsStep(fixedDeltaTime: number): void;
+        readStates(outStates: VehicleWheelState[]): void;
+        reset(): void;
         destroy(): void;
     }
     /**
@@ -51786,6 +52461,8 @@ declare namespace Laya {
          * @param value 物体的新质量空间惯性张量。
          */
         setInertiaTensor(value: Vector3): void;
+        /** @en Set per-body gravity. @zh 设置单个刚体的重力。 */
+        setGravity?(value: Vector3): void;
         /**
          * @en Sets the mass-normalized kinetic energy threshold below which an actor may go to sleep.
          * @param value Energy below which an actor may go to sleep.
@@ -52010,6 +52687,8 @@ declare namespace Laya {
          * @param mesh 输入的网格。
          */
         createCorveMesh?(mesh: Mesh): Mesh;
+        /** Create a complete disabled backend vehicle. */
+        createVehicle?(manager: IPhysicsManager, desc: VehicleDesc): IPhysicsVehicle;
     }
     /**
      * @en Interface for physics manager.
@@ -52205,6 +52884,78 @@ declare namespace Laya {
          * @param value 碰撞器是否为触发器。
          */
         setTrigger(value: boolean): void;
+    }
+    /** Runtime wheel state. Instances are reused to avoid fixed-step allocations. */
+    class VehicleWheelState {
+        otherCollider: ICollider;
+        contactPos: Vector3;
+        contactNormal: Vector3;
+        isContact: boolean;
+        currentSuspensionLength: number;
+        suspensionForce: number;
+        skidInfo: number;
+        rotation: number;
+        angularSpeed: number;
+        rpm: number;
+        worldPosition: Vector3;
+        worldRotation: Quaternion;
+    }
+    enum VehicleChangeFlags {
+        None = 0,
+        ChassisMass = 1,
+        WheelConfig = 2
+    }
+    enum VehicleApplyResult {
+        Applied = 0,
+        RebuildRequired = 1,
+        Unsupported = 2,
+        Invalid = 3
+    }
+    /**
+     * @en Wheel cast information, containing ground contact data.
+     * @zh 车轮投射信息，包含地面接触数据。
+     */
+    interface WheelCastInfo {
+        /**
+         * @en The collider that the wheel is in contact with.
+         * @zh 车轮接触的碰撞体。
+         */
+        otherCollider: ICollider;
+        /**
+         * @en The contact point position.
+         * @zh 接触点位置。
+         */
+        contactPos: Vector3;
+        /**
+         * @en The contact point normal.
+         * @zh 接触点法线。
+         */
+        contactNormal: Vector3;
+        /**
+         * @en Whether the wheel is in contact with the ground.
+         * @zh 是否接触地面。
+         */
+        isContact: boolean;
+        /**
+         * @en Current suspension length.
+         * @zh 当前悬挂长度。
+         */
+        currentSuspensionLength: number;
+        /**
+         * @en Raycast hit distance from connection point to ground (including wheel radius).
+         * @zh 射线检测距离，从连接点到地面的距离（包括轮子半径）。
+         */
+        hitDistance?: number;
+        /**
+         * @en Suspension rest length (from connection point to wheel center).
+         * @zh 悬挂静止长度（从连接点到轮子中心）。
+         */
+        suspensionRestLength?: number;
+        /**
+         * @en Wheel radius.
+         * @zh 轮子半径。
+         */
+        wheelRadius?: number;
     }
     /**
      * @en Interface for custom joints in the physics system.
@@ -52831,6 +53582,19 @@ declare namespace Laya {
          */
         addChildShape(shape: IColliderShape): void;
         /**
+         * @en Adds a child shape with a transform relative to the compound shape.
+         * @param shape The child shape to add.
+         * @param localPosition The position relative to the compound shape.
+         * @param localRotation The rotation relative to the compound shape.
+         * @param localScale The scale relative to the compound shape.
+         * @zh 添加一个带有相对于组合形状变换的子形状。
+         * @param shape 要添加的子形状。
+         * @param localPosition 相对于组合形状的位置。
+         * @param localRotation 相对于组合形状的旋转。
+         * @param localScale 相对于组合形状的缩放。
+         */
+        addChildShapeWithTransform?(shape: IColliderShape, localPosition: Vector3, localRotation: Quaternion, localScale: Vector3): void;
+        /**
          * @en Removes a child shape from the compound collider shape.
          * @param shape The child shape to remove.
          * @param index The index of the child shape to remove.
@@ -52839,6 +53603,8 @@ declare namespace Laya {
          * @param index 要移除的子形状的索引。
          */
         removeChildShape(shape: IColliderShape, index: number): void;
+        /** Recompute an attached dynamic body's inertia after child shapes change. */
+        refreshMassProperties?(mass: number): void;
         /**
          * @en Sets the data of the shape.
          * @param component The component to set the data.
@@ -53376,7 +54142,9 @@ declare namespace Laya {
          * @en 6 Degrees of Freedom (D6) joint capability.
          * @zh 6自由度（D6）关节能力。
          */
-        Physics_D6Joint = 17
+        Physics_D6Joint = 17,
+        /** Vehicle system capability. */
+        Physics_VehicleSystem = 18
     }
     /**
      * @en Physical Statistics Data
@@ -53461,6 +54229,9 @@ declare namespace Laya {
         static tempV3: Vector3;
         _shapeID: number;
         private _nonWalkableMode;
+        private _jumpVelocity;
+        private _gravityDisplacement;
+        private _lastCollisionFlags;
         private _gravity;
         private _characterCollisionFlags;
         /**
@@ -53527,6 +54298,8 @@ declare namespace Laya {
          * @param velocity 跳跃速度。
          */
         jump?(velocity: Vector3): void;
+        simulateGravity(deltaTime: number): void;
+        getVerticalVel(): number;
         isGrounded(): boolean;
         /**
          * @en Sets the step offset for the character controller.
@@ -53930,6 +54703,8 @@ declare namespace Laya {
          * @zh 表示碰撞体是否是运动学的。
          */
         IsKinematic: boolean;
+        private _allowSleep;
+        private _gravity;
         private _mass;
         private _linearDamping;
         private _angularDamping;
@@ -54081,6 +54856,7 @@ declare namespace Laya {
          */
         setIsKinematic(value: boolean): void;
         allowSleep(value: boolean): void;
+        setGravity(value: Vector3): void;
         /**
          * @en Set the constraints of the dynamic collider.
          * @param linearFactor The linear factor vector.
@@ -54446,6 +55222,7 @@ declare namespace Laya {
      * @zh `pxJoint`类用于在物理引擎中实现关节功能。
      */
     class pxJoint implements IJoint {
+        private _destroyed;
         /**
          * @en Create an instance of the pxJoint class.
          * @param manager The physics manager.
@@ -54482,6 +55259,7 @@ declare namespace Laya {
      * @zh 实现PhysX碰撞数据内容
      */
     class pxCollisionTool {
+        private static _contactPool;
         /**@ignore */
         constructor();
         /**
@@ -54694,25 +55472,34 @@ declare namespace Laya {
          * @param mesh 输入的网格。
          */
         createCorveMesh(mesh: Mesh): Mesh;
+        createVehicle(manager: pxPhysicsManager, desc: VehicleDesc): pxVehicle;
     }
     /**
      * @en The `pxPhysicsManager` class is used to implement physics management.
      * @zh `pxPhysicsManager` 类用于实现物理管理。
      */
     class pxPhysicsManager implements IPhysicsManager {
+        private _dispatchingEvents;
+        private _deferredCollisionRecycles;
+        /** Scene-owned callback wrapper. It must outlive the PxScene. */
+        private _simulationCallback;
+        /** Descriptor returned by getDefaultSceneDesc and owned by this manager. */
+        private _sceneDesc;
         _dynamicUpdateList: PhysicsUpdateList;
         /**
          * @en Fixed time step for physics simulation.
          * @zh 物理模拟的固定时间步长。
          */
         fixedTime: number;
+        /** @en Max fixed steps per outer update. @zh 单帧最多固定步数。 */
+        maxSubSteps: number;
         /**
          * @en Whether to enable Continuous Collision Detection (CCD).
          * @zh 是否启用连续碰撞检测(CCD)。
          */
         enableCCD: boolean;
+        private _triggerShapePairs;
         _pxcontrollerManager: any;
-        private _gravity;
         /**temp tranform object */
         private static _tempTransform;
         /**
@@ -54778,6 +55565,8 @@ declare namespace Laya {
          * @private
          * @perfTag PerformanceDefine.T_PhysicsCollider
          */
+        private _clearColliderEvents;
+        private _recoverCollision;
         private _collision_event;
         /**
          * @private
@@ -54917,7 +55706,12 @@ declare namespace Laya {
          */
         shapeCastAll(shape: pxColliderShape, fromPosition: Vector3, toPosition: Vector3, out: HitResult[], fromRotation?: Quaternion, toRotation?: Quaternion, collisonGroup?: number, collisionMask?: number, allowedCcdPenetration?: number): boolean;
         sphereQuery?(pos: Vector3, radius: number, result: ICollider[], collisionmask: number): void;
+        addPhysicsStepListener(listener: IPhysicsStepListener): void;
+        removePhysicsStepListener(listener: IPhysicsStepListener): void;
+        deferPhysicsOperation(operation: () => void): void;
+        private _flushPendingPhysicsOperations;
         destroy(): void;
+        private _releaseNative;
     }
     /**
      * @en Represents a physics material in the PhysX engine.
@@ -55043,6 +55837,7 @@ declare namespace Laya {
          * @zh 将形状添加到碰撞器。
          * @param collider 要添加形状的碰撞器。
          */
+        protected _setLocalPose(): void;
         addToActor(collider: pxCollider): void;
         /**
          * @en Sets the radius of the capsule.
@@ -55107,6 +55902,7 @@ declare namespace Laya {
             rotation: Quaternion;
         };
         _offset: Vector3;
+        protected _compoundRotation: Quaternion;
         _scale: Vector3;
         _shapeFlags: ShapeFlag;
         _pxShape: any;
@@ -55171,26 +55967,55 @@ declare namespace Laya {
          * @param filterWorld2Number 过滤数据。
          */
         setEventFilterData(filterWorld2Number: number): void;
+        setBounciness(value: number): void;
+        setDynamicFriction(value: number): void;
+        setStaticFriction(value: number): void;
+        setFrictionCombine(value: PhysicsCombineMode): void;
+        setBounceCombine(value: PhysicsCombineMode): void;
         /**
          * @en Destroys the collider shape and releases resources.
          * @zh 销毁碰撞器形状并释放资源。
          */
         destroy(): void;
     }
+    /** PhysX compounds are represented by attaching every child PxShape to the same actor. */
     class pxCompoundColliderShape extends pxColliderShape implements ICompoundColliderShape {
-        private _physicsComponent;
-        pxShapes: pxColliderShape[];
-        constructor();
+        private _isTrigger;
+        private _collisionGroup;
+        private _collisionMask;
+        private _eventFilterData;
+        private _bounciness;
+        private _dynamicFriction;
+        private _staticFriction;
+        private _bounceCombine;
+        private _frictionCombine;
+        private _children;
         addChildShape(shape: pxColliderShape): void;
+        addChildShapeWithTransform(shape: pxColliderShape, localPosition: Vector3, localRotation: Quaternion, localScale: Vector3): void;
         removeChildShape(shape: pxColliderShape, index: number): void;
-        setShapeData(component: PhysicsColliderComponent): void;
-        refreshShapes(): void;
+        refreshMassProperties(mass: number): void;
+        addToActor(collider: pxCollider): void;
+        removeFromActor(collider: pxCollider): void;
+        setOffset(position: Vector3): void;
+        setIsTrigger(value: boolean): void;
+        setSimulationFilterData(colliderGroup: number, colliderMask: number): void;
+        setEventFilterData(filterWorld2Number: number): void;
+        setBounciness(value: number): void;
+        setDynamicFriction(value: number): void;
+        setStaticFriction(value: number): void;
+        setFrictionCombine(value: PhysicsCombineMode): void;
+        setBounceCombine(value: PhysicsCombineMode): void;
+        destroy(): void;
+        private _applyChildTransform;
+        private _applyShapeData;
     }
     /**
      * @en Represents a height field shape in the PhysX physics engine.
      * @zh 表示 PhysX 物理引擎中的高度场形状。
      */
     class pxHeightFieldShape extends pxColliderShape implements IHeightFieldShape {
+        private _terrainYScale;
+        private _heightOffset;
         /**@ignore */
         constructor();
         /**
@@ -55221,6 +56046,7 @@ declare namespace Laya {
          * @param flag 标志数据数组。
          * @param scale 高度场的缩放。
          */
+        protected _setLocalPose(): void;
         setHeightFieldData(numRows: number, numCols: number, heightData: Float32Array, flag: Uint8Array, scale: Vector3): void;
         /**
          * @en Gets the number of rows in the height field.
@@ -55271,10 +56097,13 @@ declare namespace Laya {
      * @zh 表示物理引擎中的网格碰撞器形状。
      */
     class pxMeshColliderShape extends pxColliderShape implements IMeshColliderShape {
+        private static _compoundTransform;
         private _limitvertex;
         private _mesh;
         private _convex;
         private _meshScale;
+        private _appliedScale;
+        private _compoundLocalRotation;
         /**
          * @en Creates a new instance of pxMeshColliderShape.
          * @zh 创建一个新的 pxMeshColliderShape 实例。
@@ -55349,6 +56178,40 @@ declare namespace Laya {
          */
         destroy(): void;
     }
+    /** PhysX raycast vehicle implemented in TypeScript. */
+    class pxVehicle implements IPhysicsVehicle {
+        private _physicsManager;
+        private _vehicleBody;
+        private _wheels;
+        private _enabled;
+        private _destroyed;
+        private _wakeRequested;
+        private _idleTime;
+        private _chassisActorID;
+        private _chassisMass;
+        private _fixedDeltaTime;
+        private _rayOrigin;
+        private _rayDirection;
+        private _force;
+        private _localPosition;
+        private _torque;
+        constructor(_physicsManager: pxPhysicsManager, desc: VehicleDesc);
+        setEnabled(value: boolean): void;
+        applyConfig(desc: VehicleDesc, changes: VehicleChanges): VehicleApplyResult;
+        private _validateDesc;
+        private _validateWheel;
+        setInputs(inputs: readonly VehicleWheelInput[]): void;
+        beforePhysicsStep(fixedDeltaTime: number): void;
+        afterPhysicsStep(fixedDeltaTime: number): void;
+        private _hasStaticGroundSupport;
+        private _sleepIfIdle;
+        private _solve;
+        private _applyForceAtLocalPosition;
+        private _updateWheelTransforms;
+        readStates(outStates: VehicleWheelState[]): void;
+        reset(): void;
+        destroy(): void;
+    }
     /**
      * @ignore
      */
@@ -55376,6 +56239,11 @@ declare namespace Laya {
          * Returns false when the current platform does not support this operation.
          */
         setResolution(width: number, height: number, fullscreen: boolean): boolean;
+        /**
+         * Enters or leaves non-exclusive borderless desktop fullscreen mode.
+         * Returns false when the current platform does not support this operation.
+         */
+        setWindowedFullscreen(enabled: boolean): boolean;
         getVisibility(): boolean;
         requestFullscreen(): void;
         exitFullscreen(): void;
@@ -55679,6 +56547,10 @@ declare namespace Laya {
             scaleY: number;
         };
         protected _beginFlag: number;
+        private _beginTarget;
+        private _selectionReady;
+        private _selectionSession;
+        private _pendingSelection;
         /**
          * If true, the input box will be displayed inline with the canvas.
          * If false, use a pop-up keyboard to enter text.
@@ -55693,6 +56565,7 @@ declare namespace Laya {
         syncText(): void;
         setText(value: string): void;
         setSelection(startIndex: number, endIndex: number): void;
+        private showKeyboard;
         private onTouchBegin;
         private onTouchEnd;
         protected setPromptColor(): void;
@@ -56002,6 +56875,8 @@ declare namespace Laya {
         blitOpaqueBuffer: CommandBuffer;
         depthTarget: InternalRenderTarget;
         destTarget: InternalRenderTarget;
+        opaqueMRTTarget?: InternalRenderTarget;
+        opaqueMRTClearColors?: readonly (Color | null)[];
         depthNormalTarget: InternalRenderTarget;
         enableCMD: boolean;
         enableOpaque: boolean;
@@ -56075,7 +56950,8 @@ declare namespace Laya {
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
-        setClearData(clearFlag: number, clolor: Color, depth: number, stencil: number): number;
+        /** Overrides color in attachment order with the Color flag. A null entry preserves that attachment. */
+        setClearData(clearFlag: number, color: Color, depth: number, stencil: number, colorValues?: readonly (Color | null)[]): number;
         drawRenderElementList(list: FastSinglelist<IRenderElement3D>): number;
         drawRenderElementOne(node: IRenderElement3D): number;
         runOneCMD(cmd: IRenderCMD): void;
@@ -56264,6 +57140,7 @@ declare namespace Laya {
         protected _clearDepthValue: number;
         protected _clearStencilValue: number;
         protected _clearColorValue: Color;
+        protected _clearColorValues: (Color | null)[];
         get rt(): InternalRenderTarget;
         set rt(value: InternalRenderTarget);
         get clearFlag(): number;
@@ -56274,6 +57151,9 @@ declare namespace Laya {
         set clearStencilValue(value: number);
         get clearColorValue(): Color;
         set clearColorValue(value: Color);
+        /** 按固定槽位清除；数组中的 null 保留该槽内容，数组为 null 时使用统一清除色。 */
+        get clearColorValues(): readonly (Color | null)[];
+        set clearColorValues(value: readonly (Color | null)[]);
         apply(context: IRenderContext3D): void;
     }
     /**
@@ -56647,10 +57527,15 @@ declare namespace Laya {
         _isCube: boolean;
         _samples: number;
         _generateMipmap: boolean;
-        _textures: InternalTexture[];
+        /** 颜色槽位与 Shader location 一一对应；MRT 的空槽为 null，不拥有纹理。 */
+        _textures: (InternalTexture | null)[];
         _texturesResolve?: InternalTexture[];
         _depthTexture: InternalTexture;
         colorFormat: RenderTargetFormat;
+        /** 固定 location 的 MRT 布局，附件 0 必须存在，中间空槽为 null；普通 RT 可省略。 */
+        readonly colorFormats?: readonly (RenderTargetFormat | null)[];
+        /** MRT 组内缓存的颜色 0 与共享深度绑定，不单独拥有附件存储。 */
+        readonly _color0Target?: InternalRenderTarget;
         depthStencilFormat: RenderTargetFormat;
         isSRGB: boolean;
         gpuMemory: number;
@@ -56824,6 +57709,16 @@ declare namespace Laya {
         _renderTarget: InternalRenderTarget;
         _isCameraTarget: boolean;
         isCube: boolean;
+        /**
+         * @en Whether this is an MRT resource, even with a single color attachment. Omitted means false.
+         * @zh 是否为 MRT 资源，即使只有一个颜色附件也为 true；未提供时视为 false。
+         */
+        readonly isMRT?: boolean;
+        /**
+         * 包含附件 0 和中间空槽的颜色槽位跨度，用于逐槽清除参数。
+         * 目前仅 MRT 提供；未提供不代表没有颜色附件。
+         */
+        readonly colorAttachmentCount?: number;
         samples: number;
         generateMipmap: boolean;
         depthStencilTexture: BaseTexture | null;
@@ -56864,6 +57759,13 @@ declare namespace Laya {
         setCubeKTXData(texture: InternalTexture, ktxInfo: KTXTextureInfo): void;
         setTextureCompareMode(texture: InternalTexture, compareMode: TextureCompareMode): TextureCompareMode;
         createRenderTargetInternal(width: number, height: number, format: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): InternalRenderTarget;
+        /**
+         * 创建整组拥有颜色及共享深度/模板的 2D MRT；单采样、仅 mip 0。
+         * 数组索引即固定 location，附件 0 必须存在，null 槽不分配或绑定纹理；不修改传入列表。
+         * 仅附件 0 可使用 sRGB，辅助附件保持线性；尺寸和格式须受设备支持，读回支持单独校验。
+         * 未适配后端可省略此方法；调用方须检查支持情况。
+         */
+        createMultiRenderTargetInternal?(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): InternalRenderTarget;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         createRenderTargetDepthTexture(renderTarget: InternalRenderTarget, dimension: TextureDimension, width: number, height: number): InternalTexture;
         createRenderTargetArrayInternal(width: number, height: number, depth: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
@@ -56880,7 +57782,11 @@ declare namespace Laya {
          * @param out
          */
         readRenderTargetPixelData(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): ArrayBufferView;
-        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        /**
+         * 异步读取颜色附件，默认附件 0；索引不是 Cube 面、数组层或深度附件。
+         * 空槽、越界或后端不支持的索引直接拒绝 Promise。
+         */
+        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         updateVideoTexture(texture: InternalTexture, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): void;
         createTexture3DInternal(dimension: TextureDimension, width: number, height: number, depth: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
         setTexture3DImageData(texture: InternalTexture, source: HTMLImageElement[] | HTMLCanvasElement[] | ImageBitmap[], depth: number, premultiplyAlpha: boolean, invertY: boolean): void;
@@ -57183,6 +58089,8 @@ declare namespace Laya {
         protected _totalSize: number;
         protected _blocks: UniformBufferBlock[];
         protected _needUpload: Array<boolean>;
+        private _dirtyStartIndex;
+        private _dirtyEndIndex;
         protected _holeNum: number;
         private _expand;
         buffer: any;
@@ -57222,6 +58130,12 @@ declare namespace Laya {
          * 将数据上传到GPU内存，合并相邻块，尽可能减少上传次数
          */
         upload(): void;
+        /**
+         * 将首个脏块到最后一个脏块之间的数据一次性上传，以额外带宽换取更少的 writeBuffer 调用。
+         */
+        private _uploadDirtyRange;
+        /** 脏块被释放时重新计算边界，避免仅剩失效边界时产生无意义上传。 */
+        private _rebuildDirtyRange;
         /**
          * 标记块需要上传
          * @param index
@@ -57307,6 +58221,11 @@ declare namespace Laya {
         clusterMaxBlock: number;
         uploadThreshold: number;
         removeHoleThreshold: number;
+        /**
+         * 是否将一个 Cluster 内从首个脏块到最后一个脏块合并为一次上传。
+         * 开启后减少 writeBuffer 调用次数，但会上传脏块之间未变化的数据。
+         */
+        reduceWriteBufferCalls: boolean;
         constructor(useBigBuffer: boolean);
         /**
          * 创建大内存块对象
@@ -57558,9 +58477,9 @@ declare namespace Laya {
      * LayaX Blit RenderFeature — TS 层封装。
      *
      * 当 destRT == null（渲染到 swapchain）时，由外部调用 dispatch()，
-     * 传入 RenderElement3D + 上下文数据，Rust 端 BlitRenderFeature 直接录制渲染。
+     * 传入 RenderElement3D + 上下文数据，C++ 端 BlitRenderFeature 直接录制渲染。
      *
-     * 对应 C++ conchLayaXBlitFeature → Rust BlitRenderFeature。
+     * conchLayaXBlitFeature 通过 LayaX C API 调用 C++ BlitRenderFeature。
      */
     class LayaXBlitRenderFeature {
         /** C++ 原生对象（conchLayaXBlitFeature），惰性创建 */
@@ -57605,13 +58524,20 @@ declare namespace Laya {
         set depthNormalPipelineMode(value: string);
         get depthTextureMode(): DepthTextureMode;
         set depthTextureMode(value: DepthTextureMode);
-        blitOpaqueBuffer: CommandBuffer;
         private _depthTarget;
         get depthTarget(): InternalRenderTarget;
         set depthTarget(value: InternalRenderTarget);
         private _destTarget;
         get destTarget(): InternalRenderTarget;
         set destTarget(value: InternalRenderTarget);
+        private _opaqueMRTTarget;
+        get opaqueMRTTarget(): InternalRenderTarget;
+        set opaqueMRTTarget(value: InternalRenderTarget);
+        private _opaqueMRTClearColors;
+        private _opaqueMRTClearRGBA;
+        private _opaqueMRTClearEnabled;
+        get opaqueMRTClearColors(): readonly (Color | null)[];
+        set opaqueMRTClearColors(value: readonly (Color | null)[]);
         private _depthNormalTarget;
         get depthNormalTarget(): InternalRenderTarget;
         set depthNormalTarget(value: InternalRenderTarget);
@@ -57689,9 +58615,9 @@ declare namespace Laya {
     /**
      * LayaX render context for 3D.
      *
-     * 职责精简：只负责 ShaderData / ModuleData / InvertY 绑定到 Rust。
-     * 渲染 Pass 配置（viewport/scissor/clear/RT）由 LayaXForwardAddClusterRP 直接设置。
-     * RenderElement 是 Rust 侧持久对象，draw 方法为 no-op。
+     * 将 ShaderData、ModuleData 和翻转状态绑定到 C++ 上下文。
+     * 常规相机 pass 由 LayaXForwardAddClusterRP 配置；独立 draw 经 BlitRenderFeature
+     * 录制，clearRenderTarget 经缓存的 SetRenderTarget 命令提交并消费清除状态。
      */
     class LayaXRenderContext3D implements IRenderContext3D {
         /** Native C++ LayaXRenderContext object (conchLayaXRenderContext). */
@@ -57735,10 +58661,17 @@ declare namespace Laya {
         private _scissor;
         /** 缓存当前 offsetScale (ox, oy, sx, sy) */
         private _offsetScale;
+        private _clearCommand;
+        private _clearFlag;
+        private _clearColor;
+        private _clearDepth;
+        private _clearStencil;
+        private _clearColorRGBA;
+        private _clearColorEnabled;
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
-        setClearData(clearFlag: number, color: Color, depth: number, stencil: number): number;
+        setClearData(clearFlag: number, color: Color, depth: number, stencil: number, colorValues?: readonly (Color | null)[]): number;
         clearRenderTarget(): void;
         drawRenderElementList(list: FastSinglelist<IRenderElement3D>): number;
         drawRenderElementOne(node: IRenderElement3D): number;
@@ -57749,11 +58682,12 @@ declare namespace Laya {
      * LayaX render element for 3D.
      *
      * 每个实例持有 C++ _nativeObj（conchLayaXRenderElement），
-     * 每个 setter 同步到 C++ → Rust FFI → Rust LYRenderElement3D。
+     * setter 经原生对象和 LayaX C API 更新 C++ LYRenderElement3D。
      *
      * 不再用 POD packToBuffer，而是持久对象 handle 模式。
      */
     class LayaXRenderElement3D implements IRenderElement3D, IRenderStateListener {
+        sortIndex: number;
         /** C++ 原生对象（conchLayaXRenderElement） */
         _nativeObj: any;
         constructor();
@@ -57808,7 +58742,7 @@ declare namespace Laya {
          * 保证命令流的"录制+重放"语义 —— 同一个 ComputeCommandBuffer 被重复
          * execute 时每次都按原始值序列写。对标 WebGPUComputeContext 行为。
          *
-         * DeviceBuffer / ReadOnlyDeviceBuffer 暂不走命令流(Rust ShaderDataValue
+         * DeviceBuffer / ReadOnlyDeviceBuffer 暂不走命令流(C++ ShaderDataValue
          * 未包含该变体),保留立即写到 ShaderDataBlock。
          */
         addSetShaderDataCommand(shaderData: ShaderData, propertyID: number, shaderDataType: ShaderDataType, value: ShaderDataItem): void;
@@ -57837,7 +58771,7 @@ declare namespace Laya {
      *
      * Duck-type compatible with WebGPUUniformPropertyBindingInfo so
      * GLSLForVulkanGenerator.process can consume it without changes.
-     * Also serialized to JSON for Rust FFI (layax_create_render_program).
+     * Also serialized to JSON for LayaX C API (layax_create_render_program).
      */
     interface LayaXBindingInfo {
         id: number;
@@ -57845,10 +58779,10 @@ declare namespace Laya {
         set: number;
         binding: number;
         propertyId: number;
-        /** Source ShaderPropertyMap ID (matches Rust source_map_id for ShaderDataBlock lookup) */
+        /** Source ShaderPropertyMap ID (matches C++ source_map_id for ShaderDataBlock lookup) */
         sourceMapId: number;
         type: LayaXBindingInfoType;
-        /** For Rust JSON serialization */
+        /** For C++ JSON serialization */
         bindingType: string;
         dataType: number;
         /** GLSLForVulkanGenerator reads these for texture/sampler declarations */
@@ -57918,7 +58852,7 @@ declare namespace Laya {
      * LayaX 后端 DeviceBuffer (Storage Buffer) 薄包装。
      *
      * - native 对象由 `conchLayaXDeviceBuffer(rhiUsage, heapType)` 构造，持有 GpuDeviceBufferId (u32)
-     * - 越界 setData 由 Rust FFI 自动 destroy + recreate 扩容（与 VB/IB 一致）
+     * - 越界 setData 由 LayaX C API 自动 destroy + recreate 扩容（与 VB/IB 一致）
      * - 扩容后已绑定到 ShaderData 的旧 handle 不会自动刷新，调用方需重新 `setDeviceBuffer`
      */
     class LayaXDeviceBuffer implements IDeviceBuffer, IGPUBuffer {
@@ -57928,9 +58862,9 @@ declare namespace Laya {
         private _destroyed;
         constructor(usage: EDeviceBufferUsage);
         /**
-         * EDeviceBufferUsage(LayaAir) → rhi_resource::buffer_usage(Rust) 位映射。
+         * EDeviceBufferUsage(LayaAir) → rhi_resource::buffer_usage(C++) 位映射。
          *
-         * Rust bit:  VERTEX=0, INDEX=1, UNIFORM=2, STORAGE=3, INDIRECT=4, COPY_SRC=5, COPY_DST=6
+         * C++ bit:  VERTEX=0, INDEX=1, UNIFORM=2, STORAGE=3, INDIRECT=4, COPY_SRC=5, COPY_DST=6
          * MAP_READ / MAP_WRITE 不在 usage flags 中，它们决定 heap_type。
          */
         private static _convertUsage;
@@ -57965,12 +58899,18 @@ declare namespace Laya {
         destroy(): void;
     }
     class LayaXInternalRT implements InternalRenderTarget {
-        _texturesRef: InternalTexture[];
+        _texturesRef: (InternalTexture | null)[];
         _depthTextureRef: InternalTexture;
         _nativeObj: any;
+        readonly colorFormats?: readonly (RenderTargetFormat | null)[];
+        readonly _owner: LayaXInternalRT;
+        private _color0TargetRef;
+        private _disposed;
         private _propU32;
         private _propI32;
-        constructor(nativeObj: any);
+        constructor(nativeObj: any, owner?: LayaXInternalRT);
+        get destroyed(): boolean;
+        get _color0Target(): LayaXInternalRT;
         get _isCube(): boolean;
         set _isCube(value: boolean);
         get _samples(): number;
@@ -57985,7 +58925,7 @@ declare namespace Laya {
         set isSRGB(value: boolean);
         get gpuMemory(): number;
         set gpuMemory(value: number);
-        get _textures(): InternalTexture[];
+        get _textures(): (InternalTexture | null)[];
         get _depthTexture(): InternalTexture;
         dispose(): void;
     }
@@ -57997,7 +58937,7 @@ declare namespace Laya {
      * 2. `LayaXRenderEngine.startFrame` 每帧调 `pump(device)` 拉底层 DeviceEvent
      * 3. 按 requestId 找到登记的 Promise 完成/失败
      *
-     * DeviceEventType 与 Rust 保持一致：
+     * DeviceEventType 与 C++ 保持一致：
      *   0=DeviceLost, 1=SwapchainOutOfDate, 2=OutOfMemory, 3=BackendError,
      *   4=ReadbackCompleted, 5=ReadbackFailed
      */
@@ -58083,6 +59023,7 @@ declare namespace Laya {
         private _lastDeviceBufferMemory;
         private _lastGpuBufferMemory;
         private _lastGpuMemory;
+        private readonly _capabilities;
         shaderCompiler: LayaXShaderCompiler;
         constructor();
         get _framePassCount(): number;
@@ -58232,6 +59173,7 @@ declare namespace Laya {
         bindRenderTarget(renderTarget: LayaXInternalRT, faceIndex?: number): void;
         bindoutScreenTarget(): void;
         unbindRenderTarget(renderTarget: LayaXInternalRT): void;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): LayaXInternalRT;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): LayaXInternalRT;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): LayaXInternalRT;
         createRenderTextureCubeInternal(dimension: TextureDimension, size: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): LayaXInternalTex;
@@ -58241,9 +59183,9 @@ declare namespace Laya {
         /**
          * 异步回读 RT color attachment 像素到 `out`。
          * 走 LayaXReadbackDispatcher 等 ReadbackCompleted 事件，不阻塞主线程。
-         * bpp 由 `out.byteLength / (w*h)` 推断；wgpu 行宽 256 对齐，回来按行 strip padding 拷贝到 `out`。
+         * 按附件真实格式分配 256 字节对齐行；RGBA16F 解码为 Float32Array。
          */
-        readRenderTargetPixelDataAsync(renderTarget: LayaXInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        readRenderTargetPixelDataAsync(renderTarget: LayaXInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         updateVideoTexture(texture: LayaXInternalTex, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): void;
     }
     class LayaXVertexBuffer implements IVertexBuffer {
@@ -58312,12 +59254,13 @@ declare namespace Laya {
      * LayaX 3D RenderModule factory.
      *
      * Creates LayaX-specific bridge objects that wrap `conchLayaX*` native classes.
-     * All rendering is driven by the Rust RenderFeature; these objects serve as
+     * All rendering is driven by the C++ RenderFeature; these objects serve as
      * the TS-side data bridge.
      */
     class LayaX3DRenderModuleFactory implements I3DRenderModuleFactory {
         createTransform(owner: Sprite3D): LayaXTransform3D;
         createBounds(min: Vector3, max: Vector3): LayaXBounds;
+        setBoundsMinMaxBatch(targets: readonly Bounds[], values: Float64Array, count: number): boolean;
         createVolumetricGI(): LayaXVolumetricGI;
         createReflectionProbe(): LayaXReflectionProbe;
         createLightmapData(): LayaXLightmapData;
@@ -58335,15 +59278,18 @@ declare namespace Laya {
      * LayaX BaseRenderNode bridge.
      *
      * Implements `IBaseRenderNode` by delegating all property access to the native
-     * `conchLayaXBaseRenderNode` object.  Rendering is driven by the Rust side;
+     * `conchLayaXBaseRenderNode` object.  Rendering is driven by the C++ side;
      * this class is a thin data-bridge.
      */
     class LayaXBaseRenderNode implements IBaseRenderNode {
+        private _readbackFlags;
         private _transform;
         get transform(): LayaXTransform3D;
         set transform(value: LayaXTransform3D);
         get distanceForSort(): number;
         set distanceForSort(value: number);
+        get renderOrder(): number;
+        set renderOrder(value: number);
         get sortingFudge(): number;
         set sortingFudge(value: number);
         get castShadow(): boolean;
@@ -58414,7 +59360,10 @@ declare namespace Laya {
         set ismoved(value: Vector2);
         private _caculateBoundingBoxbindFun;
         private _renderUpdatePrebindFun;
+        private _renderUpdatePreOwner;
+        private _renderUpdatePreFunction;
         set_renderUpdatePreCall(call: any, fun: any): void;
+        isRenderUpdatePreCall(call: any, fun: any): boolean;
         set_caculateBoundingBox(call: any, fun: any): void;
         protected _getNativeObj(): void;
         constructor();
@@ -58431,11 +59380,13 @@ declare namespace Laya {
     /**
      * LayaX Bounds bridge.
      *
-     * Wraps a `conchLayaXBounds` native object. Unlike the RT path which uses
-     * shared memory for min/max/center/extent, the LayaX path delegates via
-     * simple setter/getter calls on the native object.
+     * Native and JS read the same min/max block. Older runtimes keep the
+     * scalar-property fallback; cached Vector3 objects retain their identity.
      */
     class LayaXBounds implements IClone {
+        private static readonly _batchTargets;
+        private static _batchBusy;
+        private _readback;
         get min(): Vector3;
         set min(value: Vector3);
         get max(): Vector3;
@@ -58461,7 +59412,7 @@ declare namespace Laya {
     /**
      * LayaX CameraNodeData bridge.
      *
-     * Projection / view-proj / forward travel through a TS-owned ArrayBuffer that Rust reads
+     * Projection / view-proj / forward travel through a TS-owned ArrayBuffer that C++ reads
      * directly (absorbed in `camera_cull_prepare_system`) — no per-field FFI. Only the
      * transform-entity reference still goes through a native call.
      */
@@ -58491,7 +59442,7 @@ declare namespace Laya {
     /**
      * LayaXChunkPages —— JS 供页注册表（stable_row_chunk_design.md §7.1）。
      *
-     * ECS chunk 页内存由 JS 分配（1MB = 64 chunk）并注册给 Rust 当 chunk 内存：
+     * ECS chunk 页内存由 JS 分配（1MB = 64 chunk）并注册给 C++ 当 chunk 内存：
      * chunk 数据因此住在 JS 自己的 ArrayBuffer 里，零拷贝视图是自家 buffer 上的
      * 普通 TypedArray——V8 沙箱（Android）/OHOS JSVM 无 external ArrayBuffer 的
      * 缺口全消失，全平台统一。
@@ -58499,7 +59450,7 @@ declare namespace Laya {
      * 规则：
      *   - 注册表持强引用防 GC（INV-7）；页归 JS 所有，跨 device 重建存活。
      *   - register 返回 0xFFFFFFFF（provider 未启用/失败）则永久停供，
-     *     回退 Rust 堆页（行为不变，仅丢沙箱零拷贝）。
+     *     回退 C++ 堆页（行为不变，仅丢沙箱零拷贝）。
      */
     class LayaXChunkPages {
         /** 页大小：1MB = 64 chunk */
@@ -58508,7 +59459,7 @@ declare namespace Laya {
         private static readonly WATERMARK;
         private static readonly ENTITY_CREATE_RESERVE;
         private static readonly MAX_REGISTER_PER_ENSURE;
-        /** 已注册页（下标 = Rust 侧 page_id，注册顺序一致；强引用防 GC） */
+        /** 已注册页（下标 = C++ 侧 page_id，注册顺序一致；强引用防 GC） */
         private static _pages;
         private static _dead;
         /**
@@ -58520,14 +59471,14 @@ declare namespace Laya {
         static page(pageId: number): ArrayBuffer;
     }
     /**
-     * LayaX DefineDatas — Rust-backed shader define bitmask.
+     * Shader define bitmask stored by the C++ runtime.
      *
-     * Delegates all operations to `conchLayaXDefineDatas` (C++ → Rust FFI).
-     * Unlike RTDefineDatas which uses conchRTDefineDatas (GLES path),
-     * this uses the LayaX path with Rust-side storage and variant selection.
+     * Native operations go through `conchLayaXDefineDatas` and the LayaX C API.
+     * Variant resolution reads the same C++ define storage.
      */
     class LayaXDefineDatas implements IDefineDatas {
         _nativeObj: any;
+        private _readback;
         constructor();
         get _length(): number;
         set _length(value: number);
@@ -58546,10 +59497,10 @@ declare namespace Laya {
     /**
      * LayaX DirectLight bridge.
      *
-     * Shadow params + light orientation travel through a TS-owned ArrayBuffer that Rust
+     * Shadow params + light orientation travel through a TS-owned ArrayBuffer that C++
      * absorbs each frame (`camera_cull_prepare_system`) — no per-field FFI. Only the
      * transform reference still goes through a native call. direction / color are consumed
-     * via Scene3D ShaderData on the LayaX path, not this light's Rust component.
+     * via Scene3D ShaderData on the LayaX path, not this light's C++ component.
      */
     class LayaXDirectLight implements IDirectLightData {
         private _transform;
@@ -58586,9 +59537,9 @@ declare namespace Laya {
     /**
      * LayaX LightmapData bridge.
      *
-     * Wraps lightmap color and direction textures for the Rust rendering pipeline
-     * via `conchLayaXLightmapData`. offset xyzw + lightmapIndex live in a TS-owned
-     * ArrayBuffer that C++ holds (pointer reserved for future Rust direct-read).
+     * Retains lightmap textures in TS and in `conchLayaXLightmapData`. TS owns the
+     * offset/index property block; native currently stores its pointer without a render
+     * consumer. LayaXBaseRenderNode publishes the lightmap values through ShaderData.
      */
     class LayaXLightmapData implements ILightMapData {
         private _buf;
@@ -58615,18 +59566,16 @@ declare namespace Laya {
      * LayaX MeshRenderNode bridge.
      *
      * Extends LayaXBaseRenderNode and implements IMeshRenderNode.
-     * Currently identical to the base — the native class `conchLayaXMeshRenderNode`
-     * may carry additional mesh-specific state on the Rust side.
+     * Creates `conchLayaXMeshRenderNode`, whose C++ wrapper owns the LayaX mesh node handle.
      */
     class LayaXMeshRenderNode extends LayaXBaseRenderNode implements IMeshRenderNode {
     }
     /**
      * LayaX PointLight bridge.
      *
-     * Point light range / shadow params live in a TS-owned ArrayBuffer that C++ holds (and Rust
-     * will read directly once a point-light system lands) — no per-property FFI. The transform
-     * reference still goes through a native setter. (Replaces the previous JS-expando properties,
-     * whose data never reached native.)
+     * TS owns the range/shadow property block and passes its pointer to
+     * `conchLayaXPointLight`. The current native wrapper stores this pointer and the
+     * transform reference; the C++ point-light rendering system does not consume them.
      */
     class LayaXPointLight implements IPointLightData {
         private _buf;
@@ -58656,10 +59605,9 @@ declare namespace Laya {
     /**
      * LayaX ReflectionProbe bridge.
      *
-     * Numeric probe properties live in a TS-owned ArrayBuffer that C++ holds (and Rust will
-     * read directly once a probe system lands) — no per-property FFI. Object refs (bounds /
-     * textures / ambientSH) still go through native setters. Today `applyRenderData()` pushes
-     * everything into the ShaderData; the buffer is the forward path for native consumption.
+     * TS owns the property block and retains bounds/textures/ambientSH.
+     * `applyRenderData()` publishes the values to ShaderData. The native wrapper stores
+     * the block pointer; its bounds/texture/SH setters currently perform no work.
      */
     class LayaXReflectionProbe implements IReflectionProbeData {
         private static _idCounter;
@@ -58703,14 +59651,10 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * LayaX RenderState — Rust-backed render state.
-     *
-     * Inherits all state storage from base RenderState.
-     * TODO: Add FFI sync to Rust when RenderState FFI is implemented.
+     * TS render-state value object. ShaderPass and render elements snapshot these
+     * fields into immutable C++ render-state handles when preparing a draw.
      */
     class LayaXRenderState extends RenderState {
-        _nativeObj: any;
-        protected createObj(): void;
         constructor();
         cloneTo(dest: RenderState): void;
         clone(): RenderState;
@@ -58718,7 +59662,7 @@ declare namespace Laya {
     /**
      * LayaX SceneNodeData bridge.
      *
-     * Wraps scene-level data (currently just the lightmap dirty flag) for the Rust
+     * Wraps scene-level data (currently just the lightmap dirty flag) for the C++
      * rendering pipeline via `conchLayaXSceneNodeData`.
      */
     class LayaXSceneNodeData implements ISceneNodeData {
@@ -58727,16 +59671,13 @@ declare namespace Laya {
         constructor();
     }
     /**
-     * LayaX ShaderPass — Rust-backed shader pass with compile callback.
+     * C++ shader-pass wrapper with an owner-thread compile callback.
      *
-     * When Rust encounters a variant cache miss during ForwardAddFeature::execute,
-     * it calls back into C++ → this TS class to compile WGSL and create pipeline.
-     *
-     * The compile flow:
-     * 1. Rust sets compileDefines + setMapNames on the pass
-     * 2. Rust invokes compile callback (C++ → TS)
-     * 3. TS reads compileDefine + setMapNames, generates WGSL, creates LayaXShaderInstance
-     * 4. Returns ProgramHandle to Rust
+     * ShaderResolutionService combines defines and resolves the variant cache. On an
+     * owner-thread miss it supplies define names, set maps and attributes to this callback.
+     * TS generates shader sources and LayaXShaderInstance registers a C++ render program.
+     * The returned ProgramHandle enters the existing variant cache. Workers use prepared
+     * variants; this callback remains on the JS owner thread.
      */
     class LayaXShaderPass implements IShaderPassData {
         _nativeObj: any;
@@ -58762,33 +59703,32 @@ declare namespace Laya {
         set statefirst(value: boolean);
         syncOwnerUniformMap(): void;
         /**
-         * Parse set→map name mapping string from Rust.
+         * Parse set→map name mapping string from C++.
          * Format: "0:Scene3D,Global,Shadow;1:BaseCamera;2:Sprite3D"
          * Returns Map<setIndex, mapNames[]>
          */
         private _parseSetMapNames;
         /**
-         * Parse attribute locations string from Rust.
+         * Parse attribute locations string from C++.
          * Format: "0,1,2,5"
          * Returns Set<number>
          */
         private _parseAttributeLocations;
         /**
-         * Compile callback invoked by Rust on variant cache miss.
+         * Sync pass renderState to C++.
          *
-         * @param defineNamesStr - newline-separated define names from Rust (e.g. "DIRECTIONLIGHT\nSHADOWMAP")
-         * @param setMapNamesStr - set→map name mapping from Rust (format: "0:Scene3D,Global;1:BaseCamera;2:Sprite3D")
-         * @param attributeLocationsStr - attribute locations from Rust (format: "0,1,2,5")
-         * @returns LayaXShaderInstance._nativeObj (C++ LayaXShaderInstance_JS*), C++ extracts handle
-         */
-        /**
-         * Sync pass renderState to Rust.
-         *
-         * 普通 3D 元素仍由 Rust 按 statefirst 决定是否使用 pass state；
+         * 普通 3D 元素仍由 C++ 按 statefirst 决定是否使用 pass state；
          * CommandBuffer blit / postprocess 的 standalone element 需要 pass state
          * 作为屏幕 quad 的渲染状态来源。
          */
         private _syncRenderState;
+        /**
+         * Synchronous owner-thread callback for a variant cache miss.
+         * @param defineNamesStr Newline-separated define names.
+         * @param setMapNamesStr Set-to-map names, e.g. "0:Scene3D,Global;1:BaseCamera".
+         * @param attributeLocationsStr Comma-separated attribute locations.
+         * @returns Native shader-instance wrapper from which C++ extracts the program handle.
+         */
         private _onCompileCallback;
         setCacheShader(defines: IDefineDatas, shaderInstance: IShaderInstance): void;
         getCacheShader(defines: IDefineDatas): IShaderInstance;
@@ -58802,12 +59742,12 @@ declare namespace Laya {
     /**
      * LayaX SkinRenderNode bridge.
      *
-     * Provides skinned mesh rendering data to the Rust side via `conchLayaXSkinRenderNode`.
+     * Provides skinned mesh rendering data to the C++ side via `conchLayaXSkinRenderNode`.
      * Bone transforms and inverse bind poses are pushed to native for GPU skinning.
      */
     class LayaXSkinRenderNode extends LayaXBaseRenderNode implements ISkinRenderNode {
         private boneNums;
-        /** 方案 B：骨骼 entity id 是否已注册给 native（一次性）。setBones 重新绑定时置 false。 */
+        /** 骨骼 entity id 是否已注册给 native（一次性）。setBones 重新绑定时置 false。 */
         private _bonesRegistered;
         constructor();
         computeSkinnedData(): void;
@@ -58821,7 +59761,7 @@ declare namespace Laya {
      * LayaX SpotLight bridge.
      *
      * worldMatrix + angle/range + shadow params travel through a TS-owned ArrayBuffer that
-     * Rust absorbs each frame (`camera_cull_prepare_system`) — no per-field FFI. Only the
+     * C++ absorbs each frame (`camera_cull_prepare_system`) — no per-field FFI. Only the
      * transform reference still goes through a native call.
      */
     class LayaXSpotLight implements ISpotLightData {
@@ -58854,7 +59794,7 @@ declare namespace Laya {
         syncShadow(): void;
     }
     /**
-     * LayaX SubShader — Rust-backed SubShader container.
+     * SubShader container owned by the C++ runtime.
      *
      * SubShaderHandle doubles as shader_template_id for the variant cache key.
      * Holds passes, uniform properties, and instance flag.
@@ -58877,10 +59817,10 @@ declare namespace Laya {
         destroy(): void;
     }
     /**
-     * LayaX Transform3D —— chunk 共享存储上的三端同源方案（world 计算回 JS）。
+     * LayaX Transform3D —— JS 与 C++ 共用 ECS chunk 存储（world 计算回 JS）。
      *
-     * 存储模型（stable_row_chunk_design.md）：local TRS 唯一源 = ECS chunk 的
-     * Transform 组件；WorldMat 组件由 Rust propagate 独家产出。本类是基类纯 TS
+     * 存储模型：local TRS 唯一源 = ECS chunk 的
+     * Transform 组件；WorldMat 组件由 C++ propagate 独家产出。本类是基类纯 TS
      * `Transform3D` 之上的薄壳：
      *   - JS 写 local：经本 slot 零拷贝视图**直写 chunk + 标 slot 脏位**，
      *     0 跨语言调用；视图不可用（native 页 + 沙箱/OHOS）则降级
@@ -58898,7 +59838,7 @@ declare namespace Laya {
      *   - 路径③：两者都不可用 → 不绑定，写 local 走 C++ 推。
      *   失效协议：只有 VIEW_STALE 表示本实体 row moved，需要重绑；普通 epoch 变化只刷新快照。
      *
-     * ⚠ 构造时序铁律（见 memory project_layax_transform_init_order）：基类 ctor 在 `super()`
+     * 构造时序：基类 ctor 在 `super()`
      * 期间调 `this._initProperty()`，子类字段初始化器在 `super()` 返回后才执行、会覆盖 `_initProperty`
      * 里赋的值。故①不重声明 `_localPosition` 等基类字段；②在 `_initProperty` 赋值的子类字段
      * （`_nativeFloat32Buffer`/`_nativeObj`）不能带 `= 初值`。
@@ -58937,6 +59877,8 @@ declare namespace Laya {
          */
         private static _syncEpochView;
         private static _syncEpochProbed;
+        /** Any local write invalidates repeated world reads, including ancestor writes. */
+        private static _worldWriteEpoch;
         /** 进程级一次性探测：external ArrayBuffer 可用 = true；沙箱/OHOS = false。 */
         private static _zeroCopyProbed;
         private static _hasZeroCopy;
@@ -58946,10 +59888,14 @@ declare namespace Laya {
         private _checkFrame;
         private _syncGateEpoch;
         private _syncGateStruct;
+        private _worldGateFrame;
+        private _worldGateWrite;
+        private _worldGateNative;
+        private _worldGateStruct;
         constructor(owner: Sprite3D);
         protected _initProperty(): void;
         /**
-         * 在 Rust ECS 创建 entity（chunk 行随 spawn 分配），随后绑定本 slot 的零拷贝视图。
+         * 在 C++ ECS 创建 entity（chunk 行随 spawn 分配），随后绑定本 slot 的零拷贝视图。
          * 创建前补足 JS 供页储备（§7.1）。
          */
         createEntity(): void;
@@ -58975,7 +59921,7 @@ declare namespace Laya {
          */
         private _bindExternalViews;
         /**
-         * Rust ECS entity 是否已创建且存活。
+         * C++ ECS entity 是否已创建且存活。
          */
         get isEntityValid(): boolean;
         private _pullPos;
@@ -58995,7 +59941,7 @@ declare namespace Laya {
          */
         get worldPositionView(): Float32Array | null;
         /**
-         * 读 world 消除双算：flag 干净 → 直读 chunk WorldMat（Rust propagate 的产物，
+         * 读 world 消除双算：flag 干净 → 直读 chunk WorldMat（C++ propagate 的产物，
          * 容忍 1 帧），免去 JS 沿父链的矩阵乘；本帧写过 local（flag 脏）→ 回落基类
          * 自算，结果只落 JS 堆（propagate 仍是组件唯一写者）。
          */
@@ -59044,7 +59990,7 @@ declare namespace Laya {
     /**
      * LayaX UnitRenderModuleDataFactory
      *
-     * Creates LayaX (Rust-backed) versions of shader variant system objects.
+     * Creates shader variant data wrappers for the C++ LayaX runtime.
      * Replaces RTUintRenderModuleDataFactory for the LayaX rendering path.
      */
     class LayaXUnitRenderModuleDataFactory implements IUnitRenderModuleDataFactory {
@@ -59056,10 +60002,9 @@ declare namespace Laya {
     /**
      * LayaX VolumetricGI bridge.
      *
-     * Numeric GI properties live in a TS-owned ArrayBuffer that C++ holds (and Rust will read
-     * directly once a GI system lands) — no per-property FFI. Object refs (bounds / textures)
-     * still go through native setters. Today `applyRenderData()` pushes everything into the
-     * ShaderData; the buffer is the forward path for native consumption.
+     * TS owns the property block and retains bounds/textures. `applyRenderData()`
+     * publishes those values to ShaderData. The native wrapper stores the block pointer;
+     * its bounds/texture setters currently perform no work.
      */
     class LayaXVolumetricGI implements IVolumetricGIData {
         private static _idCounter;
@@ -59092,102 +60037,6 @@ declare namespace Laya {
         setProbeStep(value: Vector3): void;
         applyRenderData(): void;
         destroy(): void;
-    }
-    /**
-     * LayaX Shader compile code utilities.
-     *
-     * Handles GLSL source processing for the LayaX/wgpu backend.
-     * The compilation pipeline mirrors WebGPU: GLSL → SPIR-V → WGSL.
-     *
-     * TODO(Q17): Verify glslang.wasm and naga.wasm work in Conch V8 environment.
-     * TODO(Q18): Determine if shader compilation should be sync or async.
-     */
-    /**
-     * Processes GLSL shader source code for LayaX pipeline.
-     * Handles define injection, include resolution, and format adaptation.
-     */
-    class LayaXShaderCompileCode {
-        /**
-         * Process vertex shader source.
-         * @param vs Raw GLSL vertex shader source
-         * @param defineString Define string to inject
-         * @returns Processed GLSL source ready for compilation
-         */
-        static processVS(vs: string, defineString: string): string;
-        /**
-         * Process fragment shader source.
-         * @param fs Raw GLSL fragment shader source
-         * @param defineString Define string to inject
-         * @returns Processed GLSL source ready for compilation
-         */
-        static processFS(fs: string, defineString: string): string;
-        /**
-         * Inject define directives into GLSL source after the #version line.
-         */
-        private static _injectDefines;
-    }
-    /**
-     * LayaX Shader compile utilities.
-     *
-     * Provides GLSL source adaptation for the LayaX/wgpu backend.
-     * The Rust side compiles GLSL → SPIR-V (glslang) → WGSL (naga),
-     * so the TS side only needs to ensure the GLSL is well-formed for that pipeline.
-     *
-     * TODO(Q17): Verify glslang.wasm and naga.wasm work in Conch V8 environment.
-     * TODO(Q18): Determine if shader compilation should be sync or async.
-     */
-    /**
-     * Utility class for preparing GLSL shader source for the LayaX pipeline.
-     *
-     * Unlike WebGPU which does extensive TS-side preprocessing (sampler splitting,
-     * uniform extraction, etc.), LayaX delegates compilation to the Rust backend.
-     * This util handles only the source-level adaptations needed before handoff.
-     */
-    class LayaXShaderCompileUtil {
-        /**
-         * Strip GLSL ES precision qualifiers (lowp, mediump, highp) from source.
-         * wgpu/naga GLSL parser may not accept precision qualifiers in all contexts.
-         * This keeps `precision` declarations intact (they are valid GLSL) but removes
-         * inline qualifiers on variable declarations and function parameters.
-         */
-        static stripInlinePrecision(source: string): string;
-        /**
-         * Ensure the GLSL source has a #version directive.
-         * If absent, prepend `#version 300 es` for GLSL ES 3.0 compatibility.
-         * The Rust glslang compiler requires a #version directive.
-         */
-        static ensureVersion(source: string, version?: string): string;
-        /**
-         * Process vertex shader source for LayaX pipeline.
-         * Applies define injection and format normalization.
-         */
-        static processVS(vs: string, defineString: string): string;
-        /**
-         * Process fragment shader source for LayaX pipeline.
-         * Applies define injection and format normalization.
-         */
-        static processFS(fs: string, defineString: string): string;
-        /**
-         * Replace GLES 2.0 texture functions with GLES 3.0 equivalents.
-         * The LayaX pipeline targets GLSL ES 3.0+, so legacy functions need updating.
-         * This is a safety net — `GLSLCodeGenerator` should already handle this via
-         * `#define texture2D texture` macros.
-         */
-        static upgradeTextureCalls(source: string): string;
-        /**
-         * Remove GLSL extension directives that are not needed for the wgpu pipeline.
-         * Extensions like GL_EXT_shader_texture_lod are WebGL-specific.
-         */
-        static removeUnsupportedExtensions(source: string): string;
-        /**
-         * Full processing pipeline for a shader source string destined for the Rust backend.
-         * Applies all necessary transformations in order.
-         *
-         * @param source The GLSL source (already processed by GLSLCodeGenerator)
-         * @param isVertex Whether this is a vertex shader
-         * @returns GLSL source ready for the native LayaX compiler
-         */
-        static prepareForNative(source: string, isVertex: boolean): string;
     }
     class NoRenderGlobalRenderData implements I2DGlobalRenderData {
         cullRect: Vector4;
@@ -59434,6 +60283,8 @@ declare namespace Laya {
         primitiveShaderData: ShaderData;
     }
     class NoRenderContext2D implements IRenderContext2D {
+        private _renderTarget;
+        private _offscreenView;
         passData: ShaderData;
         getRenderTarget(): InternalRenderTarget;
         sceneData: ShaderData;
@@ -59535,7 +60386,7 @@ declare namespace Laya {
         setRenderTarget(value: InternalRenderTarget, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
-        setClearData(clearFlag: number, clolor: Color, depth: number, stencil: number): number;
+        setClearData(clearFlag: number, color: Color, depth: number, stencil: number, colorValues?: readonly Color[]): number;
         drawRenderElementList(list: FastSinglelist<IRenderElement3D>): number;
         drawRenderElementOne(node: IRenderElement3D): number;
         runOneCMD(cmd: IRenderCMD): void;
@@ -59546,6 +60397,7 @@ declare namespace Laya {
         geometry: IRenderGeometryElement;
         materialShaderData: ShaderData;
         materialRenderQueue: number;
+        sortIndex: number;
         renderShaderData: ShaderData;
         transform: Transform3D;
         canDynamicBatch: boolean;
@@ -59652,6 +60504,7 @@ declare namespace Laya {
         destroy(): void;
     }
     class NoRenderDeviceFactory implements IRenderDeviceFactory {
+        private _uniformMaps;
         createShaderInstance(shaderProcessInfo: ShaderProcessInfo, shaderPass: ShaderCompileDefineBase): IShaderInstance;
         createIndexBuffer(bufferUsage: BufferUsage): IIndexBuffer;
         createVertexBuffer(bufferUsageType: BufferUsage): IVertexBuffer;
@@ -59662,7 +60515,11 @@ declare namespace Laya {
         createShaderData(ownerResource?: Resource): ShaderData;
     }
     class NoRenderCommandUnifojrmMap extends CommandUniformMap {
+        _idata: Map<number, UniformProperty>;
+        _defaultTextures: Map<number, BaseTexture>;
+        private _stateID;
         constructor(stateName: string);
+        hasPtrID(propertyID: number): boolean;
         /**
          * 增加一个Uniform参数
          * @param propertyID
@@ -59673,6 +60530,7 @@ declare namespace Laya {
          * 增加一个UniformArray参数
          */
         addShaderUniformArray(propertyID: number, propertyName: string, uniformtype: ShaderDataType, arrayLength: number, block?: string): void;
+        setDefaultTextureData(key: number, defaultTex: BaseTexture): void;
     }
     class NoRenderShaderInstance implements IShaderInstance {
         _serializeShader(): ArrayBuffer;
@@ -59703,6 +60561,7 @@ declare namespace Laya {
         destroy(): void;
     }
     class NoRenderGeometryElement implements IRenderGeometryElement {
+        constructor(mode?: MeshTopology, drawType?: DrawType);
         getDrawDataParams(out: FastSinglelist<number>): void;
         bufferState: IBufferState;
         mode: MeshTopology;
@@ -59872,7 +60731,8 @@ declare namespace Laya {
         /**
          * @private
          */
-        _setInternalTexture(index: number, value: InternalTexture): void;
+        _setInternalTexture(index: number, value: InternalTexture | InternalRenderTarget): void;
+        update(name: string): void;
         /**
          * 克隆。
          * @param destObject 克隆源。
@@ -59985,6 +60845,7 @@ declare namespace Laya {
         dispose(): void;
     }
     class NoTextureContext implements ITextureContext {
+        private _createRenderTarget;
         createRenderTargetArrayInternal(width: number, height: number, depth: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         needBitmap: boolean;
         createTextureInternal(dimension: TextureDimension, width: number, height: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
@@ -60002,6 +60863,7 @@ declare namespace Laya {
         setCubeDDSData(texture: InternalTexture, ddsInfo: DDSTextureInfo): void;
         setCubeKTXData(texture: InternalTexture, ktxInfo: KTXTextureInfo): void;
         setTextureCompareMode(texture: InternalTexture, compareMode: TextureCompareMode): TextureCompareMode;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly RenderTargetFormat[], depthStencilFormat: RenderTargetFormat): InternalRenderTarget;
         createRenderTargetInternal(width: number, height: number, format: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): InternalRenderTarget;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): InternalRenderTarget;
         createRenderTargetDepthTexture(renderTarget: InternalRenderTarget, dimension: TextureDimension, width: number, height: number): InternalTexture;
@@ -60009,7 +60871,7 @@ declare namespace Laya {
         bindoutScreenTarget(): void;
         unbindRenderTarget(renderTarget: InternalRenderTarget): void;
         readRenderTargetPixelData(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): ArrayBufferView;
-        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         updateVideoTexture(texture: InternalTexture, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): void;
         createTexture3DInternal(dimension: TextureDimension, width: number, height: number, depth: number, format: TextureFormat, generateMipmap: boolean, sRGB: boolean, premultipliedAlpha: boolean): InternalTexture;
         setTexture3DImageData(texture: InternalTexture, source: HTMLImageElement[] | HTMLCanvasElement[] | ImageBitmap[], depth: number, premultiplyAlpha: boolean, invertY: boolean): void;
@@ -60019,11 +60881,13 @@ declare namespace Laya {
     class NoRenderSubShader implements ISubshaderData {
         shaderName: string;
         enableInstance: boolean;
+        shaderPasses: IShaderPassData[];
+        uniformMap: Map<number, UniformProperty>;
         addShaderPass(pass: IShaderPassData): void;
-        setUniformMap(_uniformMap: Map<number, any>): void;
+        setUniformMap(uniformMap: Map<number, UniformProperty>): void;
         destroy(): void;
     }
-    class NoRenderUnitModuleDataFactory {
+    class NoRenderUnitModuleDataFactory implements IUnitRenderModuleDataFactory {
         createSubShader(): NoRenderSubShader;
         createShaderPass(pass: ShaderPass): IShaderPassData;
         createRenderState(): RenderState;
@@ -60287,12 +61151,16 @@ declare namespace Laya {
         protected _clearColorValue: Color;
         protected _clearDepthValue: number;
         protected _clearStencilValue: number;
+        private _clearColorRGBA;
+        private _clearColorEnabled;
         get rt(): GLESInternalRT;
         set rt(value: GLESInternalRT);
         get clearFlag(): number;
         set clearFlag(value: number);
         get clearColorValue(): Color;
         set clearColorValue(value: Color);
+        get clearColorValues(): readonly (Color | null)[];
+        set clearColorValues(value: readonly (Color | null)[]);
         get clearDepthValue(): number;
         set clearDepthValue(value: number);
         get clearStencilValue(): number;
@@ -60327,12 +61195,14 @@ declare namespace Laya {
         private _mem;
         private _i32;
         private _u32;
+        private _clearColorRGBA;
+        private _clearColorEnabled;
         constructor();
         preDrawUniformMaps: Set<string>;
         setRenderTarget(value: GLESInternalRT, clearFlag: RenderClearFlag): void;
         setViewPort(value: Viewport): void;
         setScissor(value: Vector4): void;
-        setClearData(clearFlag: number, color: Color, depth: number, stencil: number): number;
+        setClearData(clearFlag: number, color: Color, depth: number, stencil: number, colorValues?: readonly (Color | null)[]): number;
         clearRenderTarget(): void;
         private _tempList;
         drawRenderElementList(list: FastSinglelist<GLESRenderElement3D>): number;
@@ -60346,6 +61216,7 @@ declare namespace Laya {
         Instance = 2
     }
     class GLESRenderElement3D implements IRenderElement3D {
+        sortIndex: number;
         private _geometry;
         private _materialShaderData;
         private _renderShaderData;
@@ -60632,6 +61503,39 @@ declare namespace Laya {
         viewport(x: number, y: number, width: number, height: number): void;
         scissor(x: number, y: number, width: number, height: number): void;
     }
+    /** Synchronous geometry preparation scope. Uses the same GL setters/thread as
+     * individual updates; it only consolidates JS/native crossings before drawing. */
+    class GLESGeometryUpdateBatch {
+        static active: GLESGeometryUpdateBatch;
+        private static readonly pool;
+        static readonly diagnostics: {
+            flushes: number;
+            uploads: number;
+            geometries: number;
+            uploadBytes: number;
+            renderNodeFlushes: number;
+            renderNodes: number;
+            renderElements: number;
+            cameraUpdateCompletions: number;
+            cameraUpdateNodes: number;
+        };
+        static completeCameraRenderUpdateBatch(nodes: readonly any[], cameraMask: number): boolean;
+        private readonly buffers;
+        private readonly sources;
+        private readonly geometries;
+        private readonly nativeGeometries;
+        private uploadRanges;
+        private drawRanges;
+        private readonly renderNodes;
+        private readonly renderElements;
+        private renderElementCounts;
+        static begin(): (() => void) | null;
+        upload(buffer: any, source: ArrayBuffer, offset: number, start: number, bytes: number): void;
+        geometry(value: GLESRenderGeometryElement): void;
+        /** Copy the ordered binding now; callers may reuse their element array. */
+        bindRenderElements(node: any, elements: readonly any[]): boolean;
+        flush(): void;
+    }
     class GLESIndexBuffer implements IIndexBuffer {
         destroy(): void;
         _setIndexDataLength(data: number): void;
@@ -60647,12 +61551,19 @@ declare namespace Laya {
         setData(buffer: ArrayBuffer, bufferOffset: number, dataStartIndex: number, dataCount: number): void;
     }
     class GLESInternalRT implements InternalRenderTarget {
-        _texturesRef: InternalTexture[];
+        _texturesRef: (InternalTexture | null)[];
         _depthTextureRef: InternalTexture;
         _nativeObj: any;
+        readonly colorFormats?: readonly (RenderTargetFormat | null)[];
+        /** The color-0 FBO borrows the owner's texture wrappers and attachment storage. */
+        readonly _owner: GLESInternalRT;
+        private _color0TargetRef;
+        private _disposed;
         private _propU32;
         private _propI32;
-        constructor(nativeObj: any);
+        constructor(nativeObj: any, owner?: GLESInternalRT);
+        get destroyed(): boolean;
+        get _color0Target(): GLESInternalRT;
         get _isCube(): boolean;
         set _isCube(value: boolean);
         get _samples(): number;
@@ -60667,7 +61578,7 @@ declare namespace Laya {
         set isSRGB(value: boolean);
         get gpuMemory(): number;
         set gpuMemory(value: number);
-        get _textures(): InternalTexture[];
+        get _textures(): (InternalTexture | null)[];
         get _depthTexture(): InternalTexture;
         dispose(): void;
     }
@@ -60713,6 +61624,19 @@ declare namespace Laya {
         constructor();
     }
     class GLESRenderDeviceFactory implements IRenderDeviceFactory {
+        beginGeometryUpdateBatch(): (() => void) | null;
+        getGeometryUpdateBatchDiagnostics(): {
+            flushes: number;
+            uploads: number;
+            geometries: number;
+            uploadBytes: number;
+            renderNodeFlushes: number;
+            renderNodes: number;
+            renderElements: number;
+            cameraUpdateCompletions: number;
+            cameraUpdateNodes: number;
+        };
+        completeCameraRenderUpdateBatch(nodes: readonly any[], cameraMask: number): boolean;
         createShaderData(ownerResource: Resource): ShaderData;
         private globalBlockMap;
         createGlobalUniformMap(blockName: string): GLESCommandUniformMap;
@@ -60734,6 +61658,7 @@ declare namespace Laya {
         _nativeObj: any;
         /** JS-read mirror of [mode, drawType, instanceCount, indexFormat]; shared with C++. */
         private _props;
+        private _indexFormatInitialized;
         getDrawDataParams(out: FastSinglelist<number>): void;
         setDrawArrayParams(first: number, count: number): void;
         setDrawElemenParams(count: number, offset: number): void;
@@ -60955,6 +61880,7 @@ declare namespace Laya {
         bindRenderTarget(renderTarget: GLESInternalRT, faceIndex?: number): void;
         bindoutScreenTarget(): void;
         unbindRenderTarget(renderTarget: GLESInternalRT): void;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): GLESInternalRT;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): GLESInternalRT;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): GLESInternalRT;
         createRenderTextureCubeInternal(dimension: TextureDimension, size: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): GLESInternalTex;
@@ -60970,7 +61896,7 @@ declare namespace Laya {
          * @returns
          */
         readRenderTargetPixelData(renderTarget: GLESInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): ArrayBufferView;
-        readRenderTargetPixelDataAsync(renderTarget: GLESInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        readRenderTargetPixelDataAsync(renderTarget: GLESInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         updateVideoTexture(texture: GLESInternalTex, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): void;
     }
     class GLESVertexBuffer implements IVertexBuffer {
@@ -61232,6 +62158,8 @@ declare namespace Laya {
         transform: Transform3D;
         distanceForSort: number;
         sortingFudge: number;
+        /** Renderer order within a render queue; lower values are submitted first. */
+        renderOrder: number;
         castShadow: boolean;
         receiveShadow: boolean;
         enable: boolean;
@@ -61271,7 +62199,7 @@ declare namespace Laya {
         /**
          * @param value
          */
-        setRenderelements(value: IRenderElement3D[]): void;
+        setRenderelements(value: IRenderElement3D[], deferUntilSubmit?: boolean): void;
         /**
          * 设置基于RenderNode的渲染数据
          * @param dataSlot
@@ -61363,6 +62291,8 @@ declare namespace Laya {
     interface I3DRenderModuleFactory {
         createTransform(owner: Sprite3D): Transform3D;
         createBounds(min: Vector3, max: Vector3): any;
+        /** Optional synchronous batch. Return false only before changing any target. */
+        setBoundsMinMaxBatch?(targets: readonly Bounds[], values: Float64Array, count: number): boolean;
         createVolumetricGI(): IVolumetricGIData;
         createReflectionProbe(): IReflectionProbeData;
         createLightmapData(): ILightMapData;
@@ -62048,6 +62978,14 @@ declare namespace Laya {
         private _destTarget;
         get destTarget(): InternalRenderTarget;
         set destTarget(value: InternalRenderTarget);
+        private _opaqueMRTTarget;
+        get opaqueMRTTarget(): InternalRenderTarget;
+        set opaqueMRTTarget(value: InternalRenderTarget);
+        private _opaqueMRTClearColors;
+        private _opaqueMRTClearRGBA;
+        private _opaqueMRTClearEnabled;
+        get opaqueMRTClearColors(): readonly (Color | null)[];
+        set opaqueMRTClearColors(value: readonly (Color | null)[]);
         private _depthNormalTarget;
         get depthNormalTarget(): InternalRenderTarget;
         set depthNormalTarget(value: InternalRenderTarget);
@@ -62131,6 +63069,10 @@ declare namespace Laya {
         renderFowarAddCameraPass(context: IRenderContext3D, renderpass: RTForwardAddRP): void;
     }
     class NativeBounds implements IClone {
+        private static readonly _batchTargets;
+        private static _batchBusy;
+        private static readonly _sharedReady;
+        private _sharedState;
         get min(): Vector3;
         set min(value: Vector3);
         get max(): Vector3;
@@ -62226,6 +63168,7 @@ declare namespace Laya {
     class RT3DRenderModuleFactory implements I3DRenderModuleFactory {
         createTransform(owner: Sprite3D): RTTransform3D;
         createBounds(min: Vector3, max: Vector3): NativeBounds;
+        setBoundsMinMaxBatch(targets: readonly Bounds[], values: Float64Array, count: number): boolean;
         createVolumetricGI(): RTVolumetricGI;
         createReflectionProbe(): RTReflectionProb;
         createLightmapData(): RTLightmapData;
@@ -62240,6 +63183,8 @@ declare namespace Laya {
         createSimpleSkinRenderNode(): ISimpleSkinRenderNode;
     }
     class RTBaseRenderNode implements IBaseRenderNode {
+        get renderOrder(): number;
+        set renderOrder(value: number);
         renderelements: IRenderElement3D[];
         private _transform;
         get transform(): RTTransform3D;
@@ -62293,6 +63238,10 @@ declare namespace Laya {
         set irradientMode(value: IrradianceMode);
         private _caculateBoundingBoxbindFun;
         private _renderUpdatePrebindFun;
+        private _renderUpdatePreCaller;
+        private _renderUpdatePreFunction;
+        /** A cohort may only complete the callback it actually executed. */
+        isRenderUpdatePreCall(call: any, fun: any): boolean;
         /**
          * 设置更新数据
          * @param call
@@ -62307,6 +63256,7 @@ declare namespace Laya {
         set_caculateBoundingBox(call: any, fun: any): void;
         _nativeObj: any;
         private _f32;
+        private _f64;
         private _i32;
         private _u32;
         protected _getNativeObj(): void;
@@ -62333,7 +63283,7 @@ declare namespace Laya {
         set receiveShadow(value: boolean);
         _applyLightProb(): void;
         _applyReflection(): void;
-        setRenderelements(value: IRenderElement3D[]): void;
+        setRenderelements(value: IRenderElement3D[], deferUntilSubmit?: boolean): void;
         setLightmapScaleOffset(value: Vector4): void;
         setCommonUniformMap(value: string[]): void;
         setOneMaterial(index: number, mat: Material): void;
@@ -63403,6 +64353,7 @@ declare namespace Laya {
         boundsChange: boolean;
         distanceForSort: number;
         sortingFudge: number;
+        renderOrder: number;
         castShadow: boolean;
         receiveShadow: boolean;
         enable: boolean;
@@ -63540,6 +64491,8 @@ declare namespace Laya {
         blitOpaqueBuffer: CommandBuffer;
         depthTarget: InternalRenderTarget;
         destTarget: InternalRenderTarget;
+        opaqueMRTTarget: InternalRenderTarget;
+        opaqueMRTClearColors: readonly (Color | null)[];
         depthNormalTarget: InternalRenderTarget;
         enableCMD: boolean;
         enableOpaque: boolean;
@@ -63625,6 +64578,7 @@ declare namespace Laya {
         render3DManager: WebSceneRenderManager;
         _renderPass: IForwardAddRP;
         protected _defaultDepthTex: RenderTexture;
+        private _useCachedDepth;
         protected _defaultShadowMap: RenderTexture;
         constructor();
         /**
@@ -64487,6 +65441,11 @@ declare namespace Laya {
         _globalConfigShaderData: WebDefineDatas;
         private _globalShaderData;
         private _cameraModuleData;
+        /** Internal MRT shader variant; ordinary RTs keep their existing shader path. */
+        get _mrtColorAttachmentCount(): number;
+        private _clearColorValues;
+        private _clearColorValuesCache;
+        private _clearColorValuePool;
         get sceneData(): WebGLShaderData;
         set sceneData(value: WebGLShaderData);
         get cameraData(): WebGLShaderData;
@@ -64520,7 +65479,7 @@ declare namespace Laya {
         constructor();
         runOneCMD(cmd: IRenderCMD): void;
         runCMDList(cmds: IRenderCMD[]): void;
-        setClearData(clearFlag: number, color: Color, depth: number, stencil: number): number;
+        setClearData(clearFlag: number, color: Color, depth: number, stencil: number, colorValues?: readonly (Color | null)[]): number;
         drawRenderElementList(list: FastSinglelist<WebGLRenderElement3D>): number;
         drawRenderElementOne(node: WebGLRenderElement3D): number;
         private _bindRenderTarget;
@@ -64538,6 +65497,7 @@ declare namespace Laya {
         canDynamicBatch: boolean;
         _materialShaderData: WebGLShaderData;
         materialRenderQueue: number;
+        sortIndex: number;
         _renderShaderData: WebGLShaderData;
         transform: Transform3D;
         isRender: boolean;
@@ -64619,6 +65579,9 @@ declare namespace Laya {
         setTextureCompareMode(texture: WebGLInternalTex, compareMode: TextureCompareMode): TextureCompareMode;
         createRenderbuffer(width: number, height: number, internalFormat: number, samples: number): WebGLRenderbuffer;
         protected createRenderTextureInternal(dimension: TextureDimension, width: number, height: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): WebGLInternalTex;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): WebGLInternalRT;
+        /** 子 FBO 只借用整组主色和深度，由 owner 统一销毁。 */
+        private _createMRTColor0Target;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): WebGLInternalRT;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): WebGLInternalRT;
         createRenderTextureCubeInternal(dimension: TextureDimension, size: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): WebGLInternalTex;
@@ -64626,6 +65589,8 @@ declare namespace Laya {
         createRenderTextureArrayInternal(width: number, height: number, depth: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): WebGLInternalTex;
         createRenderTargetArrayInternal(width: number, height: number, depth: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): WebGLInternalRT;
         bindRenderTarget(renderTarget: WebGLInternalRT, slice?: number): void;
+        /** 字节颜色读入字节数组，浮点颜色读入 Float32Array。 */
+        readRenderTargetPixelDataAsync(renderTarget: WebGLInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         unbindRenderTarget(renderTarget: WebGLInternalRT): void;
     }
     class GLTextureContext extends GLObject implements ITextureContext {
@@ -64711,6 +65676,7 @@ declare namespace Laya {
         bindoutScreenTarget(): void;
         unbindRenderTarget(renderTarget: WebGLInternalRT): void;
         createRenderTextureCubeInternal(dimension: TextureDimension, size: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): WebGLInternalTex;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): WebGLInternalRT;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): WebGLInternalRT;
         createRenderTargetCubeInternal(size: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number): WebGLInternalRT;
         /** 组装"分层渲染目标"的公共骨架(cube/array 共享):建 RT、挂颜色纹理、建一份共享 depth、配 FBO。gpuMemory 由调用方设置。 */
@@ -64718,6 +65684,8 @@ declare namespace Laya {
         createRenderbuffer(width: number, height: number, internalFormat: number, samples: number): WebGLRenderbuffer;
         protected createRenderTextureInternal(dimension: TextureDimension, width: number, height: number, format: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean): WebGLInternalTex;
         createRenderTargetDepthTexture(renderTarget: WebGLInternalRT, dimension: TextureDimension, width: number, height: number): WebGLInternalTex;
+        /** 两个 FBO 同步更换深度，验证失败时保留旧附件。 */
+        private _createMRTDepthTexture;
         /**
          * @deprecated 请使用readRenderTargetPixelDataAsync函数代替
          * @param renderTarget
@@ -64729,7 +65697,7 @@ declare namespace Laya {
          * @returns
          */
         readRenderTargetPixelData(renderTarget: WebGLInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): ArrayBufferView;
-        readRenderTargetPixelDataAsync(renderTarget: WebGLInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        readRenderTargetPixelDataAsync(renderTarget: WebGLInternalRT, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
         updateVideoTexture(texture: WebGLInternalTex, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): void;
     }
     /**
@@ -64794,6 +65762,7 @@ declare namespace Laya {
         private _scissorState;
         private _lastClearColor;
         private _lastClearDepth;
+        private _attachmentClearColor;
         private _globalWidth;
         private _globalHeight;
         private _GLParams;
@@ -64841,7 +65810,7 @@ declare namespace Laya {
         viewport(x: number, y: number, width: number, height: number): void;
         scissor(x: number, y: number, width: number, height: number): void;
         scissorTest(value: boolean): void;
-        clearRenderTexture(clearFlag: RenderClearFlag, clearcolor?: Color, clearDepth?: number, clearStencilValue?: number): void;
+        clearRenderTexture(clearFlag: RenderClearFlag, clearcolor?: Color, clearDepth?: number, clearStencilValue?: number, clearColorValues?: readonly (Color | null)[]): void;
         copySubFrameBuffertoTex(texture: WebGLInternalTex, level: number, xoffset: number, yoffset: number, x: number, y: number, width: number, height: number): void;
         colorMask(r: boolean, g: boolean, b: boolean, a: boolean): void;
         getParams(params: RenderParams): number;
@@ -65026,7 +65995,7 @@ declare namespace Laya {
     class GLShaderInstance extends GLObject {
         _engine: WebGLEngine;
         _gl: WebGLRenderingContext | WebGL2RenderingContext;
-        /** Warn only once for each texture uniform that falls back to a default texture. */
+        /** Warn once per uniform, texture and invalid resource state. */
         private _defaultTextureWarnings;
         constructor(engine: WebGLEngine, vs: string, ps: string, attributeMap: {
             [name: string]: [
@@ -65036,8 +66005,8 @@ declare namespace Laya {
         });
         private _create;
         getUniformMap(): ShaderVariable[];
-        _uniform_sampler2DArray(one: any, texture: BaseTexture): number;
-        _uniform_sampler3D(one: any, texture: BaseTexture): number;
+        _uniform_sampler2DArray(one: any, texture: BaseTexture | WebGLInternalTex | WebGLInternalRT): number;
+        _uniform_sampler3D(one: any, texture: BaseTexture | WebGLInternalTex | WebGLInternalRT): number;
         private _getTextureSource;
         _uniform_UniformBuffer(one: ShaderVariable, value: IWebGLUniformBuffer): number;
         destroy(): void;
@@ -65091,11 +66060,16 @@ declare namespace Laya {
         _isCube: boolean;
         _samples: number;
         _generateMipmap: boolean;
-        _textures: InternalTexture[];
-        _texturesOwnsResources: boolean;
+        _textures: (InternalTexture | null)[];
+        /** 仅主颜色子 FBO 借用整组附件，不拥有纹理和深度存储。 */
+        _owner: WebGLInternalRT;
         _depthTexture: InternalTexture;
         colorFormat: RenderTargetFormat;
+        readonly colorFormats?: readonly (RenderTargetFormat | null)[];
+        /** 整组 MRT 缓存的主颜色绑定，只拥有 FBO，与整组共享颜色 0 和深度。 */
+        _color0Target: WebGLInternalRT;
         depthStencilFormat: RenderTargetFormat;
+        private _disposed;
         _arrayLayerIndex: number;
         isSRGB: boolean;
         /**bytelength */
@@ -65103,7 +66077,7 @@ declare namespace Laya {
         get gpuMemory(): number;
         set gpuMemory(value: number);
         private _changeTexMemory;
-        constructor(engine: WebGLEngine, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number);
+        constructor(engine: WebGLEngine, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number, colorFormats?: readonly (RenderTargetFormat | null)[]);
         _getSource(): any;
         dispose(): void;
     }
@@ -66495,9 +67469,13 @@ declare namespace Laya {
         private _invertY;
         private _clearFlag;
         private _clearColor;
+        private _clearColorValues;
+        private _clearColorValuesCache;
+        private _clearColorValuePool;
         private _clearDepth;
         private _clearStencil;
         private _needStart;
+        private _commandClearPending;
         private _blitFrameCount;
         private _blitScreen;
         private _viewScissorSaved;
@@ -66515,6 +67493,8 @@ declare namespace Laya {
         _pipelineChange: Vector2;
         device: GPUDevice;
         destRT: WebGPUInternalRT;
+        /** Internal MRT shader variant; ordinary RTs keep their existing shader path. */
+        get _mrtColorAttachmentCount(): number;
         get sceneData(): WebGPUShaderData;
         set sceneData(value: WebGPUShaderData);
         get cameraData(): WebGPUShaderData;
@@ -66587,7 +67567,7 @@ declare namespace Laya {
          * @param depth
          * @param stencil
          */
-        setClearData(flag: number, color: Color, depth: number, stencil: number): number;
+        setClearData(flag: number, color: Color, depth: number, stencil: number, colorValues?: readonly (Color | null)[]): number;
         /**
          * 渲染一组节点
          * @param list
@@ -66608,6 +67588,8 @@ declare namespace Laya {
          * @param cmd
          */
         runOneCMD(cmd: IRenderCMD): void;
+        private _applyCommand;
+        private _flushCommandClear;
         /**
          * 清除渲染目标（空白绘制，用于清除颜色或深度缓存）
          */
@@ -66632,6 +67614,7 @@ declare namespace Laya {
         protected _invertFrontFace: boolean;
         protected _bindGroupMap: Map<number, WebGPUBindGroup>;
         materialRenderQueue: number;
+        sortIndex: number;
         materialId: number;
         transform: Transform3D;
         canDynamicBatch: boolean;
@@ -67206,8 +68189,9 @@ declare namespace Laya {
      * @param width 拷贝宽度
      * @param height 拷贝高度
      * @param invertY 是否翻转Y轴
+     * @param commandEncoder 可选，传入时仅录制命令，由调用方提交
      */
-    function blitFramebuffer(device: GPUDevice, srcColorTexture: GPUTexture, dstColorTexture: GPUTexture, dstColorFormat: GPUTextureFormat, srcDepthTexture: GPUTexture | null, dstDepthTexture: GPUTexture | null, dstDepthFormat: GPUTextureFormat | null, width: number, height: number, invertY: boolean): void;
+    function blitFramebuffer(device: GPUDevice, srcColorTexture: GPUTexture, dstColorTexture: GPUTexture, dstColorFormat: GPUTextureFormat, srcDepthTexture: GPUTexture | null, dstDepthTexture: GPUTexture | null, dstDepthFormat: GPUTextureFormat | null, width: number, height: number, invertY: boolean, commandEncoder?: GPUCommandEncoder): void;
     /**
      * Converts a `GPUExtent3D` into an array of numbers
      *
@@ -67231,8 +68215,9 @@ declare namespace Laya {
     /**
      * Generates mip levels from level 0 to the last mip for an existing texture
      *
-     * The texture must have been created with TEXTURE_BINDING and RENDER_ATTACHMENT
-     * and been created with mip levels
+     * The texture must be single-sampled, filterable and color-renderable, with
+     * TEXTURE_BINDING and RENDER_ATTACHMENT usage and allocated mip levels.
+     * All mip passes are submitted together. Use encodeMipmaps to control submission.
      *
      * @param device A GPUDevice
      * @param texture The texture to create mips for
@@ -67240,6 +68225,13 @@ declare namespace Laya {
      *   and it is only needed when the texture is going to be used as a cube map.
      */
     function genMipmap(device: GPUDevice, texture: GPUTexture, textureBindingViewDimension?: GPUTextureViewDimension): void;
+    /**
+     * Records mip generation into an existing encoder without finishing or submitting
+     * it. End any active pass before calling. Each mip uses a separate render pass
+     * so the previous mip can transition from an attachment to a sampled texture.
+     * The texture requirements are the same as genMipmap.
+     */
+    function encodeMipmaps(device: GPUDevice, encoder: GPUCommandEncoder, texture: GPUTexture, textureBindingViewDimension?: GPUTextureViewDimension): void;
     /**
      * 对贴图中的像素做预乘处理
      *
@@ -67552,22 +68544,30 @@ declare namespace Laya {
         _isCube: boolean;
         _samples: number;
         _generateMipmap: boolean;
-        _textures: WebGPUInternalTex[];
+        _textures: (WebGPUInternalTex | null)[];
         _texturesResolve: WebGPUInternalTex[];
         _depthTexture: WebGPUInternalTex;
         _texturesOwnsResources: boolean;
+        _depthOwnsResources: boolean;
         colorFormat: RenderTargetFormat;
+        readonly colorFormats?: readonly (RenderTargetFormat | null)[];
+        private _color0TargetCache?;
+        /** 完整 MRT 与主颜色通道共享同一组资源，池化复用期间只创建一次绑定。 */
+        get _color0Target(): WebGPUInternalRT;
+        /** 创建资源的设备，用于读回校验。 */
+        readonly _device?: GPUDevice;
         depthStencilFormat: RenderTargetFormat;
         isSRGB: boolean;
         gpuMemory: number;
         private _disposed;
+        get destroyed(): boolean;
         private _stateCacheKey;
         stateCacheID: number;
-        _colorStates: GPUColorTargetState[];
+        _colorStates: (GPUColorTargetState | null)[];
         _depthState: GPUColorTargetState;
         _renderPassDescriptor: GPURenderPassDescriptor;
         _arrayLayerIndex: number;
-        constructor(colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number, sRGB: boolean);
+        constructor(colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, isCube: boolean, generateMipmap: boolean, samples: number, sRGB: boolean, colorFormats?: readonly (RenderTargetFormat | null)[], device?: GPUDevice);
         dispose(destroyResource?: boolean): void;
     }
     class WebGPUInternalTex implements InternalTexture {
@@ -67582,8 +68582,12 @@ declare namespace Laya {
         isPotSize: boolean;
         mipmap: boolean;
         mipmapCount: number;
-        baseMipmapLevel: number;
-        maxMipmapLevel: number;
+        private _baseMipmapLevel;
+        get baseMipmapLevel(): number;
+        set baseMipmapLevel(value: number);
+        private _maxMipmapLevel;
+        get maxMipmapLevel(): number;
+        set maxMipmapLevel(value: number);
         useSRGBLoad: boolean;
         gammaCorrection: number;
         multiSamplers: number;
@@ -67599,6 +68603,7 @@ declare namespace Laya {
         /** 底层 GPUTexture 每次更换/销毁时自增，用于 bindGroupCache 命中时校验是否失效 */
         resourceVersion: number;
         private _onStateChange;
+        private _invalidateMipmapViews;
         private _filterMode;
         get filterMode(): FilterMode;
         set filterMode(value: FilterMode);
@@ -67710,9 +68715,10 @@ declare namespace Laya {
         private _device;
         encoder: GPURenderPassEncoder;
         private _commandEncoder;
+        private _renderTarget;
         renderPassDesc: GPURenderPassDescriptor;
         constructor();
-        startRender(renderPassDesc: GPURenderPassDescriptor): void;
+        startRender(renderPassDesc: GPURenderPassDescriptor, renderTarget?: WebGPUInternalRT): void;
         setViewport(x: number, y: number, width: number, height: number, minDepth: number, maxDepth: number): void;
         setScissorRect(x: GPUIntegerCoordinate, y: GPUIntegerCoordinate, width: GPUIntegerCoordinate, height: GPUIntegerCoordinate): void;
         setStencilReference(ref: number): void;
@@ -67835,6 +68841,12 @@ declare namespace Laya {
         readonly wgslLanguageFeatures: WGSLLanguageFeatures;
         gpuBufferMgr: WebGPUBufferManager;
         useSPRIV: boolean;
+        /**
+         * @en Whether each pooled UBO GPUBuffer uploads one continuous range from its first dirty block to its last dirty block. This reduces writeBuffer calls at the cost of uploading unchanged data between dirty blocks.
+         * @zh 池化 UBO 是否从首个脏块到最后一个脏块一次性连续上传。开启后会减少 writeBuffer 调用次数，但会额外上传脏块之间未变化的数据。
+         */
+        get reduceWriteBufferCalls(): boolean;
+        set reduceWriteBufferCalls(value: boolean);
         globalId: number;
         objectName: string;
         shaderCompiler: WebGPUShaderCompiler;
@@ -67970,7 +68982,8 @@ declare namespace Laya {
         destroy(): void;
     }
     class WebGPURenderPassHelper {
-        static getDescriptor(rt: WebGPUInternalRT, clearflag: RenderClearFlag, clearColor?: Color, clearDepthValue?: number, clearStencilValue?: number): GPURenderPassDescriptor;
+        static getDescriptor(rt: WebGPUInternalRT, clearflag: RenderClearFlag, clearColor?: Color, clearDepthValue?: number, clearStencilValue?: number, clearColorValues?: readonly (Color | null)[]): GPURenderPassDescriptor;
+        private static _depthStencilAttachment;
     }
     interface WebGPUBlendStateCache {
         state: GPUBlendState;
@@ -68575,7 +69588,11 @@ declare namespace Laya {
          */
         private _isSRGBFormat;
         private _supportSRGB;
+        createMultiRenderTargetInternal(width: number, height: number, colorFormats: readonly (RenderTargetFormat | null)[], depthStencilFormat: RenderTargetFormat, color0SRGB?: boolean): WebGPUInternalRT;
+        private _validateMRTColorFormats;
         createRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, depthStencilFormat: RenderTargetFormat, generateMipmap: boolean, sRGB: boolean, multiSamples: number, storage: boolean): InternalRenderTarget;
+        /** Records mip updates after the render pass (including MSAA resolve) has ended. */
+        encodeRenderTargetMipmaps(renderTarget: WebGPUInternalRT, encoder: GPUCommandEncoder): void;
         createScreenRenderTargetInternal(width: number, height: number, colorFormat: RenderTargetFormat, sRGB: boolean): InternalRenderTarget;
         ensureScreenDepthStencil(internalRT: WebGPUInternalRT, width: number, height: number): void;
         /**
@@ -68603,7 +69620,9 @@ declare namespace Laya {
          * @param out
          */
         readRenderTargetPixelData(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): ArrayBufferView;
-        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView): Promise<ArrayBufferView>;
+        readRenderTargetPixelDataAsync(renderTarget: InternalRenderTarget, xOffset: number, yOffset: number, width: number, height: number, out: ArrayBufferView, attachmentIndex?: number): Promise<ArrayBufferView>;
+        /** 与 WebGL2 一致，读回紧密排列的字节或 Float32 数据。 */
+        private _readMultiRenderTargetPixelData;
         initVideoTextureData(texture: WebGPUInternalTex): void;
         updateVideoTexture(texture: InternalTexture, video: HTMLVideoElement, premultiplyAlpha: boolean, invertY: boolean): Promise<void>;
         getRenderTextureDataAsync(internalTex: InternalRenderTarget, x: number, y: number, width: number, height: number): Promise<ArrayBufferView>;
@@ -69293,7 +70312,19 @@ declare namespace Laya {
         Texture_HalfFloatLinearFiltering = 23,
         StorageBuffer = 24,
         ComputeShader = 25,
-        IndirectDraw = 26
+        IndirectDraw = 26,
+        /**
+         * @en The backend supports non-power-of-two textures with Repeat/Mirrored wrapping and mipmaps. Engine paths enable these features separately.
+         * @zh 后端支持非二次幂纹理的重复/镜像寻址和 mipmap，引擎各路径分别接入这些能力。
+         */
+        Texture_NPOTFull = 27,
+        /**
+         * @en Whether the backend supports multiple color attachments (MRT). This does not validate a specific format combination or shader.
+         * @zh 后端是否具备多颜色附件（MRT）能力；不代表任意格式组合或 Shader 均可用。
+         */
+        MRT = 28,
+        RenderTextureFormat_R16 = 29,
+        RenderTextureFormat_R16G16 = 30
     }
     enum RenderClearFlag {
         Nothing = 0,
@@ -69322,7 +70353,17 @@ declare namespace Laya {
         UNSIGNED_BYTE = 7,
         BYTE = 8,
         UNSIGNED_SHORT = 9,
-        MaxComputeElement = 10
+        MaxComputeElement = 10,
+        /**
+         * @en Maximum simultaneous color outputs, including attachment 0. WebGL2 uses the minimum of MAX_COLOR_ATTACHMENTS and MAX_DRAW_BUFFERS; WebGPU uses device.limits. WebGL1 returns 1; unimplemented backends return 0.
+         * @zh 同时输出的颜色附件数上限，包含附件 0。WebGL2 取颜色附件和 draw buffers 上限的较小值；WebGPU 读取 device.limits。WebGL1 返回 1，未适配后端返回 0。
+         */
+        Max_Color_Attachment_Count = 11,
+        /**
+         * @en WebGPU color attachment byte budget per sample, across all color outputs. A value of 0 means this limit is not exposed by the backend, not unlimited MRT support.
+         * @zh WebGPU 所有颜色附件合计的每采样字节预算；0 表示后端不提供此项限制，不表示 MRT 无限制可用。
+         */
+        Max_Color_Attachment_Bytes_Per_Sample = 12
     }
     /**
      * Mesh topology.
@@ -69372,7 +70413,11 @@ declare namespace Laya {
         STENCIL_8 = 36,
         DEPTHSTENCIL_24_8 = 37,
         DEPTH_32 = 38,
-        DEPTHSTENCIL_24_Plus = 39
+        DEPTHSTENCIL_24_Plus = 39,
+        /** Single-channel half-float; check RenderTextureFormat_R16 first. */
+        R16 = 40,
+        /** Two-channel half-float; check RenderTextureFormat_R16G16 first. */
+        R16G16 = 41
     }
     enum StencilOperation {
         /** Keeps the current value. */
@@ -69431,7 +70476,7 @@ declare namespace Laya {
         R8G8B8A8 = 1,
         /**RGB格式纹理,R通道5位，G通道6位，B通道5位。*/
         R5G6B5 = 16,
-        /**纹理格式_ALPHA8。*/
+        /**单通道8位纹理。WebGL1 使用 ALPHA（读取 .a）；WebGL2/WebGPU 使用 R8（读取 .r）。*/
         Alpha8 = 2,
         /**纹理格式_DXT1。*/
         DXT1 = 3,
@@ -69703,6 +70748,7 @@ declare namespace Laya {
         get statefirst(): boolean;
         set statefirst(value: boolean);
         moduleData: IShaderPassData;
+        private _mrtTargetDefines;
         get attributeLocations(): Set<number>;
         set attributeLocations(value: Set<number>);
         /**
@@ -70206,10 +71252,15 @@ declare namespace Laya {
          */
         wrapMode: AnimationWrapMode;
         /**
-         * @en The delay time of each frame, in milliseconds.
-         * @zh 每帧的延迟时间，单位为毫秒。
+         * @en Extra transition delays, in milliseconds, indexed in the full frame list. Forward playback uses the current absolute index; reverse playback uses the preceding index.
+         * @zh 按完整帧列表索引配置的额外切换延迟，单位为毫秒。正序使用当前绝对索引，倒序使用前一绝对索引。
          */
         frameDelays: Array<number>;
+        /**
+         * @en Whether to repeat frameDelays using its array length as the period. Default is false. Absolute delay indices are used regardless of the playback range.
+         * @zh 是否以 frameDelays 数组长度为周期循环匹配延迟，默认为 false。使用绝对延迟索引，不随播放范围改变匹配起点。
+         */
+        frameDelaysLoop?: boolean;
     }
     /**
      * @en Resource class for managing an atlas, which is a collection of textures and their frames.
@@ -70236,6 +71287,11 @@ declare namespace Laya {
          * @zh 大图合集的动画信息。
          */
         animation: IAtlasAnimationInfo;
+        /**
+         * @en User-defined data associated with the atlas resource.
+         * @zh 与大图合集资源相关联的用户自定义数据。
+         */
+        userData: any;
         /**
          * @en Creates a new instance of the AtlasResource class.
          * @param dir Directory of the atlas.
@@ -71562,8 +72618,8 @@ declare namespace Laya {
      * @zh RenderTexture 类用于创建渲染纹理。
      */
     class RenderTexture extends BaseTexture implements IRenderTarget {
-        private static _pool;
-        private static _poolMemory;
+        protected static _pool: RenderTexture[];
+        protected static _poolMemory: number;
         /**
          * @en Creates a RenderTexture instance from the pool.
          * @param width Width of the RenderTexture.
@@ -71615,7 +72671,9 @@ declare namespace Laya {
          * 渲染纹理
          */
         _renderTarget: InternalRenderTarget;
-        private _generateDepthTexture;
+        /** 是否拥有多个颜色附件的资源组。 */
+        get isMRT(): boolean;
+        protected _generateDepthTexture: boolean;
         /**
          * @en Whether to generate depth texture maps.
          * @zh 是否生成深度纹理贴图。
@@ -71626,7 +72684,7 @@ declare namespace Laya {
          * @en Depth and stencil removal texture mapping
          * @zh 深度与模板剔除纹理贴图
          */
-        private _depthStencilTexture;
+        protected _depthStencilTexture: BaseTexture;
         /**
          * @en Depth and stencil removal texture mapping
          * @zh 深度与模板剔除纹理贴图
@@ -72018,6 +73076,70 @@ declare namespace Laya {
          * @param multiSamples 多采样的样本数量。
          */
         constructor(size: number, colorFormat: RenderTargetFormat, depthFormat: RenderTargetFormat, generateMipmap: boolean, multiSamples: number);
+    }
+    /** 单采样、无 mipmap 的 2D MRT 布局。 */
+    interface RenderTextureMRTOptions {
+        /** 全部附件共用的宽度。 */
+        width: number;
+        /** 全部附件共用的高度。 */
+        height: number;
+        /** 索引即固定 location；附件 0 必须存在，null 槽不分配纹理。 */
+        colorFormats: readonly (RenderTargetFormat | null)[];
+        /** 共享深度/模板格式，默认为 None。 */
+        depthStencilFormat?: RenderTargetFormat;
+        /** 是否提供共享深度的采样纹理。 */
+        depthTexture?: boolean;
+        /** 附件 0 是否使用 sRGB，其他附件始终保持线性。 */
+        sRGB?: boolean;
+    }
+    /**
+     * 多颜色附件渲染纹理。绑定目标时使用完整 MRT；采样本对象及继承的纹理属性仅对应附件 0。
+     * 颜色和深度整组入池、销毁，布局不可重建；业务数据由 Shader 写入。
+     */
+    class RenderTextureMRT extends RenderTexture {
+        private _colorFormats;
+        private _colorTextures;
+        private _poolLayout;
+        /** 按完整、有序的附件布局借用整组 MRT，使用后调用 RenderTexture.recoverToPool。 */
+        static createFromPool(options: RenderTextureMRTOptions): RenderTextureMRT;
+        /** 兼容 RT 的单附件调用形式；MRT 仍限于单采样、无 mipmap、非存储纹理。 */
+        static createFromPool(...args: Parameters<typeof RenderTexture.createFromPool>): RenderTextureMRT;
+        private static _getFormats;
+        /** 单颜色附件仍属于 MRT，不能与普通 RT 混池。 */
+        get isMRT(): boolean;
+        /** 不可变的固定槽位格式列表，未分配的槽位为 null。 */
+        get colorFormats(): readonly (RenderTargetFormat | null)[];
+        /** 包含空槽的颜色槽位跨度，用于 Shader 输出位置和逐槽清除参数。 */
+        get colorAttachmentCount(): number;
+        /** @inheritDoc */
+        get width(): number;
+        set width(value: number);
+        /** @inheritDoc */
+        get height(): number;
+        set height(value: number);
+        /** 深度采样视图借用组内存储，不能独立销毁。 */
+        get generateDepthTexture(): boolean;
+        set generateDepthTexture(value: boolean);
+        constructor(options: RenderTextureMRTOptions);
+        /**
+         * 返回稳定的颜色附件借用视图，未分配的槽位返回 null。请统一销毁 owner，不要单独销毁视图。
+         * 引用视图会保护 owner，防止被自动回收。
+         * 整组归池后不得继续使用旧视图；再次借用整组后重新获取。
+         * @param index 从 0 开始的颜色附件索引，不是深度附件或数组层。
+         */
+        getColorTexture(index: number): BaseTexture | null;
+        /**
+         * Pass 提交后按附件格式读取紧密排列的数据；字节使用 Uint8Array，浮点使用 Float32Array。
+         * @param attachmentIndex 颜色附件索引，默认为 0。
+         */
+        getDataAsync(xOffset: number, yOffset: number, width: number, height: number, out: Uint8Array | Uint8ClampedArray | Float32Array, attachmentIndex?: number): Promise<ArrayBufferView>;
+        /** 请使用 getDataAsync。 */
+        getData(..._args: Parameters<RenderTexture["getData"]>): Uint8Array | Float32Array;
+        /** 尺寸或布局变化时请归还旧组并重新借用。 */
+        recreate(..._args: Parameters<RenderTexture["recreate"]>): void;
+        private _checkAttachment;
+        /** @inheritDoc */
+        protected _disposeResource(): void;
     }
     /**
      * @en The `Resource` class used for resource access.
@@ -73835,6 +74957,7 @@ declare namespace Laya {
         private _skin;
         private _renderOffset;
         private _offset;
+        private _skinRenderDirty;
         private _setPreAlphaFlag;
         private _premultipliedAlpha;
         protected _bones: Sprite[];
@@ -74904,7 +76027,6 @@ declare namespace Laya {
         registerTexture(texture: Texture): void;
         private _registerTextureByName;
         private _refreshSpineMaterialTextureKeys;
-        private _registerSpineMaterialTexture;
         private _addSpineMaterialTextureKey;
         /**
          * @en Get the animation name by its index
@@ -75592,6 +76714,7 @@ declare namespace Laya {
         protected _createBakedRenderer(): IRender;
         protected _updateSkinShaderDefines(): void;
         changeSkeleton(skeleton: spine.Skeleton): void;
+        reset(): void;
         /**
          * @en Update render elements from subMeshes and materials.
          * This method is called from renderProxy.afterRender().
@@ -76596,6 +77719,7 @@ declare namespace Laya {
          */
         getDynamicMesh(vertexDeclaration: VertexDeclaration, create?: boolean, index?: number): Mesh2D;
         reset(): void;
+        private _applyCurrentPose;
         /**
          * @en Play a specific animation.
          * @param animationName The name of the animation to play.
@@ -76607,6 +77731,7 @@ declare namespace Laya {
          * @param animationName 要播放的动画名称。
          */
         play(animationName: string, loop?: boolean, trackIndex?: number, start?: number, end?: number): void;
+        private _updateRenderProxy;
         addAnimation(animationName: string, loop?: boolean, delay?: number, trackIndex?: number): void;
         setMix(fromAnimation: string, toAnimation: string, duration: number): void;
         findBone(boneName: string): IBoneInfo | null;
@@ -86214,11 +87339,23 @@ declare namespace Laya {
         get color(): string;
         set color(value: string);
         /**
-         * @en The index of the current frame in the animation.
-         * @zh 动画当前帧的索引。
+         * @en The index of the current frame within the active playback range.
+         * @zh 当前有效播放区间内的帧索引。
          */
         get frame(): number;
         set frame(value: number);
+        /**
+         * @en The inclusive start index in the full frame list. Default is 0.
+         * @zh 完整帧列表中的开始帧索引，包含此帧，默认为 0。
+         */
+        get rangeStart(): number;
+        set rangeStart(value: number);
+        /**
+         * @en The inclusive end index in the full frame list. Default is -1, meaning the last frame.
+         * @zh 完整帧列表中的结束帧索引，包含此帧。默认为 -1，表示最后一帧。
+         */
+        get rangeEnd(): number;
+        set rangeEnd(value: number);
         /**
          * @en Whether the animation is currently playing.
          * @zh 动画是否正在播放。
@@ -94073,9 +95210,6 @@ declare namespace Laya {
     }
     class Shader2D {
         /**
-         * primitive Mesh Descript
-         */
-        /**
          * TextureSV Mesh Descript
          */
         static readonly graphicsAttribute: {
@@ -94958,7 +96092,7 @@ declare namespace Laya {
     class MgWebSocket implements IWebSocket {
         ws: WechatMinigame.SocketTask;
         onOpen: (result: any) => void;
-        onClose: () => void;
+        onClose: (code?: number, reason?: string) => void;
         onError: (e: any) => void;
         onMessage: (data: string | ArrayBuffer) => void;
         open(url: string, options?: IWebSocketConnectOptions): void;
@@ -94974,6 +96108,7 @@ declare namespace Laya {
         getVisibility(): boolean;
         setWindowSize(width: number, height: number): boolean;
         setResolution(width: number, height: number, fullscreen: boolean): boolean;
+        setWindowedFullscreen(enabled: boolean): boolean;
         createMainCanvas(): any;
         createElement<K extends keyof HTMLElementTagNameMap>(tagName: K): HTMLElementTagNameMap[K];
         getElementById(id: string): HTMLElement;
@@ -95013,6 +96148,10 @@ declare namespace Laya {
         private _ended;
         private _muted;
         private _playbackRate;
+        private _volume;
+        get duration(): number;
+        get volume(): number;
+        set volume(value: number);
         get loop(): boolean;
         set loop(value: boolean);
         get ended(): boolean;
@@ -95034,12 +96173,25 @@ declare namespace Laya {
         private _ended;
         private _waitFirstFrame;
         private _startOption;
+        private _loadId;
+        private _hasNativeControls;
         constructor();
         get readyState(): number;
         get ended(): boolean;
         get currentTime(): number;
         set currentTime(value: number);
+        get duration(): number;
+        get muted(): boolean;
+        set muted(value: boolean);
+        get volume(): number;
+        set volume(value: number);
+        get playbackRate(): number;
+        set playbackRate(value: number);
+        private readNativeProperty;
+        private writeNativeProperty;
         protected onLoad(url: string): void;
+        private onError;
+        private restart;
         protected onPlay(): void;
         protected onPause(): void;
         protected onStop(): void;

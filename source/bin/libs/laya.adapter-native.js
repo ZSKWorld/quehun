@@ -258,6 +258,13 @@
             Laya.PAL.warnIncompatibility("setResolution");
             return false;
         }
+        setWindowedFullscreen(enabled) {
+            if (!Laya.PAL.hasAPI("setWindowedFullscreen")) {
+                Laya.PAL.warnIncompatibility("setWindowedFullscreen");
+                return false;
+            }
+            return Laya.PAL.g.setWindowedFullscreen(enabled);
+        }
         createMainCanvas() {
             this._canvas = Laya.PAL.g.createCanvas();
             this._canvas.id = "layaCanvas";
@@ -1701,6 +1708,29 @@
             this._ended = false;
             this._muted = false;
             this._playbackRate = 1;
+            this._volume = 1;
+        }
+        get duration() {
+            var _a;
+            try {
+                const duration = (_a = this.video) === null || _a === void 0 ? void 0 : _a.duration;
+                return typeof duration === "number" ? duration : 0;
+            }
+            catch (_b) {
+                return 0;
+            }
+        }
+        get volume() {
+            return this._volume;
+        }
+        set volume(value) {
+            this._volume = value;
+            try {
+                if (this.video && "volume" in this.video)
+                    this.video.volume = value;
+            }
+            catch (_a) {
+            }
         }
         get loop() {
             return this._loop;
@@ -1740,22 +1770,39 @@
         }
         onLoad(url) {
             this._ended = false;
-            if (this._loaded)
-                this.video.destroy();
+            const previousVideo = this.video;
+            this.video = null;
+            this._loaded = false;
+            previousVideo === null || previousVideo === void 0 ? void 0 : previousVideo.destroy();
             this.video = Laya.PAL.g.createVideo(Object.assign({}, this.options, this.getNodeTransform(), {
                 src: Laya.URL.postFormatURL(Laya.URL.formatURL(url)),
                 autoplay: this._playing,
                 loop: this._loop,
                 muted: this._muted,
                 playbackRate: this._playbackRate,
+                volume: this._volume,
             }));
-            this.video.onEnded(() => this._ended = true);
-            this.video.onError((err) => {
+            const video = this.video;
+            video.onEnded(() => {
+                var _a;
+                if (this.video !== video || this._loop)
+                    return;
+                this.pause();
+                this._ended = true;
+                (_a = this._owner) === null || _a === void 0 ? void 0 : _a.event("ended");
+            });
+            video.onError((err) => {
+                var _a;
+                if (this.video !== video)
+                    return;
+                this.pause();
                 console.error("NativeVideoPlayer: " + Laya.getErrorMsg(err));
+                (_a = this._owner) === null || _a === void 0 ? void 0 : _a.event("error", err);
             });
             this.setLoaded();
         }
         onPlay() {
+            this._ended = false;
             this.video.play();
         }
         onPause() {
@@ -1771,36 +1818,54 @@
             this.video.height = height;
         }
         onDestroy() {
-            this.video.destroy();
+            const video = this.video;
+            this.video = null;
+            this._loaded = false;
+            video === null || video === void 0 ? void 0 : video.destroy();
         }
     }
 
     class NativeVideoTexture extends Laya.VideoTexture {
         constructor() {
             super();
+            this._currentTime = 0;
             this._ended = false;
             this._waitFirstFrame = false;
+            this._loadId = 0;
             this.decoder = Laya.PAL.g.createVideoDecoder({
                 type: "wemedia"
             });
+            this._hasNativeControls = this.readNativeProperty("duration", -1) >= 0;
             this.decoder.on("frame", (res) => {
                 this._currentTime = res.pts / 1000;
                 if (this._waitFirstFrame) {
                     this._waitFirstFrame = false;
                     if (!this._playing) {
+                        const loadId = this._loadId;
+                        const source = this._source;
                         this.render(true);
-                        this.decoder.wait(true);
+                        if (loadId === this._loadId && source === this._source && !this.destroyed && !this._playing)
+                            this.decoder.wait(true);
                     }
                 }
             });
             this.decoder.on("ended", () => {
-                if (this._loop)
-                    this.decoder.stop().then(() => this.decoder.start(this._startOption));
+                if (this._loop) {
+                    this.restart();
+                }
                 else {
+                    if (this._hasNativeControls)
+                        this.pause();
                     this._ended = true;
                     this.event("ended");
                 }
             });
+            if (this._hasNativeControls) {
+                try {
+                    this.decoder.on("error", (err) => this.onError(err));
+                }
+                catch (_a) { }
+            }
         }
         get readyState() {
             return this._loaded ? 1 : 0;
@@ -1814,28 +1879,108 @@
         set currentTime(value) {
             this.decoder.seek(value * 1000);
         }
+        get duration() {
+            return this.readNativeProperty("duration", 0);
+        }
+        get muted() {
+            return this.readNativeProperty("muted", false);
+        }
+        set muted(value) {
+            this.writeNativeProperty("muted", value);
+        }
+        get volume() {
+            return this.readNativeProperty("volume", 1);
+        }
+        set volume(value) {
+            this.writeNativeProperty("volume", value);
+        }
+        get playbackRate() {
+            return this.readNativeProperty("playbackRate", 1);
+        }
+        set playbackRate(value) {
+            this.writeNativeProperty("playbackRate", value);
+        }
+        readNativeProperty(name, fallback) {
+            var _a;
+            try {
+                const value = (_a = this.decoder) === null || _a === void 0 ? void 0 : _a[name];
+                return typeof value === typeof fallback ? value : fallback;
+            }
+            catch (_b) {
+                return fallback;
+            }
+        }
+        writeNativeProperty(name, value) {
+            try {
+                if (this.decoder && name in this.decoder)
+                    this.decoder[name] = value;
+            }
+            catch (_a) {
+            }
+        }
         onLoad(url) {
-            let src = this._source;
+            let loadId = ++this._loadId;
+            let source = this._source;
             this._ended = false;
+            this._currentTime = 0;
             this._waitFirstFrame = false;
             if (this._loaded)
                 this.decoder.stop();
             this._loaded = false;
-            if (this._source !== src)
-                return;
             this._startOption = {};
             this._startOption.source = Laya.URL.postFormatURL(Laya.URL.formatURL(url));
             if (Laya.Browser.isIOSHighPerformanceModePlus)
                 this._startOption.videoDataType = 2;
             this.decoder.start(this._startOption).then((res) => {
+                if (loadId !== this._loadId || source !== this._source || this.destroyed)
+                    return;
                 this.setLoaded(res.width, res.height, true);
-                if (!this._playing)
+                if (loadId !== this._loadId || source !== this._source || this.destroyed)
+                    return;
+                if (!this._playing) {
                     this._waitFirstFrame = true;
+                    if (this._hasNativeControls)
+                        this.render(true);
+                }
             }).catch((err) => {
-                console.warn("MgVideoTexture: " + err.message);
+                if (loadId === this._loadId && source === this._source && !this.destroyed)
+                    this.onError(err);
             });
         }
+        onError(err) {
+            if (this.destroyed)
+                return;
+            this.pause();
+            console.warn("NativeVideoTexture: " + Laya.getErrorMsg(err));
+            this.event("error", err);
+        }
+        async restart() {
+            const loadId = ++this._loadId;
+            const source = this._source;
+            const options = this._startOption;
+            const isCurrent = () => loadId === this._loadId && source === this._source && !this.destroyed;
+            try {
+                await this.decoder.stop();
+                if (!isCurrent())
+                    return;
+                await this.decoder.start(options);
+                if (!isCurrent())
+                    return;
+                this._currentTime = 0;
+                if (this._hasNativeControls)
+                    this.decoder.wait(!this._playing);
+            }
+            catch (err) {
+                if (isCurrent())
+                    this.onError(err);
+            }
+        }
         onPlay() {
+            if (this._ended && this._hasNativeControls) {
+                this._ended = false;
+                this.restart();
+                return;
+            }
             this.decoder.wait(false);
         }
         onPause() {
@@ -1849,6 +1994,7 @@
             return true;
         }
         onDestroy() {
+            ++this._loadId;
             this.decoder.remove();
         }
     }

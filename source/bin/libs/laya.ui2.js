@@ -1496,7 +1496,6 @@
             this.setTexture(this._tex);
         }
         createCmd() {
-            var _a;
             let drawClass;
             if (this._meshFactory)
                 drawClass = Laya.DrawTrianglesCmd;
@@ -1505,11 +1504,6 @@
             else
                 drawClass = Laya.DrawTextureCmd;
             if (this._drawCmd && this._drawCmd.cmdID === drawClass.ID) {
-                let oldTexture = this._drawCmd.texture;
-                if (oldTexture !== this._tex) {
-                    oldTexture === null || oldTexture === void 0 ? void 0 : oldTexture._removeReference();
-                    (_a = this._tex) === null || _a === void 0 ? void 0 : _a._addReference();
-                }
                 this._drawCmd.texture = this._tex;
                 if (drawClass === Laya.DrawTrianglesCmd)
                     this._drawCmd.mesh = this._meshFactory;
@@ -3484,7 +3478,6 @@
             this.textIns.padding.fill(2);
             this.textIns._onPostLayout = () => this._onPostLayout();
             this.textIns._onTranslate = Translations.translate;
-            this.textIns.on(Laya.Event.LINK, (href) => this.event(Laya.Event.LINK, href));
             this.addChild(this.textIns);
         }
         get textWidth() {
@@ -4689,9 +4682,14 @@
             return this._defaultRes;
         }
         set defaultRes(value) {
+            var _a;
+            (_a = this._defaultRes) === null || _a === void 0 ? void 0 : _a._removeReference();
             this._defaultRes = value;
-            if (value && !value.url)
-                value.url = "data:" + idCounter++;
+            if (value) {
+                value._addReference();
+                if (!value.url)
+                    value.url = "data:" + idCounter++;
+            }
         }
         get defaultRuntime() {
             return this._defaultRuntime;
@@ -6575,6 +6573,7 @@
             this._pool = new WidgetPool();
         }
         destroy() {
+            this.itemTemplate = null;
             this._pool.clear();
             super.destroy();
         }
@@ -6737,6 +6736,18 @@
         }
         set frame(value) {
             this.comp.frame = value;
+        }
+        get rangeStart() {
+            return this.comp.rangeStart;
+        }
+        set rangeStart(value) {
+            this.comp.rangeStart = value;
+        }
+        get rangeEnd() {
+            return this.comp.rangeEnd;
+        }
+        set rangeEnd(value) {
+            this.comp.rangeEnd = value;
         }
         get isPlaying() {
             return this.comp.isPlaying;

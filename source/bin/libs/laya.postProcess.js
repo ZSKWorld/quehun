@@ -851,6 +851,9 @@
     var CompositeFS = "#define SHADER_NAME CompositeFS\n#include \"Color.glsl\";\nvarying vec2 v_Texcoord0;void main(){vec2 uv=v_Texcoord0;vec3 baseColor=texture2D(u_MainTex,uv).rgb;\n#ifdef Gamma_u_MainTex\nbaseColor=gammaToLinear(baseColor);\n#endif\nvec4 samplevalue=texture2D(u_BlurCoCTex,uv);vec3 farColor=samplevalue.rgb;float coc=texture2D(u_FullCoCTex,uv).r;vec3 dstColor=vec3(0.0);float dstAlpha=1.0;float blend=sqrt(coc*3.14*2.0);dstColor=farColor*clamp(blend,0.0,1.0);dstAlpha=clamp(1.0-blend,0.0,1.0);gl_FragColor=vec4(baseColor*dstAlpha+dstColor,1.0);gl_FragColor=outputTransform(gl_FragColor);}";
 
     class GaussianDoF extends Laya.PostProcessEffect {
+        get renderBeforeTAA() {
+            return true;
+        }
         static init() {
             GaussianDoF.SOURCESIZE = Laya.Shader3D.propertyNameToID("u_SourceSize");
             GaussianDoF.COCPARAMS = Laya.Shader3D.propertyNameToID("u_CoCParams");
@@ -928,7 +931,7 @@
             return this._cocParams.z;
         }
         set maxRadius(value) {
-            this._cocParams.z = Math.min(value, 2);
+            this._cocParams.z = Number.isNaN(value) ? 0 : Math.max(0, Math.min(value, 2));
             this._shaderData.setVector3(GaussianDoF.COCPARAMS, this._cocParams);
         }
         _setupShaderValue(context) {
@@ -1389,6 +1392,57 @@
     }
     Laya.Loader.registerLoader(["lensflare"], LensFlareSettingsLoader);
 
+    class MaterialPostProcessEffect extends Laya.PostProcessEffect {
+        constructor() {
+            super();
+            this._material = null;
+            this._postProcess = null;
+            this._singleton = false;
+        }
+        get material() {
+            return this._material;
+        }
+        set material(value) {
+            var _a, _b;
+            if (this._material === value)
+                return;
+            if (this._postProcess)
+                (_a = this._material) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._material = value;
+            if (this._postProcess)
+                (_b = this._material) === null || _b === void 0 ? void 0 : _b._addReference();
+        }
+        effectInit(postprocess) {
+            var _a, _b;
+            if (this._postProcess === postprocess)
+                return;
+            if (this._postProcess)
+                (_a = this._material) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._postProcess = postprocess;
+            (_b = this._material) === null || _b === void 0 ? void 0 : _b._addReference();
+        }
+        release(postprocess) {
+            var _a;
+            if (this._postProcess !== postprocess)
+                return;
+            (_a = this._material) === null || _a === void 0 ? void 0 : _a._removeReference();
+            this._postProcess = null;
+        }
+        render(context) {
+            var _a;
+            const material = this._material;
+            const shader = material && !material.destroyed ? material.shader : null;
+            if (!shader || shader.shaderType !== Laya.ShaderFeatureType.PostProcess) {
+                context.command.blitScreenTriangle(context.indirectTarget, context.destination);
+                return;
+            }
+            const scene = (_a = context.camera) === null || _a === void 0 ? void 0 : _a.scene;
+            if (scene)
+                material.shaderData.setNumber(Laya.Scene3D.TIME, scene._shaderValues.getNumber(Laya.Scene3D.TIME));
+            context.command.blitScreenTriangle(context.indirectTarget, context.destination, null, shader, material.shaderData);
+        }
+    }
+
     var FragAO = "#define SHADER_NAME OcclusionEstimationFS\n#include \"DepthNormalUtil.glsl\";\n#include \"AmbientOcclusion.glsl\";\n#define FIX_SAMPLING_PATTERN\nfloat CheckPerspective(float x){return mix(x,1.0,0.0);}vec3 ReconstructViewPos(vec2 uv,float depth,vec2 p11_22,vec2 p13_31){return vec3((uv*2.0-1.0-p13_31)/p11_22*CheckPerspective(depth),depth);}float UVRandom(float u,float v){float f=dot(vec2(12.9898,78.233),vec2(u,v));return fract(43758.5453*sin(f));}vec2 CosSin(float theta){float sn=sin(theta);float cs=cos(theta);return vec2(cs,sn);}float GradientNoise(vec2 uv){uv=floor(uv*u_MainTex_TexelSize.zw);float f=dot(vec2(0.06711056,0.00583715),uv);return fract(52.9829189*fract(f));}vec3 PickSamplePoint(vec2 uv,float index){\n#if defined(FIX_SAMPLING_PATTERN)\nfloat gn=GradientNoise(uv*DOWNSAMPLE);float u=fract(UVRandom(0.0,index+uv.x*1e-10)+gn)*2.0-1.0;float theta=(UVRandom(1.0,index+uv.x*1e-10)+gn)*TWO_PI;\n#else\nfloat u=UVRandom(uv.x+u_PlugTime.x,uv.y+index)*2.0-1.0;float theta=UVRandom(-uv.x-u_PlugTime.x,uv.y+index)*TWO_PI;\n#endif\nvec3 v=vec3(CosSin(theta)*sqrt(1.0-u*u),u);float l=sqrt((index+1.0)/float(SAMPLE_COUNT))*RADIUS;return v*l;}void main(){vec2 uv=v_Texcoord0;mat3 proj=mat3(u_Projection);vec2 p11_22=vec2(u_Projection[0][0],u_Projection[1][1]);vec2 p13_31=vec2(u_Projection[2][0],u_Projection[2][1]);vec3 norm_o;float depth_o=SampleDepthNormal(uv,norm_o);vec3 vpos_o=ReconstructViewPos(uv,depth_o,p11_22,p13_31);float ao=0.0;for(int s=0;s<int(SAMPLE_COUNT);s++){float s_float=float(s);vec3 v_s1=PickSamplePoint(uv,s_float);v_s1=faceforward(v_s1,-norm_o,v_s1);vec3 vpos_s1=vpos_o+v_s1;vec3 spos_s1=proj*vpos_s1;vec2 uv_s1_01=(spos_s1.xy/CheckPerspective(vpos_s1.z)+1.0)*0.5;float depth_s1=SampleDepth(uv_s1_01);vec3 vpos_s2=ReconstructViewPos(uv_s1_01,depth_s1,p11_22,p13_31);vec3 v_s2=vpos_s2-vpos_o;float a1=max(dot(v_s2,norm_o)-kBeta*depth_o,0.0);float a2=dot(v_s2,v_s2)+EPSILON;ao+=a1/a2;}ao*=RADIUS;ao=PositivePow(ao*INTENSITY/float(SAMPLE_COUNT),kContrast);gl_FragColor=PackAONormal(ao,norm_o);}";
 
     var AoBlurHorizontal = "#define SHADER_NAME AOBlurHorizontal\n#define BLUR_HIGH_QUALITY 0\nvarying vec2 v_Texcoord0;vec3 GetPackedNormal(vec4 p){return p.gba*2.0-1.0;}float CompareNormal(vec3 d1,vec3 d2){return smoothstep(0.8,1.0,dot(d1,d2));}float GetPackedAO(vec4 p){return p.r;}vec4 PackAONormal(float ao,vec3 normal){return vec4(ao,normal*0.5+0.5);}void main(){vec2 delta=vec2(u_MainTex_TexelSize.x*2.0*u_Delty.x,u_Delty.y*u_MainTex_TexelSize.y*2.0);vec2 uv=v_Texcoord0;vec2 uvtran=uv;vec4 p0=texture2D(u_MainTex,uv);uvtran=uv-delta;vec4 p1a=texture2D(u_MainTex,uvtran);uvtran=uv+delta;vec4 p1b=texture2D(u_MainTex,uvtran);uvtran=uv-delta*2.0;vec4 p2a=texture2D(u_MainTex,uvtran);uvtran=uv+delta*2.0;vec4 p2b=texture2D(u_MainTex,uvtran);uvtran=uv-delta*3.2307692308;vec4 p3a=texture2D(u_MainTex,uvtran);;uvtran=uv+delta*3.2307692308;vec4 p3b=texture2D(u_MainTex,uvtran);;vec3 n0=GetPackedNormal(p0);float w0=0.37004405286;float w1a=CompareNormal(n0,GetPackedNormal(p1a))*0.31718061674;float w1b=CompareNormal(n0,GetPackedNormal(p1b))*0.31718061674;float w2a=CompareNormal(n0,GetPackedNormal(p2a))*0.19823788546;float w2b=CompareNormal(n0,GetPackedNormal(p2b))*0.19823788546;float w3a=CompareNormal(n0,GetPackedNormal(p3a))*0.11453744493;float w3b=CompareNormal(n0,GetPackedNormal(p3b))*0.11453744493;float s;s=GetPackedAO(p0)*w0;s+=GetPackedAO(p1a)*w1a;s+=GetPackedAO(p1b)*w1b;s+=GetPackedAO(p2a)*w2a;s+=GetPackedAO(p2b)*w2b;s+=GetPackedAO(p3a)*w3a;s+=GetPackedAO(p3b)*w3b;s/=w0+w1a+w1b+w2a+w2b+w3a+w3b;gl_FragColor=PackAONormal(s,n0);}";
@@ -1545,14 +1599,185 @@
     ScalableAO.deltyVector = new Laya.Vector2(0.0, 1.0);
     Laya.Laya.addInitCallback(() => ScalableAO.init());
 
+    var TemporalAAVS = "#define SHADER_NAME TemporalAAVS\nvoid main(){gl_Position=vec4(u_OffsetScale.x*2.0-1.0+(a_PositionTexcoord.x+1.0)*u_OffsetScale.z,1.0-u_OffsetScale.y*2.0-(-a_PositionTexcoord.y+1.0)*u_OffsetScale.w,0.0,1.0);}";
+
+    var TemporalAAFS = "#define SHADER_NAME TemporalAAFS\n#include \"Color.glsl\";\nvec2 taaClampUv(vec2 uv){vec2 halfTexel=0.5*u_MainTex_TexelSize.xy;return clamp(uv,halfTexel,vec2(1.0)-halfTexel);}vec4 taaSampleCurrent(vec2 uv,vec2 offset){vec4 color=texture2DLodEXT(u_MainTex,taaClampUv(uv+u_MainTex_TexelSize.xy*offset),0.0);\n#ifdef Gamma_u_MainTex\ncolor=gammaToLinear(color);\n#endif\nreturn color;}vec4 taaSceneToWorking(vec4 color){\n#ifdef TAA_USE_RGB\nreturn color;\n#else\nconst float chromaBias=128.0/255.0;return vec4(dot(color.rgb,vec3(0.25,0.5,0.25)),dot(color.rgb,vec3(0.5,0.0,-0.5))+chromaBias,dot(color.rgb,vec3(-0.25,0.5,-0.25))+chromaBias,color.a);\n#endif\n}vec4 taaWorkingToScene(vec4 color){\n#ifdef TAA_USE_RGB\nreturn color;\n#else\nconst float chromaBias=128.0/255.0;float co=color.y-chromaBias;float cg=color.z-chromaBias;return vec4(color.x+co-cg,color.x+cg,color.x-co-cg,color.a);\n#endif\n}float taaLuma(vec3 color){\n#ifdef TAA_USE_RGB\nreturn dot(color,vec3(0.2126729,0.7151522,0.0721750));\n#else\nreturn color.x;\n#endif\n}vec4 taaPerceptualBlend(vec4 history,vec4 current,float currentInfluence){vec4 perceptualHistory=history/(taaLuma(history.rgb)+1.0);vec4 perceptualCurrent=current/(taaLuma(current.rgb)+1.0);vec4 perceptualResult=mix(perceptualHistory,perceptualCurrent,currentInfluence);return perceptualResult/(1.0-taaLuma(perceptualResult.rgb));}void taaAdjustColorBox(inout vec4 boxMin,inout vec4 boxMax,inout vec4 moment1,inout vec4 moment2,vec2 uv,vec2 offset){vec4 color=taaSceneToWorking(taaSampleCurrent(uv,offset));boxMin=min(color,boxMin);boxMax=max(color,boxMax);moment1+=color;moment2+=color*color;}vec4 taaFilterCurrent(vec2 uv){vec4 color=taaSampleCurrent(uv,vec2(0.0))*u_TaaFilterWeights0.x;color+=taaSampleCurrent(uv,vec2(0.0,1.0))*u_TaaFilterWeights0.y;color+=taaSampleCurrent(uv,vec2(1.0,0.0))*u_TaaFilterWeights0.z;color+=taaSampleCurrent(uv,vec2(-1.0,0.0))*u_TaaFilterWeights0.w;color+=taaSampleCurrent(uv,vec2(0.0,-1.0))*u_TaaFilterWeights1.x;color+=taaSampleCurrent(uv,vec2(-1.0,1.0))*u_TaaFilterWeights1.y;color+=taaSampleCurrent(uv,vec2(1.0,-1.0))*u_TaaFilterWeights1.z;color+=taaSampleCurrent(uv,vec2(1.0,1.0))*u_TaaFilterWeights1.w;color+=taaSampleCurrent(uv,vec2(-1.0,-1.0))*u_TaaFilterWeights2.x;return taaSceneToWorking(color);}vec4 taaSampleHistory(vec2 uv){return taaSceneToWorking(texture2DLodEXT(u_TaaHistoryTex,taaClampUv(uv),0.0));}vec4 taaSampleHistoryBicubic(vec2 uv){vec2 samplePos=uv*u_MainTex_TexelSize.zw;vec2 tc1=floor(samplePos-0.5)+0.5;vec2 f=samplePos-tc1;vec2 f2=f*f;vec2 f3=f*f2;vec2 w0=-0.5*f3+f2-0.5*f;vec2 w1=1.5*f3-2.5*f2+1.0;vec2 w2=-1.5*f3+2.0*f2+0.5*f;vec2 w3=0.5*f3-0.5*f2;vec2 w12=w1+w2;vec2 tc0=u_MainTex_TexelSize.xy*(tc1-1.0);vec2 tc3=u_MainTex_TexelSize.xy*(tc1+2.0);vec2 tc12=u_MainTex_TexelSize.xy*(tc1+w2/w12);float cw0=w12.x*w0.y;float cw1=w0.x*w12.y;float cw2=w12.x*w12.y;float cw3=w3.x*w12.y;float cw4=w12.x*w3.y;vec4 result=taaSampleHistory(vec2(tc12.x,tc0.y))*cw0;result+=taaSampleHistory(vec2(tc0.x,tc12.y))*cw1;result+=taaSampleHistory(vec2(tc12.x,tc12.y))*cw2;result+=taaSampleHistory(vec2(tc3.x,tc12.y))*cw3;result+=taaSampleHistory(vec2(tc12.x,tc3.y))*cw4;return result/(cw0+cw1+cw2+cw3+cw4);}vec4 taaClipToAabbCenter(vec4 history,vec4 boxMin,vec4 boxMax){vec4 center=0.5*(boxMax+boxMin);vec4 extents=max(0.5*(boxMax-boxMin),vec4(0.00006103515625));vec4 offset=history-center;vec3 unit=abs(offset.rgb/extents.rgb);float maxUnit=max(max(unit.x,unit.y),unit.z);return maxUnit>1.0 ? center+offset/maxUnit : history;}void taaAdjustBestDepth(inout float bestDepth,inout vec2 bestOffset,vec2 uv,vec2 offset){float depth=texture2DLodEXT(u_TaaDepthTex,taaClampUv(uv+u_MainTex_TexelSize.xy*offset),0.0).r;if(depth<bestDepth){bestDepth=depth;bestOffset=offset;}}vec2 taaGetVelocity(vec2 uv,vec2 depthOffset){if(u_TaaParams.z<0.5)return vec2(0.0);vec2 sampleUv=taaClampUv(uv+u_MainTex_TexelSize.xy*depthOffset);vec4 motion=texture2DLodEXT(u_TaaMotionTex,sampleUv,0.0);vec2 velocity=motion.xy;if(motion.a<0.5){float depth=texture2DLodEXT(u_TaaDepthTex,sampleUv,0.0).r;vec2 clipXY=(sampleUv*2.0-1.0)*vec2(1.0,u_TaaScreenYSign);vec4 world=u_TaaResolveInvViewProjection*vec4(clipXY,depth,1.0);if(abs(world.w)<0.0000001)return vec2(0.0);world/=world.w;vec4 currentClip=u_TaaResolveViewProjection*world;vec4 previousClip=u_TaaResolvePreviousViewProjection*world;if(abs(currentClip.w)<0.0000001||previousClip.w<=0.0000001)return vec2(2.0);velocity=(currentClip.xy/currentClip.w-previousClip.xy/previousClip.w)*vec2(0.5,0.5*u_TaaScreenYSign);}return-velocity;}vec4 taaResolve(vec2 uv,int clampQuality,int motionQuality,int historyQuality,int centralFiltering){vec4 colorCenter=centralFiltering>=1 ? taaFilterCurrent(uv): taaSceneToWorking(taaSampleCurrent(uv,vec2(0.0)));if(u_TaaParams.w<0.5)return max(taaWorkingToScene(colorCenter),vec4(0.0));vec4 boxMin=colorCenter;vec4 boxMax=colorCenter;vec4 moment1=colorCenter;vec4 moment2=colorCenter*colorCenter;taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(0.0,-1.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(-1.0,0.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(1.0,0.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(0.0,1.0));if(clampQuality>=1){taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(-1.0,-1.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(1.0,-1.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(-1.0,1.0));taaAdjustColorBox(boxMin,boxMax,moment1,moment2,uv,vec2(1.0,1.0));}if(clampQuality>=2){vec4 mean=moment1/9.0;vec4 stdDev=sqrt(abs(moment2/9.0-mean*mean));boxMin=max(boxMin,mean-u_TaaParams.y*stdDev);boxMax=min(boxMax,mean+u_TaaParams.y*stdDev);}vec2 bestOffset=vec2(0.0);float bestDepth=1.0;if(motionQuality>=1){taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(0.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(1.0,0.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(0.0,-1.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(-1.0,0.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(0.0,1.0));}if(motionQuality>=2){taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(-1.0,-1.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(1.0,-1.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(-1.0,1.0));taaAdjustBestDepth(bestDepth,bestOffset,uv,vec2(1.0,1.0));}vec2 velocity=taaGetVelocity(uv,bestOffset);vec2 historyUv=uv+velocity;if(any(greaterThan(abs(historyUv-0.5),vec2(0.5))))return max(taaWorkingToScene(colorCenter),vec4(0.0));vec4 history=historyQuality>=2 ? taaSampleHistoryBicubic(historyUv): taaSampleHistory(historyUv);vec4 clampedHistory=clampQuality>=3 ? taaClipToAabbCenter(history,boxMin,boxMax): clamp(history,boxMin,boxMax);float influence=u_TaaParams.x;return max(taaWorkingToScene(taaPerceptualBlend(clampedHistory,colorCenter,influence)),vec4(0.0));}void main(){vec2 uv=gl_FragCoord.xy*u_MainTex_TexelSize.xy;\n#error TAA_RESOLVE_NOT_SPECIALIZED\ngl_FragColor=outputTransform(gl_FragColor);}";
+
+    var TemporalAACopyFS = "#define SHADER_NAME TemporalAACopyFS\n#include \"Color.glsl\";\nvoid main(){vec2 uv=gl_FragCoord.xy*u_MainTex_TexelSize.xy;gl_FragColor=texture2DLodEXT(u_MainTex,uv,0.0);\n#ifdef Gamma_u_MainTex\ngl_FragColor=gammaToLinear(gl_FragColor);\n#endif\n}";
+
+    var TemporalAASharpenFS = "\n#define SHADER_NAME TemporalAARcasFS\n#include \"Color.glsl\";\nvec4 taaRcasLoad(vec2 uv,vec2 offset){vec2 halfTexel=0.5*u_MainTex_TexelSize.xy;vec4 color=texture2DLodEXT(u_MainTex,clamp(uv+offset*u_MainTex_TexelSize.xy,halfTexel,vec2(1.0)-halfTexel),0.0);\n#ifdef Gamma_u_MainTex\ncolor=gammaToLinear(color);\n#endif\nreturn color;}void main(){vec2 uv=gl_FragCoord.xy*u_MainTex_TexelSize.xy;vec4 center=taaRcasLoad(uv,vec2(0.0));if(u_TaaRcasSharpness<=0.0){gl_FragColor=outputTransform(center);return;}vec3 b=taaRcasLoad(uv,vec2(0.0,-1.0)).rgb;vec3 d=taaRcasLoad(uv,vec2(-1.0,0.0)).rgb;vec3 e=center.rgb;vec3 f=taaRcasLoad(uv,vec2(1.0,0.0)).rgb;vec3 h=taaRcasLoad(uv,vec2(0.0,1.0)).rgb;vec3 peak=max(max(max(b,d),max(e,f)),h);float range=max(1.0,max(max(peak.r,peak.g),peak.b));b/=range;d/=range;e/=range;f/=range;h/=range;vec3 mn4=min(min(b,d),min(f,h));vec3 mx4=max(max(b,d),max(f,h));vec3 hitMin=min(mn4,e)/max(4.0*mx4,vec3(0.000001));vec3 hitMaxDenominator=4.0*mn4-4.0;hitMaxDenominator=max(abs(hitMaxDenominator),vec3(0.000001))*mix(vec3(-1.0),vec3(1.0),step(vec3(0.0000001),hitMaxDenominator));vec3 hitMax=(vec3(1.0)-max(mx4,e))/hitMaxDenominator;vec3 lobes=max(-hitMin,hitMax);float lobe=max(-0.1875,min(max(max(lobes.r,lobes.g),lobes.b),0.0))*u_TaaRcasSharpness;vec3 color=((lobe*(b+d+f+h)+e)/(4.0*lobe+1.0))*range;gl_FragColor=outputTransform(vec4(color,center.a));}";
+
+    exports.TemporalAAQuality = void 0;
+    (function (TemporalAAQuality) {
+        TemporalAAQuality[TemporalAAQuality["VeryLow"] = 0] = "VeryLow";
+        TemporalAAQuality[TemporalAAQuality["Low"] = 1] = "Low";
+        TemporalAAQuality[TemporalAAQuality["Medium"] = 2] = "Medium";
+        TemporalAAQuality[TemporalAAQuality["High"] = 3] = "High";
+        TemporalAAQuality[TemporalAAQuality["VeryHigh"] = 4] = "VeryHigh";
+    })(exports.TemporalAAQuality || (exports.TemporalAAQuality = {}));
+    class TemporalAAEffect extends Laya.PostProcessEffect {
+        constructor() {
+            super(...arguments);
+            this._paramsValue = new Laya.Vector4();
+            this._weights = new Array(9);
+            this._weights0 = new Laya.Vector4();
+            this._weights1 = new Laya.Vector4();
+            this._weights2 = new Laya.Vector4();
+        }
+        static init() {
+            if (TemporalAAEffect._initialized)
+                return;
+            TemporalAAEffect._initialized = true;
+            TemporalAAEffect._historyTexture = Laya.Shader3D.propertyNameToID("u_TaaHistoryTex");
+            TemporalAAEffect._motionTexture = Laya.Shader3D.propertyNameToID("u_TaaMotionTex");
+            TemporalAAEffect._depthTexture = Laya.Shader3D.propertyNameToID("u_TaaDepthTex");
+            TemporalAAEffect._params = Laya.Shader3D.propertyNameToID("u_TaaParams");
+            TemporalAAEffect._screenYSign = Laya.Shader3D.propertyNameToID("u_TaaScreenYSign");
+            TemporalAAEffect._inverseViewProjection = Laya.Shader3D.propertyNameToID("u_TaaResolveInvViewProjection");
+            TemporalAAEffect._viewProjection = Laya.Shader3D.propertyNameToID("u_TaaResolveViewProjection");
+            TemporalAAEffect._previousViewProjection = Laya.Shader3D.propertyNameToID("u_TaaResolvePreviousViewProjection");
+            TemporalAAEffect._filterWeights0 = Laya.Shader3D.propertyNameToID("u_TaaFilterWeights0");
+            TemporalAAEffect._filterWeights1 = Laya.Shader3D.propertyNameToID("u_TaaFilterWeights1");
+            TemporalAAEffect._filterWeights2 = Laya.Shader3D.propertyNameToID("u_TaaFilterWeights2");
+            TemporalAAEffect._rcasSharpness = Laya.Shader3D.propertyNameToID("u_TaaRcasSharpness");
+            TemporalAAEffect._lowPrecision = Laya.Shader3D.getDefineByName("TAA_LOW_PRECISION_SOURCE");
+            const attributeMap = {
+                a_PositionTexcoord: [Laya.VertexMesh.MESH_POSITION0, Laya.ShaderDataType.Vector4]
+            };
+            const uniformMap = {
+                u_MainTex: Laya.ShaderDataType.Texture2D,
+                u_MainTex_TexelSize: Laya.ShaderDataType.Vector4,
+                u_OffsetScale: Laya.ShaderDataType.Vector4,
+                u_TaaHistoryTex: Laya.ShaderDataType.Texture2D,
+                u_TaaMotionTex: Laya.ShaderDataType.Texture2D,
+                u_TaaDepthTex: Laya.ShaderDataType.Texture2D,
+                u_TaaParams: Laya.ShaderDataType.Vector4,
+                u_TaaScreenYSign: Laya.ShaderDataType.Float,
+                u_TaaResolveInvViewProjection: Laya.ShaderDataType.Matrix4x4,
+                u_TaaResolveViewProjection: Laya.ShaderDataType.Matrix4x4,
+                u_TaaResolvePreviousViewProjection: Laya.ShaderDataType.Matrix4x4,
+                u_TaaFilterWeights0: Laya.ShaderDataType.Vector4,
+                u_TaaFilterWeights1: Laya.ShaderDataType.Vector4,
+                u_TaaFilterWeights2: Laya.ShaderDataType.Vector4,
+                u_TaaRcasSharpness: Laya.ShaderDataType.Float
+            };
+            const shader = Laya.Shader3D.add("TemporalAA");
+            shader.shaderType = Laya.ShaderFeatureType.PostProcess;
+            const qualityArguments = ["0, 0, 0, 0", "0, 1, 1, 0", "2, 2, 1, 0", "2, 2, 2, 0"];
+            for (let quality = 0; quality <= exports.TemporalAAQuality.VeryHigh; quality++) {
+                let resolve;
+                if (quality === exports.TemporalAAQuality.VeryHigh) {
+                    resolve = "#ifdef TAA_LOW_PRECISION_SOURCE\n    gl_FragColor = taaResolve(uv, 2, 2, 2, 1);\n#else\n    gl_FragColor = taaResolve(uv, 3, 2, 2, 1);\n#endif";
+                }
+                else {
+                    resolve = "gl_FragColor = taaResolve(uv, " + qualityArguments[quality] + ");";
+                }
+                const rgbDefine = quality <= exports.TemporalAAQuality.Low ? "#define TAA_USE_RGB\n" : "";
+                TemporalAAEffect._addPass(shader, attributeMap, uniformMap, rgbDefine + TemporalAAFS.replace("#error TAA_RESOLVE_NOT_SPECIALIZED", resolve));
+            }
+            TemporalAAEffect._addPass(shader, attributeMap, uniformMap, TemporalAACopyFS);
+            TemporalAAEffect._addPass(shader, attributeMap, uniformMap, TemporalAASharpenFS);
+        }
+        static _addPass(shader, attributeMap, uniformMap, fragment) {
+            const subShader = new Laya.SubShader(attributeMap, uniformMap);
+            shader.addSubShader(subShader);
+            const pass = subShader.addShaderPass(TemporalAAVS, fragment);
+            pass.statefirst = true;
+            pass.renderState.depthTest = Laya.RenderState.DEPTHTEST_ALWAYS;
+            pass.renderState.depthWrite = false;
+            pass.renderState.cull = Laya.RenderState.CULL_NONE;
+            pass.renderState.blend = Laya.RenderState.BLEND_DISABLE;
+        }
+        getCameraDepthTextureModeFlag() {
+            return Laya.DepthTextureMode.Depth;
+        }
+        _setFilterWeights(shaderData, jitter) {
+            let sum = 0;
+            for (let i = 0; i < 9; i++) {
+                const offset = TemporalAAEffect._filterOffsets[i];
+                const x = offset[0] - jitter.x;
+                const y = offset[1] - jitter.y;
+                const weight = Math.exp((-0.5 / 0.22) * (x * x + y * y));
+                this._weights[i] = weight;
+                sum += weight;
+            }
+            for (let i = 0; i < 9; i++)
+                this._weights[i] /= sum;
+            const weights = this._weights;
+            this._weights0.setValue(weights[0], weights[1], weights[2], weights[3]);
+            this._weights1.setValue(weights[4], weights[5], weights[6], weights[7]);
+            this._weights2.setValue(weights[8], 0, 0, 0);
+            shaderData.setVector(TemporalAAEffect._filterWeights0, this._weights0);
+            shaderData.setVector(TemporalAAEffect._filterWeights1, this._weights1);
+            shaderData.setVector(TemporalAAEffect._filterWeights2, this._weights2);
+        }
+        _renderTAA(context) {
+            const camera = context.camera;
+            const cameraData = camera._taa;
+            const state = cameraData === null || cameraData === void 0 ? void 0 : cameraData.preparedHistory;
+            if (!state || !camera.depthTexture || camera.depthTexture.destroyed || !context.indirectTarget || !context.destination)
+                return;
+            TemporalAAEffect.init();
+            this._shader || (this._shader = Laya.Shader3D.find("TemporalAA"));
+            const shaderData = state.resolveData;
+            const isNewFrame = state.frameIndex !== state.preparedFrameIndex;
+            const useHistory = state.valid && isNewFrame && cameraData.newFrame;
+            this._paramsValue.setValue(useHistory ? 0.1 : 1, 0.9, useHistory ? 1 : 0, useHistory ? 1 : 0);
+            shaderData.setVector(TemporalAAEffect._params, this._paramsValue);
+            shaderData.setNumber(TemporalAAEffect._screenYSign, Laya.LayaGL.renderEngine._screenInvertY ? -1 : 1);
+            shaderData.setTexture(TemporalAAEffect._historyTexture, state.texture);
+            shaderData.setTexture(TemporalAAEffect._motionTexture, camera.getOpaqueAuxiliaryTexture(3));
+            shaderData.setTexture(TemporalAAEffect._depthTexture, camera.depthTexture);
+            shaderData.setMatrix4x4(TemporalAAEffect._inverseViewProjection, cameraData.invViewProjection);
+            shaderData.setMatrix4x4(TemporalAAEffect._viewProjection, cameraData.viewProjection);
+            shaderData.setMatrix4x4(TemporalAAEffect._previousViewProjection, cameraData.previousViewProjection);
+            if (state.texture.colorFormat === Laya.RenderTargetFormat.R8G8B8 || state.texture.colorFormat === Laya.RenderTargetFormat.R8G8B8A8)
+                shaderData.addDefine(TemporalAAEffect._lowPrecision);
+            else
+                shaderData.removeDefine(TemporalAAEffect._lowPrecision);
+            if (cameraData.quality === exports.TemporalAAQuality.VeryHigh)
+                this._setFilterWeights(shaderData, cameraData.jitter);
+            context.command.blitScreenTriangle(context.indirectTarget, context.destination, null, this._shader, shaderData, cameraData.quality, true);
+            if (isNewFrame || !state.valid) {
+                context.command.blitScreenTriangle(context.destination, state.texture, null, this._shader, state.copyData, TemporalAAEffect._copyPass, true);
+                state.pendingCopy = true;
+            }
+        }
+        _renderSharpen(context) {
+            const cameraData = context.camera._taa;
+            const state = cameraData === null || cameraData === void 0 ? void 0 : cameraData.preparedHistory;
+            if (!state || !context.indirectTarget || !context.destination)
+                return;
+            TemporalAAEffect.init();
+            this._shader || (this._shader = Laya.Shader3D.find("TemporalAA"));
+            const sharpening = cameraData.sharpening;
+            const sharpness = Math.pow(2, -(1 - sharpening) * 2.5);
+            state.sharpenData.setNumber(TemporalAAEffect._rcasSharpness, sharpening > 0 ? sharpness : 0);
+            context.command.blitScreenTriangle(context.indirectTarget, context.destination, null, this._shader, state.sharpenData, TemporalAAEffect._sharpenPass, true);
+        }
+        render(context) {
+            this._renderTAA(context);
+        }
+    }
+    TemporalAAEffect._initialized = false;
+    TemporalAAEffect._copyPass = 5;
+    TemporalAAEffect._sharpenPass = 6;
+    TemporalAAEffect._filterOffsets = [
+        [0, 0], [0, 1], [1, 0], [-1, 0], [0, -1],
+        [-1, 1], [1, -1], [1, 1], [-1, -1]
+    ];
+    Laya.Laya.addInitCallback(() => TemporalAAEffect.init());
+
     let c = Laya.ClassUtils.regClass;
     c("BloomEffect", BloomEffect);
     c("GaussianDoF", GaussianDoF);
     c("ScalableAO", ScalableAO);
     c("ColorGradEffect", ColorGradEffect);
+    c("TemporalAAEffect", TemporalAAEffect);
     c("LensFlareEffect", LensFlareEffect);
     c("LensFlareElement", LensFlareElement);
     c("LensFlareData", LensFlareData);
+    c("MaterialPostProcessEffect", MaterialPostProcessEffect);
 
     exports.ACESShaderLib = ACESShaderLib;
     exports.BloomEffect = BloomEffect;
@@ -1565,7 +1790,9 @@
     exports.LensFlareElementGeomtry = LensFlareElementGeomtry;
     exports.LensFlareSettingsLoader = LensFlareSettingsLoader;
     exports.LensFlareShaderInit = LensFlareShaderInit;
+    exports.MaterialPostProcessEffect = MaterialPostProcessEffect;
     exports.ScalableAO = ScalableAO;
+    exports.TemporalAAEffect = TemporalAAEffect;
 
 })(window.Laya = window.Laya || {}, Laya);
 //# sourceMappingURL=laya.postProcess.js.map

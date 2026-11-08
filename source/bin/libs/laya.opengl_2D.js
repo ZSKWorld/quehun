@@ -2171,7 +2171,7 @@
                     break;
                 case Laya.ShaderDataType.Texture2D:
                     this._value = this.data_texture = value;
-                    this._nativeObj.setTexture2D(this.data_texture._texture._nativeObj);
+                    this._nativeObj.setTexture2D(this.data_texture ? this.data_texture._texture._nativeObj : null);
                     break;
                 case Laya.ShaderDataType.Vector4:
                     !this.data_v4 && (this.data_v4 = new Laya.Vector4());
@@ -2829,12 +2829,38 @@
     }
 
     class GLESInternalRT {
-        constructor(nativeObj) {
+        constructor(nativeObj, owner = null) {
+            this._disposed = false;
             this._propBuf = new ArrayBuffer(7 * 4);
             this._propU32 = new Uint32Array(this._propBuf);
             this._propI32 = new Int32Array(this._propBuf);
+            if (!nativeObj)
+                throw new Error("Cannot wrap a missing OpenGLES render target.");
             this._nativeObj = nativeObj;
             this._nativeObj.bindPropertyBuffer(this._propBuf);
+            this._owner = owner;
+            if (owner) {
+                this._texturesRef = [owner._textures[0]];
+            }
+            else {
+                const formats = nativeObj.getColorFormats();
+                if (formats.length)
+                    this.colorFormats = Object.freeze(formats.map(format => format === Laya.RenderTargetFormat.None ? null : format));
+            }
+        }
+        get destroyed() {
+            var _a;
+            return this._disposed || !!((_a = this._owner) === null || _a === void 0 ? void 0 : _a.destroyed);
+        }
+        get _color0Target() {
+            if (this.destroyed)
+                return null;
+            if (!this._color0TargetRef && this.colorFormats) {
+                const target = this._nativeObj.getColor0Target();
+                if (target)
+                    this._color0TargetRef = new GLESInternalRT(target, this);
+            }
+            return this._color0TargetRef;
         }
         get _isCube() {
             return this._propI32[1] !== 0;
@@ -2886,12 +2912,14 @@
                 this._texturesRef = [];
                 let textures = this._nativeObj.getTextures();
                 textures.forEach((element) => {
-                    this._texturesRef.push(new GLESInternalTex(element));
+                    this._texturesRef.push(element ? new GLESInternalTex(element) : null);
                 });
                 return this._texturesRef;
             }
         }
         get _depthTexture() {
+            if (this._owner)
+                return this._owner._depthTexture;
             if (this._depthTextureRef) {
                 return this._depthTextureRef;
             }
@@ -2903,7 +2931,17 @@
             }
         }
         dispose() {
+            if (this._disposed)
+                return;
+            this._disposed = true;
             this._nativeObj.dispose();
+            this._texturesRef = null;
+            this._depthTextureRef = null;
+            if (this._color0TargetRef) {
+                this._color0TargetRef._disposed = true;
+                this._color0TargetRef._texturesRef = null;
+                this._color0TargetRef._depthTextureRef = null;
+            }
         }
     }
 
@@ -2991,13 +3029,33 @@
             return this._native.setTextureCompareMode(texture._nativeObj, compareMode);
         }
         bindRenderTarget(renderTarget, faceIndex = 0) {
-            this._native.bindRenderTarget(renderTarget._nativeObj, faceIndex);
+            var _a;
+            if (renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.destroyed)
+                throw new Error("Cannot bind a disposed OpenGLES render target.");
+            if ((renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget.colorFormats) && faceIndex !== 0)
+                throw new RangeError("OpenGLES MRT only supports 2D attachments at mip level 0.");
+            this._native.bindRenderTarget((_a = renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget._nativeObj) !== null && _a !== void 0 ? _a : null, faceIndex);
         }
         bindoutScreenTarget() {
             this._native.bindoutScreenTarget();
         }
         unbindRenderTarget(renderTarget) {
-            this._native.unbindRenderTarget(renderTarget._nativeObj);
+            var _a;
+            this._native.unbindRenderTarget((_a = renderTarget === null || renderTarget === void 0 ? void 0 : renderTarget._nativeObj) !== null && _a !== void 0 ? _a : null);
+        }
+        createMultiRenderTargetInternal(width, height, colorFormats, depthStencilFormat, color0SRGB = false) {
+            if (!Number.isInteger(width) || !Number.isInteger(height) || width <= 0 || height <= 0 || width > 0x7fffffff || height > 0x7fffffff)
+                throw new RangeError("MRT dimensions must be positive integers.");
+            if (!Array.isArray(colorFormats) || !colorFormats.length || colorFormats[0] == null)
+                throw new RangeError("MRT requires color attachment 0 and a non-empty color layout.");
+            const formats = Array.from(colorFormats, format => {
+                if (format == null)
+                    return Laya.RenderTargetFormat.None;
+                if (!Number.isInteger(format) || format === Laya.RenderTargetFormat.None)
+                    throw new TypeError("MRT color formats must be valid format values or null.");
+                return format;
+            });
+            return new GLESInternalRT(this._native.createMultiRenderTargetInternal(width, height, formats, depthStencilFormat, color0SRGB));
         }
         createRenderTargetInternal(width, height, colorFormat, depthStencilFormat, generateMipmap, sRGB, multiSamples, storage) {
             return new GLESInternalRT(this._native.createRenderTargetInternal(width, height, colorFormat, depthStencilFormat ? depthStencilFormat : Laya.RenderTargetFormat.None, generateMipmap, sRGB, multiSamples));
@@ -3009,13 +3067,45 @@
             return new GLESInternalTex(this._native.createRenderTextureCubeInternal(dimension, size, format, generateMipmap, sRGB));
         }
         createRenderTargetDepthTexture(renderTarget, dimension, width, height) {
-            return new GLESInternalTex(this._native.createRenderTargetDepthTexture(renderTarget._nativeObj, dimension, width, height));
+            if (!renderTarget || renderTarget.destroyed || renderTarget._owner)
+                throw new Error("Cannot replace depth storage on a disposed or borrowed OpenGLES render target.");
+            if (renderTarget.colorFormats && (dimension !== Laya.TextureDimension.Tex2D ||
+                width !== renderTarget._textures[0].width || height !== renderTarget._textures[0].height))
+                throw new RangeError("MRT depth dimensions must match the 2D color attachments.");
+            const nativeTexture = this._native.createRenderTargetDepthTexture(renderTarget._nativeObj, dimension, width, height);
+            const texture = nativeTexture ? new GLESInternalTex(nativeTexture) : null;
+            renderTarget._depthTextureRef = texture;
+            return texture;
         }
         readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out) {
             return this._native.readRenderTargetPixelData(renderTarget._nativeObj, xOffset, yOffset, width, height, out);
         }
-        readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out) {
-            return Promise.resolve(this.readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out));
+        async readRenderTargetPixelDataAsync(renderTarget, xOffset, yOffset, width, height, out, attachmentIndex = 0) {
+            if (!Number.isInteger(attachmentIndex) || attachmentIndex < 0)
+                throw new RangeError("Color attachment index must be a non-negative integer.");
+            if (!renderTarget || renderTarget.destroyed)
+                throw new Error("Cannot read a missing or disposed OpenGLES render target.");
+            if (!renderTarget.colorFormats) {
+                if (attachmentIndex !== 0)
+                    throw new RangeError("An ordinary OpenGLES render target only has color attachment 0.");
+                return this.readRenderTargetPixelData(renderTarget, xOffset, yOffset, width, height, out);
+            }
+            const format = renderTarget.colorFormats[attachmentIndex];
+            if (attachmentIndex >= renderTarget.colorFormats.length || format == null)
+                throw new RangeError("MRT color attachment is empty or out of range.");
+            if (!Number.isInteger(xOffset) || !Number.isInteger(yOffset) || !Number.isInteger(width) || !Number.isInteger(height))
+                throw new RangeError("MRT readback rectangle must use integer coordinates and dimensions.");
+            const texture = renderTarget._textures[attachmentIndex];
+            if (xOffset < 0 || yOffset < 0 || width <= 0 || height <= 0 ||
+                width > texture.width || height > texture.height || xOffset > texture.width - width || yOffset > texture.height - height)
+                throw new RangeError("MRT readback rectangle is outside the color attachment.");
+            const bytePixels = format === Laya.RenderTargetFormat.R8G8B8 || format === Laya.RenderTargetFormat.R8G8B8A8;
+            if (bytePixels ? !(out instanceof Uint8Array || out instanceof Uint8ClampedArray) : !(out instanceof Float32Array))
+                throw new TypeError("MRT readback requires a byte view for byte attachments and Float32Array for floating-point attachments.");
+            const byteLength = width * height * 4 * (bytePixels ? 1 : 4);
+            if (out.byteLength < byteLength)
+                throw new RangeError(`MRT readback output requires at least ${byteLength} bytes.`);
+            return this._native.readMultiRenderTargetPixelData(renderTarget._nativeObj, xOffset, yOffset, width, height, out, attachmentIndex);
         }
         updateVideoTexture(texture, video, premultiplyAlpha, invertY) {
             if (texture && video) {
@@ -3103,6 +3193,145 @@
         }
     }
 
+    class GLESGeometryUpdateBatch {
+        constructor() {
+            this.buffers = [];
+            this.sources = [];
+            this.geometries = new Set();
+            this.nativeGeometries = [];
+            this.uploadRanges = new Int32Array(256);
+            this.drawRanges = new Int32Array(512);
+            this.renderNodes = [];
+            this.renderElements = [];
+            this.renderElementCounts = new Uint32Array(256);
+        }
+        static completeCameraRenderUpdateBatch(nodes, cameraMask) {
+            var _a;
+            const complete = (_a = window.conchRTBaseRenderNode) === null || _a === void 0 ? void 0 : _a.completeCameraRenderUpdateBatch;
+            if (!complete || !Number.isInteger(cameraMask) || cameraMask < 0 || cameraMask > 0xffffffff)
+                return false;
+            if (!nodes.length)
+                return true;
+            if (!complete(nodes.map(node => node._nativeObj), cameraMask))
+                return false;
+            this.diagnostics.cameraUpdateCompletions++;
+            this.diagnostics.cameraUpdateNodes += nodes.length;
+            return true;
+        }
+        static begin() {
+            var _a, _b;
+            if (typeof ((_a = window.conchGLESVertexBuffer) === null || _a === void 0 ? void 0 : _a.submitGeometryBatch) !== "function")
+                return null;
+            const previous = this.active;
+            previous === null || previous === void 0 ? void 0 : previous.flush();
+            const batch = (_b = this.pool.pop()) !== null && _b !== void 0 ? _b : new GLESGeometryUpdateBatch();
+            this.active = batch;
+            let finished = false;
+            return () => {
+                if (finished)
+                    return;
+                if (this.active !== batch)
+                    throw new Error("Geometry update scopes must finish in order");
+                finished = true;
+                try {
+                    batch.flush();
+                }
+                finally {
+                    this.active = previous;
+                    this.pool.push(batch);
+                }
+            };
+        }
+        upload(buffer, source, offset, start, bytes) {
+            const at = this.buffers.length * 4;
+            if (bytes === Number.MAX_SAFE_INTEGER)
+                bytes = source.byteLength;
+            if (![offset, start, bytes].every(value => Number.isSafeInteger(value) && value >= 0 && value <= 0x7fffffff)
+                || start + bytes > source.byteLength)
+                throw new RangeError("Invalid geometry upload range");
+            if (at + 4 > this.uploadRanges.length) {
+                const grown = new Int32Array(this.uploadRanges.length * 2);
+                grown.set(this.uploadRanges);
+                this.uploadRanges = grown;
+            }
+            this.uploadRanges.set([offset, start, bytes, 0], at);
+            this.buffers.push(buffer);
+            this.sources.push(source);
+        }
+        geometry(value) { this.geometries.add(value); }
+        bindRenderElements(node, elements) {
+            var _a;
+            if (typeof ((_a = window.conchRTBaseRenderNode) === null || _a === void 0 ? void 0 : _a.setRenderElementsBatch) !== "function")
+                return false;
+            const at = this.renderNodes.length;
+            if (at === this.renderElementCounts.length) {
+                const grown = new Uint32Array(at * 2);
+                grown.set(this.renderElementCounts);
+                this.renderElementCounts = grown;
+            }
+            this.renderElementCounts[at] = elements.length;
+            this.renderNodes.push(node);
+            for (const element of elements)
+                this.renderElements.push(element._nativeObj);
+            return true;
+        }
+        flush() {
+            if (!this.buffers.length && !this.geometries.size && !this.renderNodes.length)
+                return;
+            let words = this.geometries.size * 3;
+            for (const geometry of this.geometries)
+                words += geometry.drawParams.length;
+            if (words > this.drawRanges.length)
+                this.drawRanges = new Int32Array(Math.max(words, this.drawRanges.length * 2));
+            let row = 0, offset = this.geometries.size * 3;
+            try {
+                for (const geometry of this.geometries) {
+                    const params = geometry.drawParams;
+                    if (params.length % 2)
+                        throw new RangeError("Incomplete geometry draw pair");
+                    this.drawRanges.set([offset, params.length / 2, geometry.instanceCount], row * 3);
+                    for (let i = 0; i < params.length; ++i) {
+                        const value = params.elements[i];
+                        if (!Number.isSafeInteger(value) || value < 0 || value > 0x7fffffff)
+                            throw new RangeError("Invalid geometry draw range");
+                        this.drawRanges[offset++] = value;
+                    }
+                    this.nativeGeometries.push(geometry._nativeObj);
+                    row++;
+                }
+                const counters = GLESGeometryUpdateBatch.diagnostics;
+                if (this.buffers.length || this.geometries.size) {
+                    if (!window.conchGLESVertexBuffer.submitGeometryBatch(this.buffers, this.sources, this.uploadRanges.buffer, this.nativeGeometries, this.drawRanges.buffer)) {
+                        throw new Error("Native geometry submission batch rejected");
+                    }
+                    counters.flushes++;
+                    counters.uploads += this.buffers.length;
+                    counters.geometries += row;
+                    for (let i = 0; i < this.buffers.length; ++i)
+                        counters.uploadBytes += this.uploadRanges[i * 4 + 2];
+                }
+                if (this.renderNodes.length) {
+                    if (!window.conchRTBaseRenderNode.setRenderElementsBatch(this.renderNodes, this.renderElements, this.renderElementCounts.buffer)) {
+                        throw new Error("Native render element batch rejected");
+                    }
+                    counters.renderNodeFlushes++;
+                    counters.renderNodes += this.renderNodes.length;
+                    counters.renderElements += this.renderElements.length;
+                }
+            }
+            finally {
+                this.buffers.length = this.sources.length = this.nativeGeometries.length = 0;
+                this.geometries.clear();
+                this.renderNodes.length = this.renderElements.length = 0;
+            }
+        }
+    }
+    GLESGeometryUpdateBatch.active = null;
+    GLESGeometryUpdateBatch.pool = [];
+    GLESGeometryUpdateBatch.diagnostics = { flushes: 0, uploads: 0, geometries: 0, uploadBytes: 0,
+        renderNodeFlushes: 0, renderNodes: 0, renderElements: 0,
+        cameraUpdateCompletions: 0, cameraUpdateNodes: 0 };
+
     class GLESIndexBuffer {
         destroy() {
             this._nativeObj.destroy();
@@ -3166,6 +3395,7 @@
 
     class GLESRenderGeometryElement {
         constructor(mode, drawType) {
+            this._indexFormatInitialized = false;
             this._nativeObj = new window.conchGLESRenderGeometryElement();
             const buf = new ArrayBuffer(4 * 4);
             this._props = new Uint32Array(buf);
@@ -3180,18 +3410,32 @@
         setDrawArrayParams(first, count) {
             this.drawParams.add(first);
             this.drawParams.add(count);
+            if (GLESGeometryUpdateBatch.active) {
+                GLESGeometryUpdateBatch.active.geometry(this);
+                return;
+            }
             this._nativeObj.setDrawArrayParams(first, count);
         }
         setDrawElemenParams(count, offset) {
             this.drawParams.add(offset);
             this.drawParams.add(count);
+            if (GLESGeometryUpdateBatch.active) {
+                GLESGeometryUpdateBatch.active.geometry(this);
+                return;
+            }
             this._nativeObj.setDrawElementParams(count, offset);
         }
         destroy() {
+            var _a;
+            (_a = GLESGeometryUpdateBatch.active) === null || _a === void 0 ? void 0 : _a.flush();
             this._nativeObj.destroy();
         }
         clearRenderParams() {
             this.drawParams.length = 0;
+            if (GLESGeometryUpdateBatch.active) {
+                GLESGeometryUpdateBatch.active.geometry(this);
+                return;
+            }
             this._nativeObj.clearRenderParams();
         }
         set bufferState(value) {
@@ -3214,13 +3458,21 @@
             return this._props[1];
         }
         set instanceCount(value) {
+            if (GLESGeometryUpdateBatch.active) {
+                this._props[2] = value;
+                GLESGeometryUpdateBatch.active.geometry(this);
+                return;
+            }
             this._nativeObj.rt_setInstanceCount(value);
         }
         get instanceCount() {
             return this._props[2];
         }
         set indexFormat(value) {
+            if (this._indexFormatInitialized && this._props[3] === value)
+                return;
             this._nativeObj.rt_setIndexFormat(value);
+            this._indexFormatInitialized = true;
         }
         get indexFormat() {
             return this._props[3];
@@ -3255,12 +3507,20 @@
         }
         setData(buffer, bufferOffset, dataStartIndex, dataCount) {
             this._bufferRef = buffer;
+            if (GLESGeometryUpdateBatch.active) {
+                GLESGeometryUpdateBatch.active.upload(this._nativeObj, buffer, bufferOffset, dataStartIndex, dataCount);
+                return;
+            }
             this._nativeObj.setData(buffer, bufferOffset, dataStartIndex, dataCount);
         }
         setDataLength(byteLength) {
+            var _a;
+            (_a = GLESGeometryUpdateBatch.active) === null || _a === void 0 ? void 0 : _a.flush();
             this._nativeObj.setDataLength(byteLength);
         }
         destroy() {
+            var _a;
+            (_a = GLESGeometryUpdateBatch.active) === null || _a === void 0 ? void 0 : _a.flush();
             this._nativeObj.destroy();
             this._bufferRef = null;
         }
@@ -3831,6 +4091,11 @@
         constructor() {
             this.globalBlockMap = {};
         }
+        beginGeometryUpdateBatch() { return GLESGeometryUpdateBatch.begin(); }
+        getGeometryUpdateBatchDiagnostics() { return Object.assign({}, GLESGeometryUpdateBatch.diagnostics); }
+        completeCameraRenderUpdateBatch(nodes, cameraMask) {
+            return GLESGeometryUpdateBatch.completeCameraRenderUpdateBatch(nodes, cameraMask);
+        }
         createShaderData(ownerResource) {
             return new GLESShaderData(ownerResource);
         }
@@ -3978,6 +4243,7 @@
     exports.GLESDeviceBuffer = GLESDeviceBuffer;
     exports.GLESDraw2DElementCMD = GLESDraw2DElementCMD;
     exports.GLESEngine = GLESEngine;
+    exports.GLESGeometryUpdateBatch = GLESGeometryUpdateBatch;
     exports.GLESGraphicsOp2DFactory = GLESGraphicsOp2DFactory;
     exports.GLESIndexBuffer = GLESIndexBuffer;
     exports.GLESInternalRT = GLESInternalRT;

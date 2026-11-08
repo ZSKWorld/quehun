@@ -5464,6 +5464,7 @@
             dest.stretchedBillboardSpeedScale = this.stretchedBillboardSpeedScale;
             dest.stretchedBillboardLengthScale = this.stretchedBillboardLengthScale;
             dest.sortingFudge = this.sortingFudge;
+            dest.renderOrder = this.renderOrder;
         }
         _onDestroy() {
             (this._mesh) && (this._mesh._removeReference(), this._mesh = null);

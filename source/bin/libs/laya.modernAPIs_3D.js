@@ -163,11 +163,18 @@
             this._viewport = new Laya.Viewport(0, 0, 0, 0);
             this._scissor = new Laya.Vector4();
             this._offsetScale = new Laya.Vector4(0, 0, 1, 1);
+            this._clearFlag = Laya.RenderClearFlag.Nothing;
+            this._clearColor = new Laya.Color();
+            this._clearDepth = 1;
+            this._clearStencil = 0;
+            this._clearColorRGBA = [];
+            this._clearColorEnabled = [];
             this.cameraUpdateMask = 0;
             this._nativeObj = new window.conchLayaXRenderContext();
         }
         setRenderTarget(value, clearFlag) {
             this._destRT = value;
+            this._clearFlag = clearFlag !== null && clearFlag !== void 0 ? clearFlag : Laya.RenderClearFlag.Nothing;
         }
         setViewPort(value) {
             value.cloneTo(this._viewport);
@@ -175,10 +182,42 @@
         setScissor(value) {
             value.cloneTo(this._scissor);
         }
-        setClearData(clearFlag, color, depth, stencil) {
+        setClearData(clearFlag, color, depth, stencil, colorValues) {
+            var _a, _b, _c, _d, _e;
+            this._clearFlag = clearFlag;
+            color.cloneTo(this._clearColor);
+            this._clearDepth = depth;
+            this._clearStencil = stencil;
+            const rgba = this._clearColorRGBA;
+            const enabled = this._clearColorEnabled;
+            const count = (clearFlag & Laya.RenderClearFlag.Color) ? (_a = colorValues === null || colorValues === void 0 ? void 0 : colorValues.length) !== null && _a !== void 0 ? _a : 0 : 0;
+            rgba.length = count * 4;
+            enabled.length = count;
+            for (let i = 0; i < count; i++) {
+                const value = colorValues[i];
+                enabled[i] = value ? 1 : 0;
+                rgba[i * 4] = (_b = value === null || value === void 0 ? void 0 : value.r) !== null && _b !== void 0 ? _b : 0;
+                rgba[i * 4 + 1] = (_c = value === null || value === void 0 ? void 0 : value.g) !== null && _c !== void 0 ? _c : 0;
+                rgba[i * 4 + 2] = (_d = value === null || value === void 0 ? void 0 : value.b) !== null && _d !== void 0 ? _d : 0;
+                rgba[i * 4 + 3] = (_e = value === null || value === void 0 ? void 0 : value.a) !== null && _e !== void 0 ? _e : 0;
+            }
             return 0;
         }
         clearRenderTarget() {
+            if (this._clearFlag === Laya.RenderClearFlag.Nothing)
+                return;
+            const cmd = this._clearCommand || (this._clearCommand = new window.conchLayaXSetRenderTargetCMD());
+            cmd.setRT(this._destRT ? this._destRT._nativeObj : null);
+            cmd.setClearFlag(this._clearFlag);
+            const color = this._clearColor;
+            cmd.clearColorValue(color.r, color.g, color.b, color.a);
+            cmd.clearDepthValue(this._clearDepth);
+            cmd.clearStencilValue(this._clearStencil);
+            cmd.setClearColorValues(this._clearColorRGBA, this._clearColorEnabled);
+            cmd.execute();
+            this._clearFlag = Laya.RenderClearFlag.Nothing;
+            this._clearColorRGBA.length = 0;
+            this._clearColorEnabled.length = 0;
         }
         drawRenderElementList(list) {
             if (!list)
@@ -191,6 +230,7 @@
         drawRenderElementOne(node) {
             if (!node)
                 return 0;
+            this.clearRenderTarget();
             if (!this._blitFeature) {
                 this._blitFeature = new LayaXBlitRenderFeature();
             }
@@ -213,6 +253,7 @@
 
     class LayaXRenderElement3D {
         constructor() {
+            this.sortIndex = 0;
             this._isRender = true;
             this._materialRenderQueue = 0;
             this._materialId = 0;
@@ -612,13 +653,13 @@
         }
         setRPData(dirLight, camera, context) {
             this._destShadowRT = Laya.Scene3D._shadowCasterPass.getDirectLightShadowMap(dirLight);
-            this._nativeObj.setRPData(dirLight._nativeObj, camera._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
             if (dirLight.transform) {
                 let lightWorld = Laya.Matrix4x4.TEMP;
                 Laya.Matrix4x4.createFromQuaternion(dirLight.transform.rotation, lightWorld);
                 let e = lightWorld.elements;
                 dirLight.setOrientation(e[4], e[5], e[6], e[0], e[1], e[2], -e[8], -e[9], -e[10]);
             }
+            this._nativeObj.setRPData(dirLight._nativeObj, camera._nativeObj, context._nativeObj, this._destShadowRT._renderTarget._nativeObj);
         }
         setCameraCullInfo(sceneManager) {
             this._nativeObj.setCameraCullInfo(sceneManager._nativeObj);
@@ -641,21 +682,45 @@
         }
         set depthTarget(value) {
             this._depthTarget = value;
-            this._nativeObj.setDepthTarget(value._nativeObj);
+            this._nativeObj.setDepthTarget(value ? value._nativeObj : null);
         }
         get destTarget() {
             return this._destTarget;
         }
         set destTarget(value) {
             this._destTarget = value;
-            this._nativeObj.setDestTarget(value._nativeObj);
+            this._nativeObj.setDestTarget(value ? value._nativeObj : null);
+        }
+        get opaqueMRTTarget() { return this._opaqueMRTTarget; }
+        set opaqueMRTTarget(value) {
+            this._opaqueMRTTarget = value;
+            this._nativeObj.setOpaqueMRTTarget(value ? value._nativeObj : null);
+        }
+        get opaqueMRTClearColors() { return this._opaqueMRTClearColors; }
+        set opaqueMRTClearColors(value) {
+            var _a, _b, _c, _d, _e;
+            this._opaqueMRTClearColors = value;
+            const rgba = this._opaqueMRTClearRGBA;
+            const enabled = this._opaqueMRTClearEnabled;
+            const count = (_a = value === null || value === void 0 ? void 0 : value.length) !== null && _a !== void 0 ? _a : 0;
+            rgba.length = count * 4;
+            enabled.length = count;
+            for (let i = 0; i < count; i++) {
+                const color = value[i];
+                enabled[i] = color ? 1 : 0;
+                rgba[i * 4] = (_b = color === null || color === void 0 ? void 0 : color.r) !== null && _b !== void 0 ? _b : 0;
+                rgba[i * 4 + 1] = (_c = color === null || color === void 0 ? void 0 : color.g) !== null && _c !== void 0 ? _c : 0;
+                rgba[i * 4 + 2] = (_d = color === null || color === void 0 ? void 0 : color.b) !== null && _d !== void 0 ? _d : 0;
+                rgba[i * 4 + 3] = (_e = color === null || color === void 0 ? void 0 : color.a) !== null && _e !== void 0 ? _e : 0;
+            }
+            this._nativeObj.setOpaqueMRTClearColors(rgba, enabled);
         }
         get depthNormalTarget() {
             return this._depthNormalTarget;
         }
         set depthNormalTarget(value) {
             this._depthNormalTarget = value;
-            this._nativeObj.setDepthNormalTarget(value._nativeObj);
+            this._nativeObj.setDepthNormalTarget(value ? value._nativeObj : null);
         }
         get enableCMD() { return this._u32[2] !== 0; }
         set enableCMD(value) { this._u32[2] = value ? 1 : 0; }
@@ -755,6 +820,8 @@
             }
         }
         constructor() {
+            this._opaqueMRTClearRGBA = [];
+            this._opaqueMRTClearEnabled = [];
             this._nativeObj = new window.conchLayaXForwardAddClusterRP();
             this._buf = new ArrayBuffer(24 * 4);
             this._f32 = new Float32Array(this._buf);
@@ -953,9 +1020,11 @@
             let clearValue = camera._linearClearColor;
             clearValue = renderRT.gammaCorrection != 1 ? camera.clearColor : camera._linearClearColor;
             renderpass.camera = camera._renderDataModule;
-            renderpass.destTarget = renderRT._renderTarget;
+            renderpass.destTarget = renderRT._getRenderTarget(!!camera.effectiveOpaqueMRT);
             renderpass.clearFlag = clearConst;
             renderpass.clearColor = clearValue;
+            renderpass.opaqueMRTTarget = camera.effectiveOpaqueMRT ? renderRT._getRenderTarget() : null;
+            renderpass.opaqueMRTClearColors = camera._getOpaqueMRTClearColors((clearConst & Laya.RenderClearFlag.Color) ? clearValue : null);
             let needInternalRT = camera._needInternalRenderTexture();
             renderpass.setCameraCullInfo(camera, this.render3DManager);
             if (needInternalRT) {
@@ -1039,13 +1108,18 @@
             this._renderPass.finalize = this._renderPass.finalize;
         }
         renderDepth(camera) {
+            this._renderPass.mainRenderpass.depthTarget = null;
             let depthMode = camera.depthTextureMode;
             if (camera.postProcess && camera.postProcess.enable) {
                 depthMode |= camera.postProcess.cameraDepthTextureMode;
             }
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._renderTarget;
+                const useCachedDepth = camera.canblitDepth && camera.depthTexture === camera._cacheDepthTexture.depthStencilTexture;
+                if (useCachedDepth)
+                    depthMode &= ~Laya.DepthTextureMode.Depth;
+                else
+                    this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._getRenderTarget();
                 Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
@@ -1059,9 +1133,16 @@
         fowardRender(context, camera) {
             LayaXRender3DProcess._flushDirtyProbes();
             Laya.Camera.depthPass.cleanUp(camera);
+            context.cameraData.setTexture(Laya.DepthPass.DEPTHTEXTURE, this._defaultDepthTex);
             this.renderDepth(camera);
             this.initRenderpass(camera, context);
-            this.renderFowarAddCameraPass(context, this._renderPass);
+            try {
+                this.renderFowarAddCameraPass(context, this._renderPass);
+            }
+            finally {
+                this._renderPass.mainRenderpass.opaqueMRTTarget = null;
+                this._renderPass.mainRenderpass.opaqueMRTClearColors = null;
+            }
         }
         static _flushDirtyProbes() {
             let rpDirty = LayaXReflectionProbe._dirtySet;
@@ -1234,6 +1315,8 @@
         constructor() {
             super();
             this.type = Laya.RenderCMDType.ChangeRenderTarget;
+            this._clearColorRGBA = [];
+            this._clearColorEnabled = [];
             this._nativeObj = new window.conchLayaXSetRenderTargetCMD();
         }
         get rt() {
@@ -1254,10 +1337,30 @@
             return this._clearColorValue;
         }
         set clearColorValue(value) {
-            this._clearColorValue = value;
+            this._clearColorValue = value === null || value === void 0 ? void 0 : value.clone();
+            this._clearColorValues = null;
             if (value) {
                 this._nativeObj.clearColorValue(value.r, value.g, value.b, value.a);
             }
+        }
+        get clearColorValues() { return this._clearColorValues; }
+        set clearColorValues(value) {
+            var _a, _b, _c, _d, _e, _f;
+            super.clearColorValues = value;
+            const rgba = this._clearColorRGBA;
+            const enabled = this._clearColorEnabled;
+            const count = (_b = (_a = this._clearColorValues) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0;
+            rgba.length = count * 4;
+            enabled.length = count;
+            for (let i = 0; i < count; i++) {
+                const color = this._clearColorValues[i];
+                enabled[i] = color ? 1 : 0;
+                rgba[i * 4] = (_c = color === null || color === void 0 ? void 0 : color.r) !== null && _c !== void 0 ? _c : 0;
+                rgba[i * 4 + 1] = (_d = color === null || color === void 0 ? void 0 : color.g) !== null && _d !== void 0 ? _d : 0;
+                rgba[i * 4 + 2] = (_e = color === null || color === void 0 ? void 0 : color.b) !== null && _e !== void 0 ? _e : 0;
+                rgba[i * 4 + 3] = (_f = color === null || color === void 0 ? void 0 : color.a) !== null && _f !== void 0 ? _f : 0;
+            }
+            this._nativeObj.setClearColorValues(rgba, enabled);
         }
         get clearDepthValue() {
             return this._clearDepthValue;
@@ -1321,6 +1424,36 @@
     });
 
     class LayaXBounds {
+        static setMinMaxBatch(targets, values, count) {
+            var _a;
+            if (this._batchBusy || count === 0)
+                return false;
+            const first = targets[0]._imp;
+            if (!(first instanceof LayaXBounds) || typeof ((_a = first._nativeObj) === null || _a === void 0 ? void 0 : _a.setMinMaxBatch) !== "function")
+                return false;
+            this._batchBusy = true;
+            try {
+                for (let i = 0; i < count; i++) {
+                    const target = targets[i];
+                    if (!(target._imp instanceof LayaXBounds)
+                        || target.setMin !== Laya.Bounds.prototype.setMin || target.setMax !== Laya.Bounds.prototype.setMax)
+                        return false;
+                    this._batchTargets.push(target._imp._nativeObj);
+                }
+                if (!first._nativeObj.setMinMaxBatch(this._batchTargets, values.buffer, values.byteOffset, count))
+                    throw new Error("LayaX Bounds batch rejected");
+                for (let i = 0; i < count; i++) {
+                    const target = targets[i]._imp, offset = i * 6;
+                    target._boundBox.min.setValue(values[offset], values[offset + 1], values[offset + 2]);
+                    target._boundBox.max.setValue(values[offset + 3], values[offset + 4], values[offset + 5]);
+                }
+                return true;
+            }
+            finally {
+                this._batchTargets.length = 0;
+                this._batchBusy = false;
+            }
+        }
         get min() {
             return this.getMin();
         }
@@ -1338,7 +1471,8 @@
             this._boundBox.min.setValue(value.x, value.y, value.z);
         }
         getMin() {
-            this._nativeObj.getMin();
+            if (!this._readback)
+                this._nativeObj.getMin();
             this._syncBoundBoxFromNative();
             return this._boundBox.min;
         }
@@ -1347,7 +1481,8 @@
             this._boundBox.max.setValue(value.x, value.y, value.z);
         }
         getMax() {
-            this._nativeObj.getMax();
+            if (!this._readback)
+                this._nativeObj.getMax();
             this._syncBoundBoxFromNative();
             return this._boundBox.max;
         }
@@ -1355,7 +1490,8 @@
             this._nativeObj.setCenter(value.x, value.y, value.z);
         }
         getCenter() {
-            this._nativeObj.getCenter();
+            if (!this._readback)
+                this._nativeObj.getCenter();
             this._syncBoundBoxFromNative();
             const min = this._boundBox.min;
             const max = this._boundBox.max;
@@ -1366,7 +1502,8 @@
             this._nativeObj.setExtent(value.x, value.y, value.z);
         }
         getExtent() {
-            this._nativeObj.getExtent();
+            if (!this._readback)
+                this._nativeObj.getExtent();
             this._syncBoundBoxFromNative();
             const min = this._boundBox.min;
             const max = this._boundBox.max;
@@ -1374,10 +1511,16 @@
             return this._extent;
         }
         constructor(min, max) {
+            this._readback = null;
             this._center = new Laya.Vector3();
             this._extent = new Laya.Vector3();
             this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
             this._nativeObj = new window.conchLayaXBounds();
+            if (this._nativeObj.bindReadbackBuffer) {
+                const values = new Float32Array(6);
+                if (this._nativeObj.bindReadbackBuffer(values.buffer))
+                    this._readback = values;
+            }
             min && this.setMin(min);
             max && this.setMax(max);
         }
@@ -1385,13 +1528,19 @@
             this._nativeObj._tranform(matrix.elements, out._nativeObj);
         }
         _getBoundBox() {
-            this._nativeObj._getBoundBox();
+            if (!this._readback)
+                this._nativeObj._getBoundBox();
             this._syncBoundBoxFromNative();
             return this._boundBox;
         }
         _syncBoundBoxFromNative() {
             const min = this._boundBox.min;
             const max = this._boundBox.max;
+            if (this._readback) {
+                min.setValue(this._readback[0], this._readback[1], this._readback[2]);
+                max.setValue(this._readback[3], this._readback[4], this._readback[5]);
+                return;
+            }
             min.setValue(this._nativeObj._minX, this._nativeObj._minY, this._nativeObj._minZ);
             max.setValue(this._nativeObj._maxX, this._nativeObj._maxY, this._nativeObj._maxZ);
         }
@@ -1423,6 +1572,8 @@
             return dest;
         }
     }
+    LayaXBounds._batchTargets = [];
+    LayaXBounds._batchBusy = false;
     const TEMP_VECTOR3_MAX0$1 = new Laya.Vector3();
     const TEMP_VECTOR3_MAX1$1 = new Laya.Vector3();
 
@@ -1487,6 +1638,10 @@
             this._writeGen = 1;
             this._worldGenSum = -1;
             this._worldGenStruct = -1;
+            this._worldGateFrame = -1;
+            this._worldGateWrite = -1;
+            this._worldGateNative = -1;
+            this._worldGateStruct = -1;
             this._subtreeListenerTotal = 0;
             this._worldPosView = null;
         }
@@ -1536,6 +1691,7 @@
             this._worldMatrix.elements = new Float32Array(16);
             this._setTransformFlag(Laya.Transform3D.TRANSFORM_WORLDMATRIX, true);
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             LayaXTransform3D._structGen++;
         }
         _dropViews() {
@@ -1717,7 +1873,21 @@
             return sum;
         }
         _worldNeedRefresh() {
+            const sharedEpoch = LayaXTransform3D._syncEpochView;
+            const nativeEpoch = sharedEpoch !== null ? sharedEpoch[0] : -1;
+            const writeEpoch = LayaXTransform3D._worldWriteEpoch;
+            const structure = LayaXTransform3D._structGen, frame = Laya.Stat.loopCount;
+            if (sharedEpoch !== null && this._worldGateFrame === frame
+                && this._worldGateWrite === writeEpoch && this._worldGateNative === nativeEpoch
+                && this._worldGateStruct === structure)
+                return false;
             const sum = this._chainGenSum();
+            if (sharedEpoch !== null) {
+                this._worldGateFrame = frame;
+                this._worldGateWrite = writeEpoch;
+                this._worldGateNative = nativeEpoch;
+                this._worldGateStruct = structure;
+            }
             if (sum === this._worldGenSum && this._worldGenStruct === LayaXTransform3D._structGen)
                 return false;
             this._worldGenSum = sum;
@@ -1771,6 +1941,7 @@
                 this._pullScale();
             this._flagU32[LayaXTransform3D.FLAG_SYNC_IDX] &= ~pending;
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             this._setTransformFlag(Laya.Transform3D.TRANSFORM_LOCALMATRIX, true);
             if (pending & LayaXTransform3D.SYNC_POS)
                 this._onWorldPositionTransform();
@@ -2015,6 +2186,7 @@
         }
         _pushLocalPos() {
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             this._checkViewStale();
             const lp = this._localPosition;
             if (this._viewsBound) {
@@ -2034,6 +2206,7 @@
         }
         _pushLocalRot() {
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             this._checkViewStale();
             const lr = this.localRotation;
             if (this._viewsBound) {
@@ -2055,6 +2228,7 @@
         }
         _pushLocalScale() {
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             this._checkViewStale();
             const ls = this._localScale;
             if (this._viewsBound) {
@@ -2091,6 +2265,7 @@
             super._setParent(value);
             this._nativeObj.setParent(value ? value._nativeObj : null);
             this._writeGen++;
+            LayaXTransform3D._worldWriteEpoch++;
             LayaXTransform3D._structGen++;
         }
     }
@@ -2119,6 +2294,7 @@
     LayaXTransform3D._syncEpochView = null;
     LayaXTransform3D._syncEpochProbed = false;
     LayaXTransform3D._structGen = 1;
+    LayaXTransform3D._worldWriteEpoch = 1;
     LayaXTransform3D._zeroCopyProbed = false;
     LayaXTransform3D._hasZeroCopy = false;
     LayaXTransform3D._sharedNativeMemory = null;
@@ -2210,6 +2386,8 @@
         }
         get distanceForSort() { return this._nativeObj.distanceForSort; }
         set distanceForSort(value) { this._nativeObj.distanceForSort = value; }
+        get renderOrder() { return this._nativeObj.renderOrder; }
+        set renderOrder(value) { this._nativeObj.renderOrder = value; }
         get sortingFudge() { return this._nativeObj.sortingFudge; }
         set sortingFudge(value) { this._nativeObj.sortingFudge = value; }
         get castShadow() { return this._nativeObj.castShadow; }
@@ -2218,7 +2396,7 @@
         set receiveShadow(value) { this._nativeObj.receiveShadow = value; }
         get enable() { return this._nativeObj.enable; }
         set enable(value) { this._nativeObj.enable = value; }
-        get renderbitFlag() { return this._nativeObj.renderbitFlag; }
+        get renderbitFlag() { return this._readbackFlags ? this._readbackFlags[0] : this._nativeObj.renderbitFlag; }
         set renderbitFlag(value) { this._nativeObj.renderbitFlag = value; }
         get visibalRangeBit() { return this._nativeObj.visibalRangeBit; }
         set visibalRangeBit(value) { this._nativeObj.visibalRangeBit = value; }
@@ -2245,7 +2423,7 @@
         }
         get lightProbUpdateMark() { return this._nativeObj.lightProbUpdateMark; }
         set lightProbUpdateMark(value) { this._nativeObj.lightProbUpdateMark = value; }
-        get perCameraUpdate() { return this._nativeObj.perCameraUpdate; }
+        get perCameraUpdate() { return this._readbackFlags ? this._readbackFlags[1] !== 0 : this._nativeObj.perCameraUpdate; }
         set perCameraUpdate(value) { this._nativeObj.perCameraUpdate = value; }
         get bounds() {
             if (this.boundsChange) {
@@ -2319,8 +2497,13 @@
             this._ismoved.setValue(value.x, value.y);
         }
         set_renderUpdatePreCall(call, fun) {
+            this._renderUpdatePreOwner = call;
+            this._renderUpdatePreFunction = fun;
             this._renderUpdatePrebindFun = fun.bind(call, Laya.RenderContext3D._instance._contextOBJ);
             this._nativeObj.setRenderUpdatePre(this._renderUpdatePrebindFun);
+        }
+        isRenderUpdatePreCall(call, fun) {
+            return this._renderUpdatePreOwner === call && this._renderUpdatePreFunction === fun;
         }
         set_caculateBoundingBox(call, fun) {
             this._caculateBoundingBoxbindFun = fun.bind(call);
@@ -2330,6 +2513,7 @@
             this._nativeObj = new window.conchLayaXBaseRenderNode();
         }
         constructor() {
+            this._readbackFlags = null;
             this._boundsChange = false;
             this._reflectionMode = 0;
             this._nativeBoundsCallbackDisabled = false;
@@ -2339,6 +2523,11 @@
             this._ismoved = new Laya.Vector2();
             this._worldParams = new Laya.Vector4(1, 0, 0, 0);
             this._getNativeObj();
+            if (this._nativeObj.bindReadbackFlags) {
+                const flags = new Uint32Array(2);
+                if (this._nativeObj.bindReadbackFlags(flags.buffer))
+                    this._readbackFlags = flags;
+            }
             this._defaultBaseGeometryBounds = new Laya.Bounds();
             this.baseGeometryBounds = this._defaultBaseGeometryBounds;
             this.renderelements = [];
@@ -2364,6 +2553,7 @@
             for (let i = 0; i < value.length; i++) {
                 this.renderelements.push(value[i]);
                 value[i].owner = this;
+                value[i].sortIndex = i;
                 tempArray.push(value[i]._nativeObj);
             }
             this._nativeObj.setRenderElements(tempArray);
@@ -2718,6 +2908,9 @@
         createBounds(min, max) {
             return new LayaXBounds(min, max);
         }
+        setBoundsMinMaxBatch(targets, values, count) {
+            return LayaXBounds.setMinMaxBatch(targets, values, count);
+        }
         createVolumetricGI() {
             return new LayaXVolumetricGI();
         }
@@ -2837,21 +3030,45 @@
         }
         set depthTarget(value) {
             this._depthTarget = value;
-            this._nativeObj.setDepthTarget(value._nativeObj);
+            this._nativeObj.setDepthTarget(value ? value._nativeObj : null);
         }
         get destTarget() {
             return this._destTarget;
         }
         set destTarget(value) {
             this._destTarget = value;
-            this._nativeObj.setDestTarget(value._nativeObj);
+            this._nativeObj.setDestTarget(value ? value._nativeObj : null);
+        }
+        get opaqueMRTTarget() { return this._opaqueMRTTarget; }
+        set opaqueMRTTarget(value) {
+            this._opaqueMRTTarget = value;
+            this._nativeObj.setOpaqueMRTTarget(value ? value._nativeObj : null);
+        }
+        get opaqueMRTClearColors() { return this._opaqueMRTClearColors; }
+        set opaqueMRTClearColors(value) {
+            var _a, _b, _c, _d, _e;
+            this._opaqueMRTClearColors = value;
+            const rgba = this._opaqueMRTClearRGBA;
+            const enabled = this._opaqueMRTClearEnabled;
+            const count = (_a = value === null || value === void 0 ? void 0 : value.length) !== null && _a !== void 0 ? _a : 0;
+            rgba.length = count * 4;
+            enabled.length = count;
+            for (let i = 0; i < count; i++) {
+                const color = value[i];
+                enabled[i] = color ? 1 : 0;
+                rgba[i * 4] = (_b = color === null || color === void 0 ? void 0 : color.r) !== null && _b !== void 0 ? _b : 0;
+                rgba[i * 4 + 1] = (_c = color === null || color === void 0 ? void 0 : color.g) !== null && _c !== void 0 ? _c : 0;
+                rgba[i * 4 + 2] = (_d = color === null || color === void 0 ? void 0 : color.b) !== null && _d !== void 0 ? _d : 0;
+                rgba[i * 4 + 3] = (_e = color === null || color === void 0 ? void 0 : color.a) !== null && _e !== void 0 ? _e : 0;
+            }
+            this._nativeObj.setOpaqueMRTClearColors(rgba, enabled);
         }
         get depthNormalTarget() {
             return this._depthNormalTarget;
         }
         set depthNormalTarget(value) {
             this._depthNormalTarget = value;
-            this._nativeObj.setDepthNormalTarget(value._nativeObj);
+            this._nativeObj.setDepthNormalTarget(value ? value._nativeObj : null);
         }
         get enableCMD() {
             return this._i32[1] !== 0;
@@ -2966,6 +3183,8 @@
             }
         }
         constructor() {
+            this._opaqueMRTClearRGBA = [];
+            this._opaqueMRTClearEnabled = [];
             this._cameraCullInfo = new Laya.CameraCullInfo();
             this._nativeObj = new window.conchRTForwardAddClusterRP();
             this._mem = new Laya.NativeMemory(17 * 4, false);
@@ -3148,9 +3367,11 @@
             let clearValue = camera._linearClearColor;
             clearValue = renderRT.gammaCorrection != 1 ? camera.clearColor : camera._linearClearColor;
             renderpass.camera = camera._renderDataModule;
-            renderpass.destTarget = renderRT._renderTarget;
+            renderpass.destTarget = renderRT._getRenderTarget(!!camera.effectiveOpaqueMRT);
             renderpass.clearFlag = clearConst;
             renderpass.clearColor = clearValue;
+            renderpass.opaqueMRTTarget = camera.effectiveOpaqueMRT ? renderRT._getRenderTarget() : null;
+            renderpass.opaqueMRTClearColors = camera._getOpaqueMRTClearColors((clearConst & Laya.RenderClearFlag.Color) ? clearValue : null);
             let needInternalRT = camera._needInternalRenderTexture();
             renderpass.setCameraCullInfo(camera, this.render3DManager);
             if (needInternalRT) {
@@ -3223,13 +3444,18 @@
             this._renderPass.finalize = this._renderPass.finalize;
         }
         renderDepth(camera) {
+            this._renderPass.mainRenderpass.depthTarget = null;
             let depthMode = camera.depthTextureMode;
             if (camera.postProcess && camera.postProcess.enable) {
                 depthMode |= camera.postProcess.cameraDepthTextureMode;
             }
             if ((depthMode & Laya.DepthTextureMode.Depth) != 0) {
                 Laya.Camera.depthPass.getTarget(camera, Laya.DepthTextureMode.Depth, camera.depthTextureFormat);
-                this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._renderTarget;
+                const useCachedDepth = camera.canblitDepth && camera.depthTexture === camera._cacheDepthTexture.depthStencilTexture;
+                if (useCachedDepth)
+                    depthMode &= ~Laya.DepthTextureMode.Depth;
+                else
+                    this._renderPass.mainRenderpass.depthTarget = camera.depthTexture._getRenderTarget();
                 Laya.Camera.depthPass._setupDepthModeShaderValue(Laya.DepthTextureMode.Depth, camera);
             }
             if ((depthMode & Laya.DepthTextureMode.DepthNormals) != 0) {
@@ -3242,9 +3468,16 @@
         }
         fowardRender(context, camera) {
             Laya.Camera.depthPass.cleanUp(camera);
+            context.cameraData.setTexture(Laya.DepthPass.DEPTHTEXTURE, this._defaultDepthTex);
             this.renderDepth(camera);
             this.initRenderpass(camera, context);
-            this.renderFowarAddCameraPass(context, this._renderPass);
+            try {
+                this.renderFowarAddCameraPass(context, this._renderPass);
+            }
+            finally {
+                this._renderPass.mainRenderpass.opaqueMRTTarget = null;
+                this._renderPass.mainRenderpass.opaqueMRTClearColors = null;
+            }
         }
         renderFowarAddCameraPass(context, renderpass) {
             this._nativeObj.renderForwardAddCameraPass(context._nativeObj, renderpass._nativeObj);
@@ -3252,6 +3485,31 @@
     }
 
     class NativeBounds {
+        static setMinMaxBatch(targets, values, count) {
+            var _a;
+            if (this._batchBusy || count === 0)
+                return false;
+            const first = targets[0]._imp;
+            if (!(first instanceof NativeBounds) || typeof ((_a = first._nativeObj) === null || _a === void 0 ? void 0 : _a.setMinMaxBatch) !== "function")
+                return false;
+            this._batchBusy = true;
+            try {
+                for (let i = 0; i < count; i++) {
+                    const target = targets[i];
+                    if (!(target._imp instanceof NativeBounds)
+                        || target.setMin !== Laya.Bounds.prototype.setMin || target.setMax !== Laya.Bounds.prototype.setMax)
+                        return false;
+                    this._batchTargets.push(target._imp._nativeObj);
+                }
+                if (!first._nativeObj.setMinMaxBatch(this._batchTargets, values.buffer, values.byteOffset, count))
+                    throw new Error("Native Bounds batch rejected");
+                return true;
+            }
+            finally {
+                this._batchTargets.length = 0;
+                this._batchBusy = false;
+            }
+        }
         get min() {
             return this.getMin();
         }
@@ -3265,15 +3523,18 @@
             this.setMax(value);
         }
         setMin(value) {
+            const { x, y, z } = value;
+            this._sharedState[12] &= ~3;
             let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
-            this.float32Array[index] = value.x;
-            this.float32Array[index + 1] = value.y;
-            this.float32Array[index + 2] = value.z;
+            this.float32Array[index] = x;
+            this.float32Array[index + 1] = y;
+            this.float32Array[index + 2] = z;
             this._nativeObj.setMin();
         }
         getMin() {
             var min = this._boundBox.min;
-            this._nativeObj.getMin();
+            if ((this._sharedState[12] & ~2) !== (NativeBounds._sharedReady | 1))
+                this._nativeObj.getMin();
             let index = NativeBounds.BOUNDS_MIN_DATAOFFSET;
             min.x = this.float32Array[index];
             min.y = this.float32Array[index + 1];
@@ -3281,15 +3542,18 @@
             return min;
         }
         setMax(value) {
+            const { x, y, z } = value;
+            this._sharedState[12] &= ~3;
             let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
-            this.float32Array[index] = value.x;
-            this.float32Array[index + 1] = value.y;
-            this.float32Array[index + 2] = value.z;
+            this.float32Array[index] = x;
+            this.float32Array[index + 1] = y;
+            this.float32Array[index + 2] = z;
             this._nativeObj.setMax();
         }
         getMax() {
             var max = this._boundBox.max;
-            this._nativeObj.getMax();
+            if ((this._sharedState[12] & ~1) !== (NativeBounds._sharedReady | 2))
+                this._nativeObj.getMax();
             let index = NativeBounds.BOUNDS_MAX_DATAOFFSET;
             max.x = this.float32Array[index];
             max.y = this.float32Array[index + 1];
@@ -3297,10 +3561,12 @@
             return max;
         }
         setCenter(value) {
+            const { x, y, z } = value;
+            this._sharedState[12] &= ~3;
             let index = NativeBounds.BOUNDS_CENTER_DATAOFFSET;
-            this.float32Array[index] = value.x;
-            this.float32Array[index + 1] = value.y;
-            this.float32Array[index + 2] = value.z;
+            this.float32Array[index] = x;
+            this.float32Array[index + 1] = y;
+            this.float32Array[index + 2] = z;
             this._nativeObj.setCenter();
         }
         getCenter() {
@@ -3313,10 +3579,12 @@
             return center;
         }
         setExtent(value) {
+            const { x, y, z } = value;
+            this._sharedState[12] &= ~3;
             let index = NativeBounds.BOUNDS_EXTENT_DATAOFFSET;
-            this.float32Array[index] = value.x;
-            this.float32Array[index + 1] = value.y;
-            this.float32Array[index + 2] = value.z;
+            this.float32Array[index] = x;
+            this.float32Array[index + 1] = y;
+            this.float32Array[index + 2] = z;
             this._nativeObj.setExtent();
         }
         getExtent() {
@@ -3332,9 +3600,16 @@
             this._center = new Laya.Vector3();
             this._extent = new Laya.Vector3();
             this._boundBox = new Laya.BoundBox(new Laya.Vector3(), new Laya.Vector3());
-            this.nativeMemory = new Laya.NativeMemory(NativeBounds.BOUNDS_SHARE_MEMORY_SIZE * 4, true);
-            this.float32Array = this.nativeMemory.float32Array;
+            this.nativeMemory = new Laya.NativeMemory(NativeBounds.BOUNDS_SHARE_MEMORY_SIZE * 4, false);
+            this._sharedState = this.nativeMemory.Uint32Array;
+            this._sharedState[12] = 0x42580000;
             this._nativeObj = new window.conchBounds(this.nativeMemory._buffer);
+            if ((this._sharedState[12] & ~3) !== NativeBounds._sharedReady) {
+                this.nativeMemory = new Laya.NativeMemory(12 * 4, true);
+                this._nativeObj = new window.conchBounds(this.nativeMemory._buffer);
+                this._sharedState = new Uint32Array(13);
+            }
+            this.float32Array = this.nativeMemory.float32Array;
             min && this.setMin(min);
             max && this.setMax(max);
         }
@@ -3342,7 +3617,8 @@
             this._nativeObj._tranform(matrix.elements, out._nativeObj);
         }
         _getBoundBox() {
-            this._nativeObj._getBoundBox();
+            if (this._sharedState[12] !== (NativeBounds._sharedReady | 3))
+                this._nativeObj._getBoundBox();
             let minIndex = NativeBounds.BOUNDS_MIN_DATAOFFSET;
             let maxIndex = NativeBounds.BOUNDS_MAX_DATAOFFSET;
             this._boundBox.min.x = this.float32Array[minIndex];
@@ -3381,11 +3657,14 @@
             return dest;
         }
     }
+    NativeBounds._batchTargets = [];
+    NativeBounds._batchBusy = false;
     NativeBounds.BOUNDS_MIN_DATAOFFSET = 0;
     NativeBounds.BOUNDS_MAX_DATAOFFSET = 3;
     NativeBounds.BOUNDS_CENTER_DATAOFFSET = 6;
     NativeBounds.BOUNDS_EXTENT_DATAOFFSET = 9;
-    NativeBounds.BOUNDS_SHARE_MEMORY_SIZE = 12;
+    NativeBounds.BOUNDS_SHARE_MEMORY_SIZE = 13;
+    NativeBounds._sharedReady = 0x42590000;
     const TEMP_VECTOR3_MAX0 = new Laya.Vector3();
     const TEMP_VECTOR3_MAX1 = new Laya.Vector3();
 
@@ -3886,6 +4165,12 @@
     const _tempMatrix0 = new Laya.Matrix4x4();
 
     class RTBaseRenderNode {
+        get renderOrder() {
+            return this._f64[30 / 2];
+        }
+        set renderOrder(value) {
+            this._f64[30 / 2] = value;
+        }
         get transform() {
             return this._transform;
         }
@@ -4024,9 +4309,14 @@
             this._irradientMode = value;
             this._u32[15] = value;
         }
+        isRenderUpdatePreCall(call, fun) {
+            return this._renderUpdatePreCaller === call && this._renderUpdatePreFunction === fun;
+        }
         set_renderUpdatePreCall(call, fun) {
             this._renderUpdatePrebindFun = fun.bind(call, Laya.RenderContext3D._instance._contextOBJ);
             this._nativeObj.setRenderUpdatePre(this._renderUpdatePrebindFun);
+            this._renderUpdatePreCaller = call;
+            this._renderUpdatePreFunction = fun;
         }
         set_caculateBoundingBox(call, fun) {
             this._caculateBoundingBoxbindFun = fun.bind(call);
@@ -4062,8 +4352,9 @@
             this.renderelements = [];
         }
         _initPropertyBuffer() {
-            this._mem = new Laya.NativeMemory(30 * 4, false);
+            this._mem = new Laya.NativeMemory(32 * 4, false);
             this._f32 = this._mem.float32Array;
+            this._f64 = new Float64Array(this._mem._buffer);
             this._i32 = this._mem.int32Array;
             this._u32 = this._mem.Uint32Array;
             this._nativeObj.bindPropertyBuffer(this._mem._buffer);
@@ -4132,14 +4423,19 @@
         _applyReflection() {
             this._nativeObj._applyReflection();
         }
-        setRenderelements(value) {
-            var tempArray = [];
+        setRenderelements(value, deferUntilSubmit = false) {
+            const batch = Laya.GLESGeometryUpdateBatch.active;
+            if (!deferUntilSubmit)
+                batch === null || batch === void 0 ? void 0 : batch.flush();
             this.renderelements.length = 0;
             for (var i = 0; i < value.length; i++) {
                 this.renderelements.push(value[i]);
                 value[i].owner = this;
-                tempArray.push(value[i]._nativeObj);
+                value[i].sortIndex = i;
             }
+            if (deferUntilSubmit && (batch === null || batch === void 0 ? void 0 : batch.bindRenderElements(this._nativeObj, this.renderelements)))
+                return;
+            const tempArray = this.renderelements.map(element => element._nativeObj);
             this._nativeObj.setRenderElements(tempArray);
         }
         setLightmapScaleOffset(value) {
@@ -4159,6 +4455,8 @@
             this.renderelements[index].subShader = mat.shader.getSubShaderAt(0);
         }
         destroy() {
+            var _a;
+            (_a = Laya.GLESGeometryUpdateBatch.active) === null || _a === void 0 ? void 0 : _a.flush();
             this._nativeObj.destroy();
             for (let i = 0, n = this.renderelements.length; i < n; i++) {
                 this.renderelements[i].destroy();
@@ -4683,6 +4981,9 @@
         }
         createBounds(min, max) {
             return new NativeBounds(min, max);
+        }
+        setBoundsMinMaxBatch(targets, values, count) {
+            return NativeBounds.setMinMaxBatch(targets, values, count);
         }
         createVolumetricGI() {
             return new RTVolumetricGI();

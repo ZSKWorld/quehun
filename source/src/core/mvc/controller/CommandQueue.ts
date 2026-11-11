@@ -14,7 +14,7 @@ export abstract class CommandQueue extends Command {
 		this._queue.push(commandCls);
 	}
 
-	override execute(notifyName: string, data?: any): void {
+	override execute(notifyName: string, data?: any) {
 		const queue = this._queue;
 		for (let i = 0, n = queue.length; i < n; i++) {
 			const commandCls = queue[i];

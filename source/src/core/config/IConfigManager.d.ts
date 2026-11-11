@@ -43,7 +43,7 @@ declare interface IConfigManager {
 	readonly tutorial: ITable_Tutorial;
 	readonly vip: ITable_Vip;
 	readonly voice: ITable_Voice;
-	init(): Promise<void>;
+	init(): Promise<boolean>;
 }
 
 declare interface ISheetDataBase {

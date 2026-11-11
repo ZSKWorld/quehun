@@ -47,9 +47,7 @@ export class DynamicResManager implements IDynamicResManager {
 	}
 
 	private checkUnload() {
-		for (const e of this._resMap) {
-			const count = e[1];
-			const path = e[0];
+		for (const [path, count] of this._resMap) {
 			if (count <= 0) {
 				$loadMgr.cancelLoadByUrl(path);
 				$loadMgr.clearRes(path);

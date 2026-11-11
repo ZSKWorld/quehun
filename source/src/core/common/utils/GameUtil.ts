@@ -217,11 +217,10 @@ export class GameUtil implements IGameUtil {
 
 	safeCall(callback: SimpleHandler, ...args: any[]) {
 		if (!callback) return;
-		if (callback instanceof Laya.Handler) {
-			return callback.runWith([args]);
-		} else {
+		if (callback instanceof Laya.Handler)
+			return callback.runWith(args);
+		if (typeof callback == "function")
 			return callback(...args);
-		}
 	}
 
 	downloadTxt(fileName: string, text: string) {
@@ -247,4 +246,26 @@ export class GameUtil implements IGameUtil {
 			document.body.appendChild(script);
 		});
 	}
+
+	async loopConfirmLoad<T>(promiseCreator: () => (Iterable<T | PromiseLike<T>>), tip: string) {
+		if (!promiseCreator || typeof promiseCreator != "function") return [false] as any;
+		let res: Awaited<T>[];
+		while (true) {
+			res = await Promise.all(promiseCreator());
+			let hasInvalidValue = false;
+			for (let i = 0; i < res.length; i++) {
+				const element = res[i];
+				if (element == false || element == null) {
+					hasInvalidValue = true;
+					break;
+				}
+			}
+			if (hasInvalidValue) {
+				const confirm = await $confirmSma(3, tip);
+				if (!confirm) return [false, ...res] as any;
+			} else break;
+		}
+		return [true, ...res] as any;
+	}
 }
+

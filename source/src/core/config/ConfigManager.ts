@@ -83,10 +83,12 @@ export class ConfigManager implements IConfigManager {
 	//#endregion
 
 	async init() {
+		if (Object.isFrozen(this)) return true;
 		const [tblPbCfg, lqcBin] = await Promise.all([
-			$loadMgr.fetch(ResPath.EConfigPath.Tbl_pbConfig, Laya.Loader.TEXT),
-			$loadMgr.fetch(ResPath.EConfigPath.Lqc, Laya.Loader.BUFFER)
+			$loadMgr.fetch<string>(ResPath.EConfigPath.Tbl_pbConfig, Laya.Loader.TEXT),
+			$loadMgr.fetch<Laya.Buffer>(ResPath.EConfigPath.Lqc, Laya.Loader.BUFFER)
 		]);
+		if (!tblPbCfg || !lqcBin) return false;
 
 		const bytes = new Laya.Byte(lqcBin);
 		const rawData = this.parseConfig(tblPbCfg, bytes.readUint8Array(0, bytes.length));
@@ -145,6 +147,7 @@ export class ConfigManager implements IConfigManager {
 			$gameUtil.freeze(proto);
 		}
 		$gameUtil.freeze(this);
+		return true;
 	}
 
 	private parseConfig(protoContent: string, bindata: Uint8Array) {

@@ -19,8 +19,11 @@ export class SpineManager implements ISpineManager {
 	private _illustDataMap = new Map<number, ISpineIllustSkinData>();
 
 	async init() {
+		if (this._default) return true;
 		const data = await $loadMgr.fetch<{ default: ISpineIllustDefaultData; }>($langRes("extendRes/illust_data/default.json"), Laya.Loader.JSON);
+		if (!data) return false;
 		this._default = data?.default;
+		return true;
 	}
 
 	async loadIllustData(id: number) {

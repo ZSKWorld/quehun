@@ -12,8 +12,8 @@ export class LoadManager implements ILoadManager {
 		const isArray = Array.isArray(url);
 		const invalidUrl = isArray ? !url.length : !url;
 		if (invalidUrl) {
-			arg2 instanceof Laya.Handler ? arg2.runWith(1) : (arg2 && arg2(1));
-			arg1 instanceof Laya.Handler && arg1.runWith(isArray ? [] : null);
+			$gameUtil.safeCall(arg2, 1);
+			$gameUtil.safeCall(arg1, isArray ? [] : null);
 			return Promise.resolve(isArray ? [] : null);
 		}
 
@@ -23,7 +23,7 @@ export class LoadManager implements ILoadManager {
 	loadPackage(resKey: string | string[], progressHandler?: Laya.Handler | ((progress: number) => void)) {
 		const invalidUrl = Array.isArray(resKey) ? !resKey.length : !resKey;
 		if (invalidUrl) {
-			progressHandler instanceof Laya.Handler ? progressHandler.runWith(1) : (progressHandler && progressHandler(1));
+			$gameUtil.safeCall(progressHandler, 1);
 			return Promise.resolve([]);
 		}
 		return new Promise<any>((resolve) => {

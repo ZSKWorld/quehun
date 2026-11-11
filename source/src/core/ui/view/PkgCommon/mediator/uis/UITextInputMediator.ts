@@ -12,12 +12,7 @@ export class UITextInputMediator extends MediatorBase<UITextInputView, IUITextIn
 	}
 
 	private onBtnClick(text: string) {
-		const callback = this.data.callback;
-		if (callback instanceof Laya.Handler) {
-			callback.runWith(text);
-		} else if (typeof callback == "function") {
-			callback(text);
-		}
+		$gameUtil.safeCall(this.data.callback, text);
 		this.closeSelf();
 	}
 

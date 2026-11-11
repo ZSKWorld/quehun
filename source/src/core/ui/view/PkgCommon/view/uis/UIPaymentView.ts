@@ -14,6 +14,8 @@ const paymentIconMap: Record<EPaymentType, string> = {
 	[EPaymentType.XinYongKa]: "ui://vx9zwserq9u3obj9",
 };
 
+const monthTickets = { 1010: true, 2010: true, 3010: true, 5010: true };
+
 export class UIPaymentView extends UIPayment {
 	private _paymentTypes: EPaymentType[];
 
@@ -29,7 +31,7 @@ export class UIPaymentView extends UIPayment {
 		if (debtId) {
 			txt_name.langText(3438);
 		} else {
-			if (id == 1010 || id == 2010 || id == 3010 || id == 5010) {
+			if (monthTickets[id]) {
 				txt_name.text = $cfgMgr.mall.month_ticket[id].langField(ECfgLangField.name);
 			} else {
 				txt_name.text = $cfgMgr.mall.goods[id].langField(ECfgLangField.name);

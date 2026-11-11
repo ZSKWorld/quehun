@@ -59,5 +59,10 @@ declare interface IGameManager {
 	get zoneIds(): number[];
 	init(ipIndex: number, config: IConfig): void;
 	showConfirm(msg: string): Promise<boolean>;
+	/**
+	 * 退出游戏
+	 * @param logout 是否登出账号
+	 * @param tipLangId 提示文本id
+	 */
 	exitGame(logout: boolean, tipLangId?: number): void;
 }

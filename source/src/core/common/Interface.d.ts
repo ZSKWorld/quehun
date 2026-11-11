@@ -93,7 +93,7 @@ declare interface ISpineController extends Laya.Script {
 }
 
 declare interface ISpineManager {
-	init(): Promise<void>;
+	init(): Promise<boolean>;
 	loadIllustData(id: number): Promise<ISpineIllustSkinData>;
 	/**
 	 * 加载spine动画模板
@@ -278,6 +278,10 @@ declare interface IGameUtil {
 	downloadTxt(fileName: string, text: string): void;
 	/** 加载脚本 */
 	loadScript(url: string): Promise<boolean>;
+	/** 执行回调，Laya.Handler或Function */
+	safeCall(callback: SimpleHandler, ...args: any[]): any;
+	/** 循环确认加载 */
+	loopConfirmLoad<T extends readonly unknown[] | []>(promiseCreator: () => T, tip: string): Promise<[boolean, ...{ -readonly [P in keyof T]: Awaited<T[P]>; }]>;
 }
 
 declare interface ITimeUtil {

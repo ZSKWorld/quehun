@@ -801,6 +801,7 @@ declare enum EPaymentPlatform {
 	NintenDo = "nintendo",
 	PayPal = "paypal",
 	Steam = "steam",
+	AA32 = "aa32",
 	XSolla = "xsolla",
 	XSollaV4 = "xsolla_v4",
 	YoStarV4 = "yostar_v4",

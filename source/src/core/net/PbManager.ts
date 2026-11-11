@@ -10,7 +10,9 @@ export class PbManager implements IPbManager {
 	get method2Service() { return this._method2Service; }
 
 	async init() {
+		if (this._root) return true;
 		const protoJson = await $loadMgr.fetch(ResPath.EConfigPath.Proto, Laya.Loader.JSON);
+		if (!protoJson) return false;
 		this._root = protobuf.Root.fromJSON(protoJson);
 		this._root.resolveAll();
 		const services: protobuf.Service[] = [];
@@ -33,7 +35,7 @@ export class PbManager implements IPbManager {
 		});
 
 		this._wrapperCtor = this._root.lookupType('lq.Wrapper');
-
+		return true;
 	}
 
 	decodeMessage(bytes: Uint8Array) {

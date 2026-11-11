@@ -4,10 +4,10 @@ declare function $decodeProtoData<T extends IProto | IProto[]>(data: T): ProtoOb
 declare interface IPbManager {
 	get methodMap(): KeyMap<protobuf.Method>;
 	get method2Service(): KeyMap<EServiceType>;
-	init(): Promise<void>;
+	init(): Promise<boolean>;
 	decodeMessage(bytes: Uint8Array): protobuf.Message<{}>;
 	encodeRpc(method: string, bytes: Uint8Array): Uint8Array;
-	decodeRpc(bytes: Uint8Array): { name: string, data: Uint8Array };
+	decodeRpc(bytes: Uint8Array): { name: string, data: Uint8Array; };
 }
 
 declare interface IRouteInfo {
@@ -26,7 +26,7 @@ declare interface INetManager {
 	get gameConnected(): boolean;
 	get obConnected(): boolean;
 
-	init(): Promise<void>;
+	init(): Promise<boolean>;
 	connectLobby(): void;
 	connectGame(): void;
 	connectOb(): void;

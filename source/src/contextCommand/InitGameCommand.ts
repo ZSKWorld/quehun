@@ -23,9 +23,7 @@ export class InitGameCommand extends Command {
 		]);
 
 		const stage = Laya.stage;
-		const onResize = () => {
-			Laya.Stat._statUI._sp.pos(0, stage.height - Laya.Stat._statUI._sp.height);
-		};
+		const onResize = () => { Laya.Stat._statUI._sp.pos(0, stage.height - Laya.Stat._statUI._sp.height); };
 		onResize();
 		stage.on(Laya.Event.RESIZE, this, onResize);
 		//#if DEBUG
@@ -40,7 +38,7 @@ export class InitGameCommand extends Command {
 		AFKManager.Inst.init();
 		LobbyBgManager.Inst.init();
 
-		const [config] = await Promise.all([
+		const initRes = await $gameUtil.loopConfirmLoad(() => [
 			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),
 			$loadMgr.loadPackage([
 				//#if DEBUG
@@ -49,8 +47,10 @@ export class InitGameCommand extends Command {
 				ResPath.EPkgPath.PkgCommon,
 				ResPath.EPkgPath.PkgEntrance
 			]),
-		]);
-
+			$loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]),
+		], "游戏初始资源加载失败，是否重试？");
+		if (!initRes.first) return $gameMgr.exitGame(false);
+		const [, config] = initRes;
 
 		//#if !DEBUG
 		$logger.setEnable(false);
@@ -67,23 +67,21 @@ export class InitGameCommand extends Command {
 		$logger.setEnable(true);
 		//#endif
 
-		await $loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]);
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
-
 		const ipIndex = await new Promise<number>(resolve => {
 			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
 		});
 
 		$gameMgr.init(ipIndex, config);
-
 		$uiMgr.openView(EViewID.UIEntranceView);
 
-		await Promise.all([
+		const success = await $gameUtil.loopConfirmLoad(() => [
 			$pbMgr.init(),
 			$cfgMgr.init(),
 			$netMgr.init(),
 			$spineMgr.init(),
-		]);
+		], "游戏初始化失败，是否重试？");
+		if (!success.first) return $gameMgr.exitGame(false);
 
 		$netMgr.connectLobby();
 

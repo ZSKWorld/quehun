@@ -21,7 +21,9 @@ export class NetManager implements INetManager {
 	get obConnected() { return !!this._obSocket?.connected; }
 
 	async init() {
-		await this.fetchRoutes();
+		if (this._routes) return true;
+		const success = await this.fetchRoutes();
+		if (!success) return false;
 
 		this.initLobby();
 		this.initGame();
@@ -45,6 +47,7 @@ export class NetManager implements INetManager {
 				return $gameUtil.emptyFunc;
 			}
 		}));
+		return true;
 	}
 
 	private initLobby() {
@@ -120,12 +123,14 @@ export class NetManager implements INetManager {
 
 	private async fetchRoutes() {
 		const gateways = $gameMgr.ipInfo.gateways;
-		const routes = await Promise.race(gateways.map(v => {
+		const routes = await Promise.any(gateways.map(v => {
 			const url = `${ v.url }/api/clientgate/routes?platform=${ $gameMgr.detailPlatform }&version=${ $gameMgr.packageVersion }&lang=${ $gameMgr.clientType }`;
-			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => ({ routes: res?.data?.routes, url: v.url }));
+			return $loadMgr.fetch(url, Laya.Loader.JSON, null, { ignoreCache: true }).then(res => (res ? { routes: res?.data?.routes, url: v.url } : null));
 		}));
-		this._routes = routes.routes || [];
+		if (!routes) return false;
+		this._routes = routes.routes;
 		this._gateway = routes.url;
+		return true;
 	}
 
 	private _ignoreErrRequest = new Set<string>([

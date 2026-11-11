@@ -11,5 +11,7 @@ declare namespace DO {
 		isFirstRecharge(id: number): boolean;
 		/** 是否领取过对应等级的vip奖励 */
 		gainedVipLevelReward(level: number): boolean;
+		/** 进行充值 */
+		recharge(type: EPaymentType, id: number): void;
 	}
 }

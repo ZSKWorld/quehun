@@ -3,7 +3,7 @@
 import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComBackView } from "../../view/PkgCommon/view/coms/ComBackView";
 
-export default class UIPaipu extends GComponentView {
+export default class UIRecord extends GComponentView {
 
 	protected com_back: ComBackView;
 	protected btn_filter: fgui.GButton;
@@ -19,8 +19,8 @@ export default class UIPaipu extends GComponentView {
 	protected trans_show: fgui.Transition;
 	public static url: string = "ui://vith2b66qke2ob9o";
 
-	public static createInstance(): UIPaipu {
-		return <UIPaipu>(fgui.UIPackage.createObject("PkgMain", "UIPaipu"));
+	public static createInstance(): UIRecord {
+		return <UIRecord>(fgui.UIPackage.createObject("PkgMain", "UIRecord"));
 	}
 
 	protected override onConstruct(): void {

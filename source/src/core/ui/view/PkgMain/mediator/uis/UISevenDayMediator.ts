@@ -78,8 +78,8 @@ export class UISevenDayMediator extends MediatorBase<UISevenDayView, IUISevenDay
 				this.openView(EViewID.UIShopView, null, EViewOpenType.Hide);
 				break;
 
-			case EUISevenDayRenderClickEvent.JumpUIPaiPu:
-				this.openView(EViewID.UIPaipuView, null, EViewOpenType.Hide);
+			case EUISevenDayRenderClickEvent.JumpUIRecord:
+				this.openView(EViewID.UIRecordView, null, EViewOpenType.Hide);
 				break;
 
 			case EUISevenDayRenderClickEvent.JumpUIObserver:

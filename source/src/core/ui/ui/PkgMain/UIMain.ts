@@ -26,7 +26,7 @@ export default class UIMain extends GComponentView {
 	protected btn_liaoShe: fgui.GButton;
 	protected btn_friend: fgui.GButton;
 	protected btn_observer: fgui.GButton;
-	protected btn_paiPu: fgui.GButton;
+	protected btn_record: fgui.GButton;
 	protected btn_bag: fgui.GButton;
 	protected btn_shop: fgui.GButton;
 	protected btn_treasure: BtnXunMiView;
@@ -59,7 +59,7 @@ export default class UIMain extends GComponentView {
 		this.btn_liaoShe = <fgui.GButton>(this.getChildAt(13));
 		this.btn_friend = <fgui.GButton>(this.getChildAt(14));
 		this.btn_observer = <fgui.GButton>(this.getChildAt(15));
-		this.btn_paiPu = <fgui.GButton>(this.getChildAt(16));
+		this.btn_record = <fgui.GButton>(this.getChildAt(16));
 		this.btn_bag = <fgui.GButton>(this.getChildAt(17));
 		this.btn_shop = <fgui.GButton>(this.getChildAt(18));
 		this.btn_treasure = <BtnXunMiView>(this.getChildAt(19));

@@ -62,7 +62,7 @@ export class LobbyBgManager extends Observer {
 			case EViewID.UITreasureView:
 			case EViewID.UIFriendView:
 			case EViewID.UIObserverView:
-			case EViewID.UIPaipuView:
+			case EViewID.UIRecordView:
 			case EViewID.UIRechargeView:
 			case EViewID.UIShopView:
 				newBg = this._indoor; break;

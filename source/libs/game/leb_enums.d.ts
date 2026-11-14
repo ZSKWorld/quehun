@@ -658,6 +658,10 @@ declare enum EUserEvent {
 	OnNewAchievement = "EUserEvent_OnNewAchievement",
 
 	//#endregion
+
+	//#region 牌谱相关
+	OnRecordChanged = "EUserEvent_OnRecordChanged",
+	//#endregion
 }
 
 //#region 视频事件

@@ -30,7 +30,7 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIMailView]: [UIBottom, Popup],
 			[EViewID.UIMainView]: [],
 			[EViewID.UIObserverView]: [],
-			[EViewID.UIPaipuView]: [],
+			[EViewID.UIRecordView]: [],
 			[EViewID.UIRankView]: [UIBottom, Popup],
 			[EViewID.UIRechargeView]: [],
 			[EViewID.UISettingView]: [UIBottom, Popup],

@@ -2,14 +2,17 @@ declare namespace DO {
 	interface IRecordDO {
 		/** 最大可收藏数量 */
 		get maxCollect(): number;
-		/** 收藏牌谱列表简要 */
-		get collectList(): ProtoObject<IRecordCollectedData>[];
+		/** 收藏牌谱简要列表 */
+		get collectBriefs(): ProtoObject<IRecordCollectedData>[];
+		get filter(): IReqGameRecordListV2;
 
 		/**
 		 * 加载牌谱列表
 		 * @param type 总览（全部）=0/段位=1/友人=2/活动=3/赛事=4/收藏=5
 		 */
 		loadRecord(type: 0 | 1 | 2 | 3 | 4 | 5): void;
+		/** 重置对应牌谱加载器 */
+		resetLoader(type: ERecordTag): void;
 		/** 获取牌谱详情数据 */
 		getRecordDetail(uuid: string): IRecordListEntry;
 		/** 获取收藏牌谱简要 */

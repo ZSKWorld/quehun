@@ -1,15 +1,15 @@
-import UIPaipu from "../../../../ui/PkgMain/UIPaipu";
+import UIRecord from "../../../../ui/PkgMain/UIRecord";
 
 const Scroll_Threshold = 150; // 触底检查阈值
 
-export const enum EUIPaipuMsg {
+export const enum EUIRecordMsg {
 	OnListInfoScrollEnd = "EUILiaoSheMsg_OnListInfoScrollEnd",
 }
 
-export class UIPaipuView extends UIPaipu {
+export class UIRecordView extends UIRecord {
 
 	override onCreate() {
-		const { com_back , list_info} = this;
+		const { com_back, list_info } = this;
 		com_back.onBackClick(this, this.closeSelf);
 
 		list_info.on(fgui.Events.SCROLL, this, this.onListRankScroll);
@@ -19,7 +19,7 @@ export class UIPaipuView extends UIPaipu {
 		const { contentHeight, viewHeight, posY } = this.list_info.scrollPane;
 		// 触底检测：当前位置 + 视口高度 >= 内容高度 - 阈值
 		if (contentHeight - posY - viewHeight <= Scroll_Threshold) {
-			this.event(EUIPaipuMsg.OnListInfoScrollEnd);
+			this.event(EUIRecordMsg.OnListInfoScrollEnd);
 		}
 	}
 

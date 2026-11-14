@@ -4,7 +4,7 @@ import { GComponentView } from "../../core/viewBase/GComponentView";
 import { ComLevel2View } from "../../view/PkgCommon/view/coms/ComLevel2View";
 import { LabelNameView } from "../../view/PkgCommon/view/labels/LabelNameView";
 
-export default class RenderPaiPuItem2 extends GComponentView {
+export default class RenderRecordItem2 extends GComponentView {
 
 	protected ctrl_type: fgui.Controller;
 	protected ctrl_my: fgui.Controller;
@@ -22,8 +22,8 @@ export default class RenderPaiPuItem2 extends GComponentView {
 	protected txt_cong: fgui.GTextField;
 	public static url: string = "ui://vith2b66ftegobjk";
 
-	public static createInstance(): RenderPaiPuItem2 {
-		return <RenderPaiPuItem2>(fgui.UIPackage.createObject("PkgMain", "RenderPaiPuItem2"));
+	public static createInstance(): RenderRecordItem2 {
+		return <RenderRecordItem2>(fgui.UIPackage.createObject("PkgMain", "RenderRecordItem2"));
 	}
 
 	protected override onConstruct(): void {

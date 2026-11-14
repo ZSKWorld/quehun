@@ -90,6 +90,21 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 		this.dispatch(EUserEvent.OnCharacterSortChanged);
 	}
 
+	@InjectNetEvent(ENetMessage.changeMainCharacter)
+	private onChangeMainCharacter(_, req: IReqChangeMainCharacter) {
+		this._mainCharId = req.character_id;
+		this.dispatch(EUserEvent.OnMainCharacterChanged);
+	}
+
+	@InjectNetEvent(ENetMessage.updateCharacterSort)
+	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
+		this._characterSort = req.sort;
+		this._otherCharacterSort = req.other_sort;
+		this._hiddenCharacters = req.hidden_characters;
+		this.updateKindOfChars();
+		this.dispatch(EUserEvent.OnCharacterSortChanged);
+	}
+
 	@InjectNetEvent(ENetNotify.NotifyAccountUpdate)
 	private onNotifyAccountUpdate(data: INotifyAccountUpdate) {
 		if (!data.update) return;
@@ -114,19 +129,9 @@ export class CharacterDO extends BaseDO implements DO.ICharacterDO {
 		}
 	}
 
-	@InjectNetEvent(ENetMessage.changeMainCharacter)
-	private onChangeMainCharacter(_, req: IReqChangeMainCharacter) {
-		this._mainCharId = req.character_id;
-		this.dispatch(EUserEvent.OnMainCharacterChanged);
-	}
-
-	@InjectNetEvent(ENetMessage.updateCharacterSort)
-	private onUpdateCharacterSort(res: IResCommon, req: IReqUpdateCharacterSort) {
-		this._characterSort = req.sort;
-		this._otherCharacterSort = req.other_sort;
-		this._hiddenCharacters = req.hidden_characters;
-		this.updateKindOfChars();
-		this.dispatch(EUserEvent.OnCharacterSortChanged);
+	@InjectNetEvent(ENetNotify.NotifyVipLevelChange)
+	private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
+		this._sendGiftLimit = data.gift_limit;
 	}
 
 	private updateKindOfChars() {

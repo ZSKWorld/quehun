@@ -53,7 +53,7 @@ declare interface IUIObserverData {
 
 }
 
-declare interface IUIPaipuData {
+declare interface IUIRecordData {
 
 }
 

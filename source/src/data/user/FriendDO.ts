@@ -93,6 +93,12 @@ export class FriendDO extends BaseDO implements DO.IFriendDO {
 		this.dispatch(EUserEvent.OnFriendApplyChanged);
 	}
 
+	@InjectNetEvent(ENetNotify.NotifyVipLevelChange)
+	private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
+		this._friendMaxCount = data.friend_max_count;
+		this.dispatch(EUserEvent.OnFriendMaxCountChanged);
+	}
+
 	private sortFriend() {
 		this._friends.sort((a, b) => this.getSortNum(b) - this.getSortNum(a));
 	}

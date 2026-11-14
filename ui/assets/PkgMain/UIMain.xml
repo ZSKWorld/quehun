@@ -41,7 +41,7 @@
     <component id="n2_vwgm" name="observer" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1164,950" size="148,118" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgmb"/>
     </component>
-    <component id="n3_vwgm" name="paiPu" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
+    <component id="n3_vwgm" name="record" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1318,956" size="128,112" group="n7_vwgm">
       <Button icon="ui://vith2b66vwgm7"/>
     </component>
     <component id="n4_vwgm" name="bag" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1453,957" size="123,110" group="n7_vwgm">

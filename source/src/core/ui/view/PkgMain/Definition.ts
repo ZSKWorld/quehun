@@ -48,7 +48,7 @@ export const enum EUISevenDayRenderClickEvent {
 	JumpUIHelp = 1,
 	JumpUILiaoShe,
 	JumpUIShop,
-	JumpUIPaiPu,
+	JumpUIRecord,
 	JumpUIObserver,
 	JumpUIAchievement,
 	JumpUICreateRoom = 11,
@@ -69,5 +69,5 @@ export const enum EUILiaoSheEvent {
 }
 
 export const enum EUIVisitEvent {
-	
+
 }

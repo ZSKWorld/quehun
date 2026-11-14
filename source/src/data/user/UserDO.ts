@@ -70,11 +70,6 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 
 	}
 
-	@InjectNetEvent(ENetNotify.NotifyVipLevelChange)
-	private onNotifyVipLevelChange(data: INotifyVipLevelChange) {
-		$logger.error("NotifyVipLevelChange", data);
-	}
-
 	@InjectNetEvent(ENetMessage.fetchInfo)
 	private onFetchInfo(res: IResFetchInfo) {
 		const dispatch = $facade.dispatch.bind($facade) as typeof $facade.dispatch;

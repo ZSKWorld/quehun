@@ -53,7 +53,7 @@ export class SkeletonManager implements ISkeletonManager {
 		const poolArr = this._skeletonPool.get(url);
 		if (!poolArr) return;
 		poolArr.forEach(v => v.destroy());
-		poolArr.length = 0;
+		poolArr.clear();
 	}
 
 	dispose(url: string) {

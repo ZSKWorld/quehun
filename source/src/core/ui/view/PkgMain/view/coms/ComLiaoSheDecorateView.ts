@@ -20,19 +20,19 @@ const ItemPreview = [
 	[true, false], [true, true], [true, true], [true, true], [true, false]
 ];
 
-class DecoViewData implements IResAllcommonViews_Views {
+class DecoViewData implements IResAllcommonViews.IViews {
 	name: string;
 	index: number;
 	values: IViewSlot[];
 
-	init(data: IResAllcommonViews_Views) {
+	init(data: IResAllcommonViews.IViews) {
 		const newData = structuredClone(data);
 		this.name = newData.name;
 		this.index = newData.index;
 		this.values = newData.values;
 	}
 
-	equals(other: IResAllcommonViews_Views) {
+	equals(other: IResAllcommonViews.IViews) {
 		if (!other) return;
 		if (this.index != other.index) return false;
 		if (this.name != other.name) return false;
@@ -71,58 +71,70 @@ export class ComLiaoSheDecorateView extends ComLiaoSheDecorate {
 		btn_random.onClick(this, this.onBtnRandomClick);
 		btn_editName.onClick(this, this.onBtnEditNameClick);
 
-		$uiUtil.setList(list_tab, false, this, (index: number, item: RenderLiaoSheDecoTabView) => {
-			const { use, views } = $user.commonView;
-			item.refresh(views[index], views[index].index == use);
-		}, (_, __, index) => {
-			const { _curData, dataChanged, list_tab } = this;
-			const oldIndex = $user.commonView.views.findIndex(v => v.index == _curData.index);
-			if (oldIndex == index) return;
-			if (dataChanged) {
-				list_tab.selectedIndex = oldIndex;
-				$confirmSma(3, $lang(3022)).then(v => {
-					v && this.refreshView(index);
-				});
-			} else {
-				this.refreshView(index);
-			}
-		});
-
-		$uiUtil.setList(list_view, false, this, (index: number, item: RenderLiaoSheDecoTypeView) => {
-			const slotData = this._curData.values[index];
-			item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type ? SlotIconRandom : SlotIcons[index]);
-		}, (_, __, index: number) => {
-			this.refreshItem(index);
-		});
-
-		$uiUtil.setList(list_item, false, this, (index: number, item: RenderLiaoSheDecoItemView) => {
-			const id = this._items[index];
-			const { type, item_id_list, slot } = this.slotData;
-			item.refresh(id, !!type, item_id_list.includes(id), slot == EItemCommonType.LiZhiMusic);
-		}, (item: RenderLiaoSheDecoItemView, evt: Laya.Event, index: number) => {
-			const { _items, slotData, list_view, list_item } = this;
-			const id = _items[index];
-			if (!slotData.type) {
-				const defaultId = $user.commonView.getDefaultViewId(slotData.slot);
-				const targetId = defaultId || id != slotData.item_id ? id : 0;
-				if (targetId == slotData.item_id) return;
-				slotData.item_id = targetId;
-				if (!targetId) list_item.selectedIndex = -1;
-			} else {
-				const index = slotData.item_id_list.indexOf(id);
-				if (index == -1) {
-					slotData.item_id_list.push(id);
+		$uiUtil.initList<RenderLiaoSheDecoTabView>(
+			list_tab, false, this,
+			(index, item) => {
+				const { use, views } = $user.commonView;
+				item.refresh(views[index], views[index].index == use);
+			},
+			(item, e, index) => {
+				const { _curData, dataChanged, list_tab } = this;
+				const oldIndex = $user.commonView.views.findIndex(v => v.index == _curData.index);
+				if (oldIndex == index) return;
+				if (dataChanged) {
+					list_tab.selectedIndex = oldIndex;
+					$confirmSma(3, $lang(3022)).then(v => {
+						v && this.refreshView(index);
+					});
 				} else {
-					if (slotData.item_id_list.length > 1)
-						slotData.item_id_list.splice(index, 1);
-					else
-						return;
+					this.refreshView(index);
 				}
 			}
-			list_view.numItems = list_view.numItems;
-			list_item.numItems = list_item.numItems;
-			this.onDataChanged();
-		});
+		);
+
+		$uiUtil.initList<RenderLiaoSheDecoTypeView>(
+			list_view, false, this,
+			(index, item) => {
+				const slotData = this._curData.values[index];
+				item.refresh(slotData, SlotTitles[index], SlotNames[index], slotData.type ? SlotIconRandom : SlotIcons[index]);
+			},
+			(item, e, index: number) => {
+				this.refreshItem(index);
+			}
+		);
+
+		$uiUtil.initList<RenderLiaoSheDecoItemView>(
+			list_item, false, this,
+			(index, item) => {
+				const id = this._items[index];
+				const { type, item_id_list, slot } = this.slotData;
+				item.refresh(id, !!type, item_id_list.includes(id), slot == EItemCommonType.LiZhiMusic);
+			},
+			(item, e, index) => {
+				const { _items, slotData, list_view, list_item } = this;
+				const id = _items[index];
+				if (!slotData.type) {
+					const defaultId = $user.commonView.getDefaultViewId(slotData.slot);
+					const targetId = defaultId || id != slotData.item_id ? id : 0;
+					if (targetId == slotData.item_id) return;
+					slotData.item_id = targetId;
+					if (!targetId) list_item.selectedIndex = -1;
+				} else {
+					const index = slotData.item_id_list.indexOf(id);
+					if (index == -1) {
+						slotData.item_id_list.push(id);
+					} else {
+						if (slotData.item_id_list.length > 1)
+							slotData.item_id_list.splice(index, 1);
+						else
+							return;
+					}
+				}
+				list_view.numItems = list_view.numItems;
+				list_item.numItems = list_item.numItems;
+				this.onDataChanged();
+			}
+		);
 	}
 
 	override onEnable() {
@@ -225,7 +237,7 @@ export class ComLiaoSheDecorateView extends ComLiaoSheDecorate {
 			const originType = originData.type;
 			const originList = originData.item_id_list;
 			if (originType == slotType && originList.length == 0 && item_id_list.length == 1 && item_id_list.first == _items.first) {
-				item_id_list.length = 0;
+				item_id_list.clear();
 			}
 		}
 

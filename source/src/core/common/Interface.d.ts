@@ -330,6 +330,12 @@ declare interface ITimeUtil {
 	 * @param split 替换 : 符号
 	 */
 	dateFormat2(timestamp: number, split?: string): string;
+	/**
+	 * 将日期转换成 `18:51` 的格式
+	 * @param timestamp 
+	 * @param split 替换 : 符号
+	 */
+	dateFormat3(timestamp: number, split?: string): string;
 
 	/** 等待 `milSec` 毫秒 */
 	wait(milSec: number): Promise<void>;
@@ -356,6 +362,8 @@ declare interface ILocalDataManager {
 }
 
 declare interface IItemUtil {
+	/** 获取同服的称号 */
+	zoneTitle(accountId: number, titleId: number): number;
 	/** 拆分物品数量字符串 */
 	splitItems(str: string): IItem[];
 	getItemType(id: number): EItemType;

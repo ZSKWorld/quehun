@@ -11,6 +11,7 @@ import ComSettingLang from "./ComSettingLang";
 import ComSettingOther from "./ComSettingOther";
 import BtnBuy from "./BtnBuy";
 import UIRecharge from "./UIRecharge";
+import ComLevel2 from "./ComLevel2";
 import ComFlowerLoading from "./ComFlowerLoading";
 import UILoading2 from "./UILoading2";
 import BtnSwitch1 from "./BtnSwitch1";
@@ -60,6 +61,7 @@ import { ComSettingLangView } from "../../view/PkgCommon/view/coms/ComSettingLan
 import { ComSettingOtherView } from "../../view/PkgCommon/view/coms/ComSettingOtherView";
 import { BtnBuyView } from "../../view/PkgCommon/view/btns/BtnBuyView";
 import { UIRechargeView } from "../../view/PkgCommon/view/uis/UIRechargeView";
+import { ComLevel2View } from "../../view/PkgCommon/view/coms/ComLevel2View";
 import { ComFlowerLoadingView } from "../../view/PkgCommon/view/coms/ComFlowerLoadingView";
 import { UILoading2View } from "../../view/PkgCommon/view/uis/UILoading2View";
 import { BtnSwitch1View } from "../../view/PkgCommon/view/btns/BtnSwitch1View";
@@ -107,6 +109,7 @@ export default class PkgCommonBinder {
 		fgui.UIObjectFactory.setExtension(ComSettingOther.url, ComSettingOtherView);
 		fgui.UIObjectFactory.setExtension(BtnBuy.url, BtnBuyView);
 		fgui.UIObjectFactory.setExtension(UIRecharge.url, UIRechargeView);
+		fgui.UIObjectFactory.setExtension(ComLevel2.url, ComLevel2View);
 		fgui.UIObjectFactory.setExtension(ComFlowerLoading.url, ComFlowerLoadingView);
 		fgui.UIObjectFactory.setExtension(UILoading2.url, UILoading2View);
 		fgui.UIObjectFactory.setExtension(BtnSwitch1.url, BtnSwitch1View);

@@ -1,8 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImageAlpha="70">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="观战"/>
     </component>
+    <image id="n6_h3uf" name="n6" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="74,156" size="1781,870" group="n8_h3uf"/>
+    <component id="n1_cbv5" name="model" src="gsi2oben" fileName="Component/ComboBox/CmbCommon1.xml" pkg="vx9zwser" xy="143,212" size="324,73" group="n8_h3uf">
+      <ComboBox visibleItemCount="12">
+        <item title="1"/>
+        <item title="2"/>
+        <item title="3"/>
+        <item title="4"/>
+        <item title="5"/>
+        <item title="6"/>
+        <item title="7"/>
+        <item title="8"/>
+      </ComboBox>
+    </component>
+    <component id="n2_cbv5" name="type" src="gsi2oben" fileName="Component/ComboBox/CmbCommon1.xml" pkg="vx9zwser" xy="574,212" size="328,73" group="n8_h3uf">
+      <ComboBox visibleItemCount="12">
+        <item title="1"/>
+        <item title="2"/>
+        <item title="3"/>
+        <item title="4"/>
+        <item title="5"/>
+        <item title="6"/>
+        <item title="7"/>
+        <item title="8"/>
+      </ComboBox>
+    </component>
+    <component id="n3_cbv5" name="onlyFriend" src="mj5kb6p" fileName="Component/UIBag/BtnBagSkinCheck.xml" xy="1386,218" pivot="1,0" size="373,48" group="n8_h3uf">
+      <Button title="仅显示好友所在对局" titleFontSize="37"/>
+    </component>
+    <component id="n4_cbv5" name="refresh" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1002,205" size="200,86" group="n8_h3uf">
+      <Button title="刷新" titleFontSize="40"/>
+    </component>
+    <list id="n5_cbv5" name="ob" xy="136,307" size="1687,653" group="n8_h3uf" customData="sdfas gdfg dfg" overflow="scroll" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="11" defaultItem="ui://vith2b66h3ufobj9" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <group id="n8_h3uf" name="n8" xy="74,156" size="1781,870" advanced="true"/>
   </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n8_h3uf" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n8_h3uf" tween="true" startValue="-,206" endValue="-,156" duration="12" ease="Linear"/>
+  </transition>
 </component>

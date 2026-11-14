@@ -18,6 +18,6 @@ export default class ComLevel extends GComponentView {
 		this.ctrl_ht = this.getControllerAt(0);
 		this.ctrl_star = this.getControllerAt(1);
 		this.loader_icon = <fgui.GLoader>(this.getChildAt(1));
-		this.txt_htLevel = <fgui.GTextField>(this.getChildAt(3));
+		this.txt_htLevel = <fgui.GTextField>(this.getChildAt(10));
 	}
 }

@@ -83,7 +83,14 @@ export class UIHelpView extends UIHelp {
 			btn_pointLink6, btn_pointLink7, btn_pointLink8, btn_pointLink9
 		].forEach((v, i) => v.onClick(this, this.onPointLinkClick, [v, i]));
 
-		$uiUtil.setList(list_fan, true, this, this.onListFanRender);
+		$uiUtil.initList<RenderHelpItem1View>(
+			list_fan, true, this,
+			(index, item) => {
+				const tagIndex = this._fanGroup.selectIndex;
+				const fanData = this._fanData[this._fanMode][tagIndex][index];
+				item.refresh(fanData[0], fanData[1]);
+			}
+		);
 
 		$cfgMgr.fandesc.fandesc.forEach(v => {
 			if (!v.show) return;
@@ -134,12 +141,6 @@ export class UIHelpView extends UIHelp {
 	private onFanTabChanged(index: number) {
 		const fanData = this._fanData[this._fanMode][index];
 		this.list_fan.numItems = fanData.length;
-	}
-
-	private onListFanRender(index: number, item: RenderHelpItem1View) {
-		const tagIndex = this._fanGroup.selectIndex;
-		const fanData = this._fanData[this._fanMode][tagIndex][index];
-		item.refresh(fanData[0], fanData[1]);
 	}
 	//#endregion
 

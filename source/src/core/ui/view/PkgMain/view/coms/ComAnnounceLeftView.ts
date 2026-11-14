@@ -9,7 +9,17 @@ export class ComAnnounceLeftView extends ComAnnounceLeft {
 	private _announcements: [number, string, boolean][];
 
 	override onCreate() {
-		$uiUtil.setList(this.list_tab, true, this, this.onListTabRender, this.onListTabClick);
+		$uiUtil.initList<fgui.GButton>(
+			this.list_tab, true, this,
+			(index, item) => {
+				const data = this._announcements[index];
+				item.title = data[1];
+				item.iconObject.visible = !data[2];
+			},
+			(item, e, index) => {
+				this.event(EUIAnnounceEvent.OnTabSelectChanged, index);
+			}
+		);
 	}
 
 	refresh(announcements: [number, string, boolean][], selectAnnounceId: number) {
@@ -18,16 +28,6 @@ export class ComAnnounceLeftView extends ComAnnounceLeft {
 
 		const index = Math.max(announcements.findIndex(v => v[0] == selectAnnounceId), 0);
 		this.list_tab.selectedIndex = index;
-		this.onListTabClick(null, null, index);
-	}
-
-	private onListTabRender(index: number, item: fgui.GButton) {
-		const data = this._announcements[index];
-		item.title = data[1];
-		item.iconObject.visible = !data[2];
-	}
-
-	private onListTabClick(_, __, index: number) {
 		this.event(EUIAnnounceEvent.OnTabSelectChanged, index);
 	}
 }

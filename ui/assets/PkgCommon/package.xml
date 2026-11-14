@@ -45,7 +45,7 @@
     <image id="ieavob7u" name="img_265.png" path="/Texture/" exported="true" scale="9grid" scale9grid="7,0,4,20"/>
     <image id="ieavob7v" name="img_2421.png" path="/Texture/" exported="true"/>
     <image id="ieavob7w" name="img_2420.png" path="/Texture/" exported="true"/>
-    <image id="ieavob7x" name="img_2295.png" path="/Texture/" exported="true"/>
+    <image id="ieavob7x" name="img_2295.png" path="/Texture/" exported="true" scale="9grid" scale9grid="30,30,96,10"/>
     <image id="ieavob7y" name="img_1793.png" path="/Texture/" exported="true"/>
     <image id="ieavob7z" name="img_175.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,10,9,0"/>
     <image id="ieavob80" name="img_174.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,10,9,0"/>
@@ -378,6 +378,38 @@
     <image id="9c0bobll" name="img_888.png" path="/Texture/" exported="true"/>
     <image id="nsj8oblm" name="img_1507.png" path="/Texture/" exported="true"/>
     <image id="9vb3oblo" name="img_2495.png" path="/Texture/" exported="true" scale="9grid" scale9grid="0,5,300,36"/>
+    <image id="ftegoblp" name="img_1197.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblq" name="img_964.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblr" name="img_965.png" path="/Texture/" exported="true"/>
+    <image id="ftegobls" name="img_1196.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblt" name="img_1000.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblu" name="img_3057.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblv" name="img_3056.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblw" name="img_3055.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblx" name="img_3054.png" path="/Texture/" exported="true"/>
+    <image id="ftegobly" name="img_3053.png" path="/Texture/" exported="true"/>
+    <image id="ftegoblz" name="img_3052.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm0" name="img_3051.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm1" name="img_3050.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm2" name="img_3049.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm3" name="img_3048.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm4" name="img_3047.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm5" name="img_1012.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm6" name="img_1011.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm7" name="img_1010.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm8" name="img_1009.png" path="/Texture/" exported="true"/>
+    <image id="ftegobm9" name="img_1008.png" path="/Texture/" exported="true"/>
+    <image id="ftegobma" name="img_1007.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmb" name="img_1006.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmc" name="img_1005.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmd" name="img_1004.png" path="/Texture/" exported="true"/>
+    <image id="ftegobme" name="img_1003.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmf" name="img_1002.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmg" name="img_1001.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmh" name="img_998.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmi" name="img_999.png" path="/Texture/" exported="true"/>
+    <image id="ftegobmj" name="img_333.png" path="/Texture/" exported="true"/>
+    <component id="ftegobml" name="ComLevel2.xml" path="/Component/Component/段位/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

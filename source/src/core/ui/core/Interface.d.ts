@@ -155,12 +155,12 @@ declare interface IUIUtil {
 	 * @param renderFunc 渲染回调
 	 * @param clickFunc 点击回调
 	 */
-	setList(
+	initList<T extends fgui.GObject>(
 		list: fgui.GList,
 		virtual?: boolean,
 		caller?: any,
-		renderFunc?: (index?: number, item?: any) => void,
-		clickFunc?: (item?: any, evt?: Laya.Event, index?: number) => void
+		renderFunc?: (index?: number, item?: T) => void,
+		clickFunc?: (item?: T, evt?: Laya.Event, index?: number) => void
 	): void;
 
 	/**
@@ -173,7 +173,7 @@ declare interface IUIUtil {
 	 * @param defaultValue 默认值
 	 * @param showItemCount 下拉显示数量
 	 */
-	setCombox(
+	initCombox(
 		cmb: fgui.GComboBox,
 		items: string[],
 		values: any[],
@@ -194,4 +194,6 @@ declare interface IUIUtil {
 		txt_htScore?: fgui.GTextField,
 	}, data: IAccountLevel): void;
 	parseUBBText(str: string, hrefColor?: string): string;
+	/** 检查全局位置是否在目标范围内 */
+	checkPointInGobject(x: number, y: number, obj: fgui.GObject): boolean;
 }

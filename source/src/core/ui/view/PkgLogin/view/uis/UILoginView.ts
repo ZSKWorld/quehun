@@ -22,10 +22,8 @@ export class UILoginView extends UILogin {
 	override onCreate() {
 		const {
 			btn_login, btn_announce, btn_help, btn_loginByAccount, btn_loginBtnPhone,
-			btn_register, btn_forgotPassword, btn_forgotAccount, txt_version, itxt_account, itxt_password,
+			btn_register, btn_forgotPassword, btn_forgotAccount, itxt_account, itxt_password,
 			btn_logout } = this;
-		
-		txt_version.text = $gameMgr.displayVersionStr;
 		
 		btn_login.onClick(this, this.event, [EUILoginMsg.OnBtnLoginClick]);
 		btn_announce.onClick(this, this.event, [EUILoginMsg.OnBtnAnnounceClick]);

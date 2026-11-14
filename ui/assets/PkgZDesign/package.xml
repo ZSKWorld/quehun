@@ -1762,6 +1762,11 @@
     <image id="9vb37plomu" name="24wenjuan2.png" path="/11/"/>
     <image id="9vb37plomv" name="icon_resurrection_coin.png" path="/11/"/>
     <image id="hf797plomw" name="活动-青云.jpg" path="/11/"/>
+    <image id="h3uf7plomx" name="1.jpg" path="/11/观战/"/>
+    <image id="h3uf7plomy" name="2.jpg" path="/11/观战/"/>
+    <image id="fteg7plomz" name="1.jpg" path="/11/牌谱/"/>
+    <image id="fteg7plon0" name="2.jpg" path="/11/牌谱/"/>
+    <image id="fteg7plon1" name="3.jpg" path="/11/牌谱/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

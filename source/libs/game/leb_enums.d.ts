@@ -39,6 +39,52 @@ declare enum EMjpType {
 	/** 百搭 */
 	BD = "bd",
 }
+
+/** 大胡类型 */
+declare enum EBigHuType {
+	/** 流满 */
+	E_Dadian_Title_liuman = -1,
+	/** 无 */
+	E_Dadian_Title_none = 0,
+	/** 满贯 */
+	E_Dadian_Title_manguan = 1,
+	/** 跳满 */
+	E_Dadian_Title_tiaoman = 2,
+	/** 倍满 */
+	E_Dadian_Title_beiman = 3,
+	/** 三倍满 */
+	E_Dadian_Title_sanbeiman = 4,
+	/** 役满 */
+	E_Dadian_Title_yiman = 5,
+	/** 两倍役满 */
+	E_Dadian_Title_yiman2 = 6,
+	/** 三倍役满 */
+	E_Dadian_Title_yiman3 = 7,
+	/** 四倍役满 */
+	E_Dadian_Title_yiman4 = 8,
+	/** 五倍役满 */
+	E_Dadian_Title_yiman5 = 9,
+	/** 六倍役满 */
+	E_Dadian_Title_yiman6 = 10,
+	/** 累计役满 */
+	E_Dadian_Title_leijiyiman = 11,
+}
+
+/** 牌谱标签 */
+declare enum ERecordTag {
+	/** 总览（全部） */
+	All = 0,
+	/** 段位 */
+	Level = 1,
+	/** 友人 */
+	Friend = 2,
+	/** 活动 */
+	Activity = 3,
+	/** 赛事 */
+	Match = 4,
+	/** 收藏 */
+	Collect = 5,
+}
 //#endregion
 
 /** 本地化语言 */
@@ -746,6 +792,8 @@ declare enum ERDName {
 /** 配置表本地化字段名 */
 declare enum ECfgLangField {
 	name = "name",
+	name1 = "name1",
+	name2 = "name2",
 	desc = "desc",
 	desc2 = "desc2",
 	desc_cv = "desc_cv",

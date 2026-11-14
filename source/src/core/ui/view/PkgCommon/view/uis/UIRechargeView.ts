@@ -18,7 +18,17 @@ export class UIRechargeView extends UIRecharge {
 		this._tabGroup.init([
 			btn_tab0, btn_tab1, btn_tab2, btn_tab3, btn_tab4
 		], this, this.onTabChanged, EColorString._d9b263, EColorString._8cb65f);
-		$uiUtil.setList(list_item, true, this, this.onListItemRender, this.onListItemClick);
+		$uiUtil.initList<ComRechargeItemView>(
+			list_item, true, this,
+			(index, item) => {
+				item.refresh(this._tabGroup.selectIndex, this._itemIds[index]);
+			},
+			(item, e, index) => {
+				const eventName = item.rechargeEvent;
+				if (eventName)
+					this.event(eventName, this._itemIds[index]);
+			}
+		);
 	}
 
 	refreshTab(type: EUIRechargeTabType, enables: Record<EUIRechargeTabType, boolean>) {
@@ -48,16 +58,6 @@ export class UIRechargeView extends UIRecharge {
 
 	private onTabChanged(type: EUIRechargeTabType) {
 		this.event(EUIRechargeEvent.OnTabSelectChanged, type);
-	}
-
-	private onListItemRender(index: number, item: ComRechargeItemView) {
-		item.refresh(this._tabGroup.selectIndex, this._itemIds[index]);
-	}
-
-	private onListItemClick(item: ComRechargeItemView, _, index: number) {
-		const eventName = item.rechargeEvent;
-		if (eventName)
-			this.event(eventName, this._itemIds[index]);
 	}
 
 	override onOpenAni() {

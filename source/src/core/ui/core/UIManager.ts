@@ -27,7 +27,7 @@ class UIStack {
 	}
 
 	clear() {
-		this._data.length = 0;
+		this._data.clear();
 	}
 }
 /** 页面缓存 */
@@ -39,6 +39,11 @@ class UICache {
 		if (!mediator) return;
 		const viewId = mediator.viewId as EUIViewID;
 		this._mediators.set(viewId, mediator);
+	}
+
+	find(viewId: EUIViewID) {
+		const mediator = this._mediators.get(viewId);
+		return mediator;
 	}
 
 	get(viewId: EUIViewID) {
@@ -131,7 +136,7 @@ export class UIManager extends Notifier implements IUIManager {
 		if (this.isStackView(viewId)) {
 			const nextViewId = this._openedStack.peek();
 			if (nextViewId && nextViewId != this.topViewId) {
-				const mediator = this._openedViews.find(v => v.viewId == nextViewId) || this._cache.get(nextViewId);
+				const mediator = this._openedViews.find(v => v.viewId == nextViewId) || this._cache.find(nextViewId);
 				await this.openView(this._openedStack.pop(), mediator?.data);
 			}
 		}
@@ -143,7 +148,7 @@ export class UIManager extends Notifier implements IUIManager {
 			v.view.parent && v.view.removeFromParent();
 			this._cache.cache(v);
 		});
-		this._openedViews.length = 0;
+		this._openedViews.clear();
 		this._openedStack.clear();
 	}
 
@@ -193,7 +198,10 @@ export class UIManager extends Notifier implements IUIManager {
 		let mediator: IMediator;
 		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
 		if (openIndex == -1) {
-			mediator = this._cache.get(viewId) || $facade.createMediator(viewId, true);
+			mediator = this._cache.get(viewId);
+			if (!mediator){
+				mediator = $facade.createMediator(viewId, true);
+			}
 		} else {
 			mediator = this._openedViews[openIndex];
 			this._openedViews.splice(openIndex, 1);

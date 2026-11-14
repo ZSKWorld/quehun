@@ -9,7 +9,16 @@ export class ComBagIllustView extends ComBagIllust {
 	private _items: ISheetData_ItemDefinition_LoadingImage[];
 	override onCreate() {
 		const { list_illust } = this;
-		$uiUtil.setList(list_illust, true, this, this.onListIllustItemRenderer, this.onListIllustItemClick);
+		$uiUtil.initList<RenderBagIllustItemView>(
+			list_illust, true, this,
+			(index, item) => {
+				const itemData = this._items[index];
+				item.refresh(itemData, $user.bag.isUsingCG(itemData.id));
+			},
+			(item, e, index) => {
+				$user.bag.changeCGUsing(this._items[index].id);
+			}
+		);
 	}
 
 	override onEnable() {
@@ -28,14 +37,5 @@ export class ComBagIllustView extends ComBagIllust {
 
 	private onCGUsingChanged() {
 		this.list_illust.refreshVirtualList();
-	}
-
-	private onListIllustItemRenderer(index: number, item: RenderBagIllustItemView) {
-		const itemData = this._items[index];
-		item.refresh(itemData, $user.bag.isUsingCG(itemData.id));
-	}
-
-	private onListIllustItemClick(item: RenderBagIllustItemView, _, index: number) {
-		$user.bag.changeCGUsing(this._items[index].id);
 	}
 }

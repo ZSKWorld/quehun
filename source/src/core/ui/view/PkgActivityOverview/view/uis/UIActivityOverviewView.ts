@@ -13,7 +13,16 @@ export class UIActivityOverviewView extends UIActivityOverview {
 		const { btn_mask, btn_back, list_list } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_back.onClick(this, this.closeSelf);
-		$uiUtil.setList(list_list, false, this, this.onListRender, this.onListItemClick);
+		$uiUtil.initList<RenderOverviewTabView>(
+			list_list, false, this,
+			(index, item) => {
+				const data = this._overviews[index];
+				item.refresh(data.activityId, data.activityName);
+			},
+			(item, e, index) => {
+				this.setChooseIndex(index);
+			}
+		);
 	}
 
 	override onEnable() {
@@ -23,15 +32,6 @@ export class UIActivityOverviewView extends UIActivityOverview {
 		this.list_list.numItems = this._overviews.length;
 		this.list_list.selectedIndex = 0;
 		this.setChooseIndex(0);
-	}
-
-	private onListRender(index: number, item: RenderOverviewTabView) {
-		const data = this._overviews[index];
-		item.refresh(data.activityId, data.activityName);
-	}
-
-	private onListItemClick(_, __, index: number) {
-		this.setChooseIndex(index);
 	}
 
 	private setChooseIndex(index: number) {

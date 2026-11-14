@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1279,60">
+  <controller name="type" exported="true" pages="0,,1,,3," selected="1"/>
+  <controller name="my" exported="true" pages="0,,1," selected="1"/>
+  <displayList>
+    <image id="n11_fteg" name="n11" src="ftegobji" fileName="Texture/img_1842.png" xy="0,6" size="1279,46">
+      <gearDisplay controller="my" pages="1"/>
+      <gearSize controller="type" pages="1,3" values="1279,46,1,1|1279,46,1,1" default="467,46,1,1"/>
+    </image>
+    <loader id="n16_fteg" name="maka" xy="754,7" size="46,46" touchable="false" url="ui://vx9zwserftegobmc" fill="scaleFree">
+      <gearXY controller="type" pages="0,1,3" values="457,7|754,7|754,7"/>
+    </loader>
+    <loader id="n17_fteg" name="beilv" xy="801,6" size="140,47" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree">
+      <gearXY controller="type" pages="0,1,3" values="504,6|801,6|801,6"/>
+    </loader>
+    <loader id="n32_fteg" name="icon" xy="374,0" pivot="0.5,0.5" size="60,60" aspect="true" touchable="false" url="ui://ca43vz0ehk7r7ploij" fill="scaleFree">
+      <gearDisplay controller="type" pages="1,3"/>
+    </loader>
+    <component id="n33_fteg" name="level" src="ftegobml" fileName="Component/Component/段位/ComLevel2.xml" pkg="vx9zwser" xy="374,0" scale="0.5,0.5">
+      <gearDisplay controller="type" pages="1,3"/>
+    </component>
+    <component id="n15_fteg" name="name" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" pkg="vx9zwser" xy="83,11" size="534,36" touchable="false">
+      <Label title="hanser25505"/>
+    </component>
+    <text id="n12_fteg" name="rank" xy="26,3" pivot="0,0.5" size="22,48" font="ui://vx9zwserrpakobex" fontSize="35" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="3">
+      <gearColor controller="my" pages="1" values="#56c5fc,#000000" default="#4b8ed3,#000000"/>
+    </text>
+    <text id="n13_fteg" name="n13" xy="41,8" pivot="0,0.5" size="35,43" font="ui://vx9zwserrpakobeu" fontSize="31" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="位">
+      <gearColor controller="my" pages="1" values="#56c5fc,#000000" default="#4b8ed3,#000000"/>
+    </text>
+    <text id="n14_fteg" name="score" xy="647,8" pivot="0,0.5" size="88,39" fontSize="28" color="#e7d074" vAlign="middle" leading="0" singleLine="true" text="46200">
+      <gearXY controller="type" pages="0,1,3" values="350,9|647,8|647,9"/>
+      <gearColor controller="my" pages="1" values="#e7d074,#000000" default="#b98930,#000000"/>
+    </text>
+    <text id="n22_fteg" name="point" xy="517,8" pivot="0,0.5" size="48,39" fontSize="28" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="-46">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n23_fteg" name="lizhi" xy="976,7" pivot="0.5,0.5" size="22,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="0">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n24_fteg" name="ron" xy="1059,7" pivot="0.5,0.5" size="22,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="0">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n25_fteg" name="zimo" xy="1139,7" pivot="0.5,0.5" size="22,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="0">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n26_fteg" name="cong" xy="1220,7" pivot="0.5,0.5" size="22,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="5">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n28_fteg" name="n28" xy="1021,6" pivot="0.5,0.5" size="14,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="/">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n29_fteg" name="n29" xy="1104,6" pivot="0.5,0.5" size="14,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="/">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+    <text id="n30_fteg" name="n30" xy="1184,6" pivot="0.5,0.5" size="14,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="/">
+      <gearDisplay controller="type" pages="1,3"/>
+      <gearColor controller="my" pages="1" values="#ffffff,#000000" default="#73798c,#000000"/>
+    </text>
+  </displayList>
+</component>

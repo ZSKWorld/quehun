@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="235,110" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1400" designImageOffsetY="-834" designImageAlpha="0">
-  <controller name="ht" pages="0,,1," selected="1">
+  <controller name="ht" pages="0,,1," selected="0">
     <action type="change_page" fromPage="" toPage="" objectId="n17_puub" controller="ht" targetPage="~1"/>
   </controller>
-  <controller name="star" pages="0,,1,,2,,3," selected="0">
+  <controller name="star" pages="0,,1,,2,,3," selected="3">
     <action type="change_page" fromPage="" toPage="" objectId="n17_puub" controller="star" targetPage="~1"/>
   </controller>
   <displayList>
-    <component id="n17_puub" name="level" src="puubobfb" fileName="Component/Component/段位/ComLevel.xml" xy="0,0"/>
+    <component id="n17_puub" name="level" src="puubobfb" fileName="Component/Component/段位/ComLevel.xml" xy="0,0" touchable="false"/>
     <image id="n8_yuey" name="n8" src="hdeoobb5" fileName="Texture/img_343.png" xy="150,45">
       <gearDisplay controller="ht" pages="1"/>
     </image>

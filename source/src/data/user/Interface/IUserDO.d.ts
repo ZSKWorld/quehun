@@ -14,5 +14,6 @@ declare namespace DO {
 		bag: IBagDO;
 		achievement: IAchievementDO;
 		questionnaire: IQuestionnaireDO;
+		record: IRecordDO;
 	}
 }

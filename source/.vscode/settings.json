@@ -35,11 +35,11 @@
     "js/ts.implementationsCodeLens.showOnInterfaceMethods": true,
     "js/ts.inlayHints.enumMemberValues.enabled": true,
     "js/ts.inlayHints.functionLikeReturnTypes.enabled": true,
-    "js/ts.inlayHints.parameterTypes.enabled": false,
+    "js/ts.inlayHints.parameterTypes.enabled": true,
     "js/ts.inlayHints.variableTypes.enabled": false,
     "js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
     "js/ts.tsdk.path": "node_modules\\typescript\\lib",
-    "js/ts.experimental.useTsgo": false,
+    "js/ts.experimental.useTsgo": true,
     "files.exclude": {
         "**/.rpt2_cache": true,
         "**/*.csproj": true,

@@ -23,7 +23,7 @@ export class InitGameCommand extends Command {
 		]);
 
 		const stage = Laya.stage;
-		const onResize = () => { Laya.Stat._statUI._sp.pos(0, stage.height - Laya.Stat._statUI._sp.height); };
+		const onResize = () => { Laya.Stat._statUI._sp.pos(0, stage.height - Laya.Stat._statUI._sp.height - 30); };
 		onResize();
 		stage.on(Laya.Event.RESIZE, this, onResize);
 		//#if DEBUG
@@ -84,7 +84,23 @@ export class InitGameCommand extends Command {
 		if (!success.first) return $gameMgr.exitGame(false);
 
 		$netMgr.connectLobby();
-
 		$facade.dispatch(EGlobalEvent.OnGameInited);
+		this.addVersionFloat();
+
+		this.test();
+	}
+
+	private addVersionFloat() {
+		const versionTxt = new fgui.GTextField();
+		versionTxt.text = $gameMgr.displayVersionStr;
+		versionTxt.fontSize = 15;
+		versionTxt.sortingOrder = 999;
+		versionTxt.color = EColorString._999999;
+
+		versionTxt.setXY(5, 1060);
+		$uiMgr.addToLayer(versionTxt, ELayer.UITop);
+	}
+
+	private test() {
 	}
 }

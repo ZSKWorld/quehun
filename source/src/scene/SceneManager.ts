@@ -14,7 +14,7 @@ export class SceneManager implements ISceneManager {
 		if (!this._switchLockMask) {
 			const mask = this._switchLockMask = new fgui.GGraph();
 			mask.visible = false;
-			mask.sortingOrder = 9999;
+			mask.sortingOrder = 99999;
 			mask.name = "SceneManager_Mask";
 			$uiMgr.addToLayer(mask, ELayer.UITop);
 			mask.drawRect(0, "", EColorString._00000000);

@@ -141,7 +141,7 @@ export class RedDotNode implements IRedDotNode {
 		this._parent = null;
 		this._triggers = null;
 		this._nameList = null;
-		this._children.length = 0;
+		this._children.clear();
 		this._triggeredMap.clear();
 		this._comp = null;
 

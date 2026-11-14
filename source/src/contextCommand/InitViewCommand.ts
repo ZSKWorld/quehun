@@ -42,6 +42,10 @@ import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/
 import { RenderLiaoSheDecoTabView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTabView";
 import { RenderLiaoSheDecoTypeView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoTypeView";
 import { RenderMailItemView } from "../core/ui/view/PkgMain/view/renders/RenderMailItemView";
+import { RenderObserverItemView } from "../core/ui/view/PkgMain/view/renders/RenderObserverItemView";
+import { RenderObserverPlayerView } from "../core/ui/view/PkgMain/view/renders/RenderObserverPlayerView";
+import { RenderPaiPuItemView } from "../core/ui/view/PkgMain/view/renders/RenderPaiPuItemView";
+import { RenderPaiPuItem2View } from "../core/ui/view/PkgMain/view/renders/RenderPaiPuItem2View";
 import { RenderRankItemView } from "../core/ui/view/PkgMain/view/renders/RenderRankItemView";
 import { RenderSevenDayItemView } from "../core/ui/view/PkgMain/view/renders/RenderSevenDayItemView";
 import { RenderShopCGView } from "../core/ui/view/PkgMain/view/renders/RenderShopCGView";
@@ -72,6 +76,7 @@ import { ComItemView } from "../core/ui/view/PkgCommon/view/coms/ComItemView";
 import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevelView } from "../core/ui/view/PkgCommon/view/coms/ComLevelView";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
+import { ComLevel2View } from "../core/ui/view/PkgCommon/view/coms/ComLevel2View";
 import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView";
 import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
 import { ComRechargeVIPView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeVIPView";
@@ -246,6 +251,10 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderLiaoSheDecoTabView, EViewType.Render, RenderLiaoSheDecoTabView);
 		register(EViewID.RenderLiaoSheDecoTypeView, EViewType.Render, RenderLiaoSheDecoTypeView);
 		register(EViewID.RenderMailItemView, EViewType.Render, RenderMailItemView);
+		register(EViewID.RenderObserverItemView, EViewType.Render, RenderObserverItemView);
+		register(EViewID.RenderObserverPlayerView, EViewType.Render, RenderObserverPlayerView);
+		register(EViewID.RenderPaiPuItemView, EViewType.Render, RenderPaiPuItemView);
+		register(EViewID.RenderPaiPuItem2View, EViewType.Render, RenderPaiPuItem2View);
 		register(EViewID.RenderRankItemView, EViewType.Render, RenderRankItemView);
 		register(EViewID.RenderSevenDayItemView, EViewType.Render, RenderSevenDayItemView);
 		register(EViewID.RenderShopCGView, EViewType.Render, RenderShopCGView);
@@ -278,6 +287,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComItem1View, EViewType.Component, ComItem1View);
 		register(EViewID.ComLevelView, EViewType.Component, ComLevelView);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
+		register(EViewID.ComLevel2View, EViewType.Component, ComLevel2View);
 		register(EViewID.ComMJItemView, EViewType.Component, ComMJItemView);
 		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
 		register(EViewID.ComRechargeVIPView, EViewType.Component, ComRechargeVIPView);

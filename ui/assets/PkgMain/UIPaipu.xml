@@ -1,8 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="36">
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="0">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="牌谱"/>
     </component>
+    <component id="n2_fteg" name="filter" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1218,50" size="90,90" group="n14_fteg">
+      <Button icon="ui://vith2b66ftegobjd"/>
+    </component>
+    <component id="n4_fteg" name="other" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1592,53" size="234,80" group="n14_fteg">
+      <Button title="其他牌谱" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>
+    </component>
+    <text id="n3_fteg" name="collectNum" xy="1364,68" pivot="1,0.5" size="210,49" group="n14_fteg" fontSize="36" color="#dcaf71" vAlign="middle" leading="0" singleLine="true" text="收藏：18/55"/>
+    <group id="n14_fteg" name="n14" xy="1218,50" size="608,90" advanced="true"/>
+    <image id="n5_fteg" name="n5" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="328,153" size="1527,870" group="n10_fteg"/>
+    <component id="n6_fteg" name="overview" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,204" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="总览" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n7_fteg" name="level" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,330" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="段位" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n8_fteg" name="friend" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,454" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="友人" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n9_fteg" name="activity" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,578" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="活动" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n11_fteg" name="match" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,702" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="赛事" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <component id="n12_fteg" name="collect" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,826" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">
+      <Button title="收藏" titleColor="#eab65e" titleFontSize="55" icon="ui://vx9zwserq5yiobby" selectedIcon="ui://vx9zwserq5yiobbx"/>
+    </component>
+    <list id="n13_fteg" name="info" xy="365,202" size="1451,771" group="n10_fteg" overflow="scroll" scrollBarRes="ui://vx9zwserpuubobfe," lineGap="20" defaultItem="ui://vith2b66ftegobjf" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <group id="n10_fteg" name="n10" xy="47,153" size="1808,870" advanced="true"/>
   </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n10_fteg" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n14_fteg" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n10_fteg" tween="true" startValue="-,203" endValue="47,153" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n14_fteg" tween="true" startValue="-,0" endValue="1218,50" duration="12" ease="Linear"/>
+  </transition>
 </component>

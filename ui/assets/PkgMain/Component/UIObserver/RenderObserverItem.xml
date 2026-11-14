@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1638,211" designImage="ui://ca43vz0ejdu67plnxe" designImageOffsetX="-136" designImageOffsetY="-749" designImageAlpha="3">
+  <controller name="sima" pages="0,,1," selected="1"/>
+  <displayList>
+    <image id="n13_puub" name="n13" src="h3ufobjb" fileName="Texture/img_3807.png" xy="0,0" size="1638,211"/>
+    <component id="n30_h3uf" name="player0" src="h3ufobja" fileName="Component/UIObserver/RenderObserverPlayer.xml" xy="29,61"/>
+    <component id="n31_h3uf" name="player1" src="h3ufobja" fileName="Component/UIObserver/RenderObserverPlayer.xml" xy="430,61"/>
+    <component id="n32_h3uf" name="player2" src="h3ufobja" fileName="Component/UIObserver/RenderObserverPlayer.xml" xy="831,61"/>
+    <component id="n33_h3uf" name="player3" src="h3ufobja" fileName="Component/UIObserver/RenderObserverPlayer.xml" xy="1233,61">
+      <gearDisplay controller="sima" pages="1"/>
+    </component>
+    <text id="n14_puub" name="name" xy="32,5" pivot="0,0.5" size="292,49" font="SimHei" fontSize="36" color="#e6ba78" align="center" vAlign="middle" leading="0" singleLine="true" text="金之间·四人东风"/>
+    <text id="n25_h3uf" name="time" xy="1517,5" pivot="1,0.5" size="94,49" font="SimHei" fontSize="36" color="#59657d" align="center" vAlign="middle" leading="0" singleLine="true" text="12:59"/>
+  </displayList>
+</component>

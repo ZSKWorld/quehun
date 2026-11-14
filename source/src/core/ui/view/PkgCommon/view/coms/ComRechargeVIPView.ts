@@ -11,7 +11,13 @@ export class ComRechargeVIPView extends ComRechargeVIP {
 		btn_getReward.onClick(this, this.onBtnGetReward);
 		btn_last.onClick(this, this.onBtnLastAndNext, [-1]);
 		btn_next.onClick(this, this.onBtnLastAndNext, [1]);
-		$uiUtil.setList(list_rewards, true, this, this.onListRewardRender);
+		$uiUtil.initList<RenderRechargeItemView>(
+			list_rewards, true, this,
+			(index, item) => {
+				const reward = this._vipRewards[index];
+				item.refresh(reward.id, reward.count, $user.recharge.gainedVipLevelReward(this._curLevel));
+			}
+		);
 	}
 
 	refresh() {
@@ -85,10 +91,5 @@ export class ComRechargeVIPView extends ComRechargeVIP {
 		if (!$cfgMgr.vip.vip[level]) return;
 		this._curLevel = level;
 		this.refreshInfo();
-	}
-
-	private onListRewardRender(index: number, item: RenderRechargeItemView) {
-		const reward = this._vipRewards[index];
-		item.refresh(reward.id, reward.count, $user.recharge.gainedVipLevelReward(this._curLevel));
 	}
 }

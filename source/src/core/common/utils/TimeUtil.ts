@@ -2,7 +2,7 @@ const MinSec = 60;
 const HourSec = MinSec * 60;
 const DaySec = HourSec * 24;
 const WeekSec = DaySec * 7;
-const MonthSec = WeekSec * 30;
+const MonthSec = DaySec * 30;
 const YearSec = MonthSec * 12;
 
 @Singleton
@@ -47,6 +47,14 @@ export class TimeUtil implements ITimeUtil {
 		if (!split || split == ":")
 			return str;
 		return str.replaceAll(":", split);
+	}
+
+	dateFormat3(timestamp: number, split?: string) {
+		this._date.setTime(timestamp);
+		const d = this._date;
+		const hh = String(d.getHours()).padStart(2, '0');
+		const mm = String(d.getMinutes()).padStart(2, '0');
+		return `${ hh }${ split || ":" }${ mm }`;
 	}
 
 	timeFormat1(timestamp: number) {

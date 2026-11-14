@@ -14,7 +14,7 @@
     </component>
     <image id="n7_afne" name="n7" src="afneobhr" fileName="Texture/img_267.png" xy="892,271" size="804,4" group="n25_rg6e"/>
     <image id="n6_afne" name="n6" src="afneobhq" fileName="Texture/img_2400.png" xy="896,614" size="791,132" group="n25_rg6e"/>
-    <image id="n17_afne" name="n17" pkg="vith2b66" src="afneobhw" fileName="img_208.png" xy="890,838" size="804,52" group="n25_rg6e"/>
+    <image id="n17_afne" name="n17" src="afneobhw" fileName="Texture/img_208.png" pkg="vx9zwser" xy="890,838" size="804,52" group="n25_rg6e"/>
     <component id="n8_afne" name="day0" src="afneobhv" fileName="Component/UISevenDay/BtnSevenDayTab.xml" xy="887,187" size="118,70" group="n25_rg6e">
       <Button title="1" titleColor="#8d6f61" titleFontSize="45" icon="ui://vith2b66afneobht" selectedIcon="ui://vith2b66afneobhs"/>
     </component>

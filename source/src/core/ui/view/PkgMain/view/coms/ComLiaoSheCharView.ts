@@ -19,7 +19,15 @@ export class ComLiaoSheCharView extends ComLiaoSheChar {
 		btn_sort.onClick(this, this.event, [EComLiaoSheCharMsg.OnBtnSortClick]);
 		btn_filter.onClick(this, this.event, [EComLiaoSheCharMsg.OnBtnFilterClick]);
 		btn_star.onClick(this, this.onBtnStarClick);
-		$uiUtil.setList(list_chars, true, this, this.onListCharsRender, this.onListCharsClick);
+		$uiUtil.initList<RenderLiaoSheCharView>(
+			list_chars, true, this,
+			(index, item) => {
+				const data = this.showChars[index];
+				const using = data.charid == $user.character.mainCharId;
+				item.refresh(data, using, this._selectedData?.charid == data.charid);
+			},
+			this.onListCharsClick
+		);
 	}
 
 	override onEnable() {
@@ -54,12 +62,6 @@ export class ComLiaoSheCharView extends ComLiaoSheChar {
 			this.onListCharsClick(item, null, selectedIndex);
 		} else
 			this.event(EUILiaoSheEvent.OnLiaoSheCharSelected, mainCharId);
-	}
-
-	private onListCharsRender(index: number, item: RenderLiaoSheCharView) {
-		const data = this.showChars[index];
-		const using = data.charid == $user.character.mainCharId;
-		item.refresh(data, using, this._selectedData?.charid == data.charid);
 	}
 
 	private onListCharsClick(item: RenderLiaoSheCharView, evt, index: number) {

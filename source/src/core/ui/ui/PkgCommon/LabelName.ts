@@ -12,6 +12,6 @@ export default class LabelName extends GLabelView {
 	}
 
 	protected override onConstruct(): void {
-		this.img_vip = <fgui.GImage>(this.getChildAt(1));
+		this.img_vip = <fgui.GImage>(this.getChildAt(0));
 	}
 }

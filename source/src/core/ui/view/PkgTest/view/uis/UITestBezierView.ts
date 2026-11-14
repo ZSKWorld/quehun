@@ -51,7 +51,7 @@ export class UITestBezierView extends UITestBezier {
 
 	override onDisable() {
 		this._controlPoints.forEach(point => this.recoverPoints(point));
-		this._controlPoints.length = 0;
+		this._controlPoints.clear();
 	}
 
 	private changePoints(count: number) {

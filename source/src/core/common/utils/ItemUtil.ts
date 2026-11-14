@@ -4,6 +4,14 @@ const ItemString1 = /^\d+-\d+(,\d+-\d+)*$/;
 @Singleton
 export class ItemUtil implements IItemUtil {
 
+	zoneTitle(accountId: number, titleId:number) {
+		if (!titleId) return 0;
+		if ($gameUtil.isSameZone(accountId, $user.account.accountId)) return titleId;
+		const titleCfg = $cfgMgr.item_definition.title[titleId];
+		if (titleCfg && titleCfg.cross_view == 1) return titleId;
+		return 0;
+	}
+
 	splitItems(str: string) {
 		if (ItemString1.test(str)) {
 			const arr1 = str.split(",");

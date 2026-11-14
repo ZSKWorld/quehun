@@ -22,8 +22,18 @@ export class ComBagDecoView extends ComBagDeco {
 	].map(v => $lang(v));
 
 	override onCreate() {
-		$uiUtil.setList(this.list_item, true, this, this.onListItemRender, this.onListItemClick);
-		$uiUtil.setCombox(this.cmb_type, this._typeStr, this._showTypes, this, this.refreshListItem);
+		$uiUtil.initList<RenderBagItemView>(
+			this.list_item, true, this,
+			(index, item) => {
+				const info = this._showItems[index];
+				item.refreshWithoutCount(info.item_id);
+			},
+			(item, e, index) => {
+				const info = this._showItems[index];
+				this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: info.item_id, from: 1 });
+			}
+		);
+		$uiUtil.initCombox(this.cmb_type, this._typeStr, this._showTypes, this, this.refreshListItem);
 	}
 
 	override onEnable() {
@@ -54,7 +64,7 @@ export class ComBagDecoView extends ComBagDeco {
 
 	private refreshListItem() {
 		const { _items, _showItems, cmb_type, list_item } = this;
-		_showItems.length = 0;
+		_showItems.clear();
 		const selectType = cmb_type.value as unknown as number;
 		if (selectType == -1) _showItems.push(..._items);
 		else {
@@ -65,16 +75,6 @@ export class ComBagDecoView extends ComBagDeco {
 			}));
 		}
 		list_item.numItems = _showItems.length;
-	}
-
-	private onListItemRender(index: number, item: RenderBagItemView) {
-		const info = this._showItems[index];
-		item.refreshWithoutCount(info.item_id);
-	}
-
-	private onListItemClick(item: RenderBagItemView, _, index: number) {
-		const info = this._showItems[index];
-		this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: info.item_id, from: 1 });
 	}
 }
 

@@ -123,11 +123,11 @@ export class SpineManager implements ISpineManager {
 		const usingArr = this._usingPool.get(id);
 		if (unusedArr) {
 			unusedArr.forEach(v => v.gowner.dispose());
-			unusedArr.length = 0;
+			unusedArr.clear();
 		}
 		if (usingArr) {
 			usingArr.forEach(v => v.gowner.dispose());
-			usingArr.length = 0;
+			usingArr.clear();
 		}
 	}
 

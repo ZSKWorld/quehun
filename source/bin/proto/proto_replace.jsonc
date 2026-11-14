@@ -11,5 +11,14 @@
     },
     ".lq.ReqReadAnnouncement":{
         "announcement_list": { "optional": true, "type":"" }
+    },
+    ".lq.ReqGameRecordListV2":{
+        "tag": { "type": "ERecordTag" },
+        "begin_time": { "optional": true },
+        "end_time": { "optional": true },
+        "ranks": { "optional": true },
+        "modes": { "optional": true },
+        "max_hu_type": { "optional": true },
+        "level_mode": { "optional": true }
     }
 }

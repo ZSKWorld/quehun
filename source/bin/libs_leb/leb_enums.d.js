@@ -28,6 +28,31 @@ EMjpType = {
 	BD: "bd",
 }
 
+EBigHuType = {
+	E_Dadian_Title_liuman: -1,
+	E_Dadian_Title_none: 0,
+	E_Dadian_Title_manguan: 1,
+	E_Dadian_Title_tiaoman: 2,
+	E_Dadian_Title_beiman: 3,
+	E_Dadian_Title_sanbeiman: 4,
+	E_Dadian_Title_yiman: 5,
+	E_Dadian_Title_yiman2: 6,
+	E_Dadian_Title_yiman3: 7,
+	E_Dadian_Title_yiman4: 8,
+	E_Dadian_Title_yiman5: 9,
+	E_Dadian_Title_yiman6: 10,
+	E_Dadian_Title_leijiyiman: 11,
+}
+
+ERecordTag = {
+	All: 0,
+	Level: 1,
+	Friend: 2,
+	Activity: 3,
+	Match: 4,
+	Collect: 5,
+}
+
 ELanguage = {
 	CHS: "chs",
 	CHST: "chs_t",
@@ -520,6 +545,8 @@ ERDName = {
 
 ECfgLangField = {
 	name: "name",
+	name1: "name1",
+	name2: "name2",
 	desc: "desc",
 	desc2: "desc2",
 	desc_cv: "desc_cv",

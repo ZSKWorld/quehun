@@ -12,22 +12,29 @@ export class UIAchievementDetailView extends UIAchievementDetail {
 	override onCreate() {
 		const { com_back, list_group, list_item } = this;
 		com_back.onBackClick(this, this.closeSelf);
-		$uiUtil.setList(list_group, true, this, (index, item: RenderAchieveDetailGroupView) => {
-			item.refresh($user.achievement.statisticsInfo.groups[index]);
-		}, (item: RenderAchieveDetailGroupView, _, index) => {
-			if (item == this._selectItem) return;
-			item.setSelect(true, true);
-			this._selectItem.setSelect(false, true);
-			this._selectItem = item;
-			this.refreshItem(index);
-		});
+		$uiUtil.initList<RenderAchieveDetailGroupView>(
+			list_group, true, this,
+			(index, item) => {
+				item.refresh($user.achievement.statisticsInfo.groups[index]);
+			},
+			(item, _, index) => {
+				if (item == this._selectItem) return;
+				item.setSelect(true, true);
+				this._selectItem.setSelect(false, true);
+				this._selectItem = item;
+				this.refreshItem(index);
+			}
+		);
 		list_group.on(fgui.Events.SCROLL, this, this.onListGroupScrolled);
 
-		$uiUtil.setList(list_item, true, this, (index, item: RenderAchieveDetailItemView) => {
-			const groupData = $user.achievement.statisticsInfo.groups[list_group.selectedIndex];
-			const id = groupData.achievements[index];
-			item.refresh(id, $user.achievement.getProgress(id));
-		});
+		$uiUtil.initList<RenderAchieveDetailItemView>(
+			list_item, true, this,
+			(index, item) => {
+				const groupData = $user.achievement.statisticsInfo.groups[list_group.selectedIndex];
+				const id = groupData.achievements[index];
+				item.refresh(id, $user.achievement.getProgress(id));
+			}
+		);
 	}
 
 	refresh(groupId: number, achieveId: number) {

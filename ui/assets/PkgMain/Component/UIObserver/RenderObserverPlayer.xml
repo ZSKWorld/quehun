@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="370,150" designImage="ui://ca43vz0ejdu67plnxe" designImageOffsetX="-182" designImageOffsetY="-828" designImageAlpha="0">
+  <controller name="sima" pages="0,,1," selected="0"/>
+  <displayList>
+    <component id="n30_h3uf" name="title" src="hdeoobbo" fileName="Component/Component/称号/ComTitle.xml" pkg="vx9zwser" xy="115,18" pivot="0.5,0.5" size="234,44" aspect="true" touchable="false">
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plogs"/>
+    </component>
+    <component id="n32_h3uf" name="level4" src="puubobfb" fileName="Component/Component/段位/ComLevel.xml" pkg="vx9zwser" xy="15,17" pivot="0.5,0.5" size="110,110" touchable="false">
+      <gearDisplay controller="sima" pages="1"/>
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7ploim"/>
+    </component>
+    <component id="n33_h3uf" name="level3" src="puubobfb" fileName="Component/Component/段位/ComLevel.xml" pkg="vx9zwser" xy="15,17" pivot="0.5,0.5" touchable="false">
+      <gearDisplay controller="sima" pages="0"/>
+      <property target="icon" propertyId="1" value="ui://ca43vz0ehk7r7plojb"/>
+    </component>
+    <component id="n37_h3uf" name="name" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" pkg="vx9zwser" xy="167,80" pivot="0.5,0.5" touchable="false"/>
+  </displayList>
+</component>

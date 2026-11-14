@@ -11,7 +11,7 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	private _tabGroup = new RadioGroup();
 
 	// 使用 Record 管理不同类型的状态
-	private _states: KeyMap<PlayerViewLoader<IResLevelLeaderboard_Item>> = {
+	private _states: KeyMap<PlayerViewLoader<IResLevelLeaderboard.IItem>> = {
 		[EUIRankType.SiMa]: new PlayerViewLoader(new Laya.Handler(this, this.refreshCurrentView)),
 		[EUIRankType.SanMa]: new PlayerViewLoader(new Laya.Handler(this, this.refreshCurrentView)),
 	};
@@ -23,7 +23,16 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 	override onAwake() {
 		const { tabBtns, listRank } = this.view;
 		listRank.on(fgui.Events.SCROLL, this, this.onListRankScroll);
-		$uiUtil.setList(listRank, true, this, this.onListRankRender, this.onListRankItemClick);
+		$uiUtil.initList<RenderRankItemView>(
+			listRank, true, this,
+			(index, item) => {
+				const state = this._states[this.selectType];
+				item.refresh(index, this.selectType, state.briefs[index]);
+			},
+			(item, e, index) => {
+				$logger.error("Click rank item:", index + 1);
+			},
+		);
 
 		this._tabGroup.init(tabBtns, this, () => {
 			this.refreshCurrentView();
@@ -42,15 +51,6 @@ export class UIRankMediator extends MediatorBase<UIRankView, IUIRankData> {
 			this._states[key as unknown as EUIRankType].reset();
 		}
 		this._tabGroup.clearSelection();
-	}
-
-	private onListRankRender(index: number, item: RenderRankItemView) {
-		const state = this._states[this.selectType];
-		item.refresh(index, this.selectType, state.briefs[index]);
-	}
-
-	private onListRankItemClick(_, e: any, index: number) {
-		$logger.error("Click rank item:", index + 1);
 	}
 
 	private onListRankScroll() {

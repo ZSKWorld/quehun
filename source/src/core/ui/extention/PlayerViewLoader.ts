@@ -61,7 +61,7 @@ export class PlayerViewLoader<T extends { account_id: number }> {
 
 	reset() {
 		this._intro = null;
-		this._briefs.length = 0;
+		this._briefs.clear();
 		this._isLoading = false;
 		this._loadId++;
 		this._loadedAll = false;

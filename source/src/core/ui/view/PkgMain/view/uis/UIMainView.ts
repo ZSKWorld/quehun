@@ -1,5 +1,4 @@
 import UIMain from "../../../../ui/PkgMain/UIMain";
-import { EUIMainEvent } from "../../Definition";
 
 export class UIMainView extends UIMain {
 
@@ -11,7 +10,7 @@ export class UIMainView extends UIMain {
 		} = this;
 		btn_liaoShe.onClick(this, this.openView, [EViewID.UILiaoSheView, null, EViewOpenType.Hide]);
 		btn_friend.onClick(this, this.openView, [EViewID.UIFriendView, null, EViewOpenType.Hide]);
-		btn_observer.onClick(this, this.event, [EUIMainEvent.OnBtnObserverClick]);
+		btn_observer.onClick(this, this.openView, [EViewID.UIObserverView, null, EViewOpenType.Hide]);
 		btn_paiPu.onClick(this, this.openView, [EViewID.UIPaipuView, null, EViewOpenType.Hide]);
 		btn_bag.onClick(this, this.openView, [EViewID.UIBagView, null, EViewOpenType.Hide]);
 		btn_shop.onClick(this, this.openView, [EViewID.UIShopView, null, EViewOpenType.Hide]);

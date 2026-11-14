@@ -24,7 +24,12 @@ export class UIFriendView extends UIFriend {
 		com_back.onBackClick(this, this.closeSelf);
 		btn_copy.onClick(this, this.event, [EUIFriendMsg.OnBtnCopyClick]);
 		btn_find.onClick(this, this.event, [EUIFriendMsg.OnBtnFindClick]);
-		$uiUtil.setList(list_friend, true, this, this.onListFriendRender);
+		$uiUtil.initList<RenderFriendFriendView>(
+			list_friend, true, this,
+			(index, item) => {
+				item.refresh($user.friend.friends[index]);
+			}
+		);
 
 		txt_myID.text = $gameUtil.encodeAccountId($user.account.accountId).toString();
 	}
@@ -80,9 +85,5 @@ export class UIFriendView extends UIFriend {
 		anis.forEach(v => {
 			v.playing && v.stop(true, true);
 		});
-	}
-
-	private onListFriendRender(index: number, item: RenderFriendFriendView) {
-		item.refresh($user.friend.friends[index]);
 	}
 }

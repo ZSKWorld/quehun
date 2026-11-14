@@ -13,12 +13,32 @@ export class ComBagSkinView extends ComBagSkin {
 	private _showSkins: number[] = [];
 	private _showIndex: number = 0;
 	override onCreate() {
-		this.btn_back.onClick(this, this.backToCharList);
-		this.btn_toLeft.onClick(this, this.onBtnToLeftOrRight, [true]);
-		this.btn_toRight.onClick(this, this.onBtnToLeftOrRight, [false]);
-		this.btn_own.on(fgui.Events.STATE_CHANGED, this, this.onBtnOwnClick);
-		$uiUtil.setList(this.list_char, true, this, this.onListCharItemRenderer, this.onListCharItemClick);
-		$uiUtil.setList(this.list_skin, true, this, this.onListSkinItemRenderer, this.onListSkinItemClick);
+		const { btn_back, btn_toLeft, btn_toRight, btn_own, list_char, list_skin, _charSkins } = this;
+		btn_back.onClick(this, this.backToCharList);
+		btn_toLeft.onClick(this, this.onBtnToLeftOrRight, [true]);
+		btn_toRight.onClick(this, this.onBtnToLeftOrRight, [false]);
+		btn_own.on(fgui.Events.STATE_CHANGED, this, this.onBtnOwnClick);
+		$uiUtil.initList<RenderBagSkinItem1View>(
+			list_char, true, this,
+			(index, item) => {
+				const charId = this._showChars[index];
+				item.refresh(charId, $user.character.hasChar(charId));
+			},
+			(item, e, index) => {
+				this._showIndex = index;
+				this.refreshListSkin();
+				this.ctrl_type.selectedIndex = 1;
+			}
+		);
+
+		$uiUtil.initList<RenderBagSkinItem2View>(
+			list_skin, true, this,
+			(index, item) => {
+				const skinId = this._showSkins[index];
+				item.refresh(skinId, $user.character.hasSkin(skinId));
+			},
+			(item, e, index) => { }
+		);
 
 		this._allChars = $cfgMgr.item_definition.character.slice();
 		this._allChars.sort((a, b) => a.sort - b.sort);
@@ -27,8 +47,8 @@ export class ComBagSkinView extends ComBagSkin {
 			const d_chara = $cfgMgr.item_definition.character[charId];
 			if (!d_chara || !d_chara.open) return;
 			if (!d_chara.can_marry) return;
-			this._charSkins[charId] = this._charSkins[charId] || [];
-			this._charSkins[charId].push(x.id);
+			_charSkins[charId] = _charSkins[charId] || [];
+			_charSkins[charId].push(x.id);
 		});
 	}
 
@@ -65,26 +85,6 @@ export class ComBagSkinView extends ComBagSkin {
 		this._showSkins = onlyOwn ? ownSkins : skins;
 		this.list_skin.numItems = this._showSkins.length;
 		this.btn_choosedChar.refresh(charId, $user.character.hasChar(charId));
-	}
-
-	private onListCharItemRenderer(index: number, item: RenderBagSkinItem1View) {
-		const charId = this._showChars[index];
-		item.refresh(charId, $user.character.hasChar(charId));
-	}
-
-	private onListCharItemClick(_, __, index: number) {
-		this._showIndex = index;
-		this.refreshListSkin();
-		this.ctrl_type.selectedIndex = 1;
-	}
-
-	private onListSkinItemRenderer(index: number, item: RenderBagSkinItem2View) {
-		const skinId = this._showSkins[index];
-		item.refresh(skinId, $user.character.hasSkin(skinId));
-	}
-
-	private onListSkinItemClick(_, __, index: number) {
-
 	}
 
 	private backToCharList(refresh: boolean) {

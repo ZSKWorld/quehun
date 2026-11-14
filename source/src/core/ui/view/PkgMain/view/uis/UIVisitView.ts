@@ -17,10 +17,13 @@ export class UIVisitView extends UIVisit {
 				this.stopVoice();
 			}
 		});
-		$uiUtil.setList(list_voice, true, this, (index, item: RenderVisitVoiceInfoView) => {
-			item.refresh(this._charId, this._voices[index], this._playingIndex == index);
-			item.onBtnPlayClick(this, this.onListVoicePlayClick, [index]);
-		});
+		$uiUtil.initList<RenderVisitVoiceInfoView>(
+			list_voice, true, this,
+			(index, item) => {
+				item.refresh(this._charId, this._voices[index], this._playingIndex == index);
+				item.onBtnPlayClick(this, this.onListVoicePlayClick, [index]);
+			}
+		);
 	}
 
 	refresh(charId: number) {

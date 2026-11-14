@@ -23,7 +23,15 @@ export class UIPaymentView extends UIPayment {
 		const { btn_mask, btn_close, list_payment } = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		$uiUtil.setList(list_payment, false, this, this.onListPaymentRender, this.onListPaymentClick);
+		$uiUtil.initList<fgui.GButton>(
+			list_payment, false, this,
+			(index, item) => {
+				item.icon = paymentIconMap[this._paymentTypes[index]];
+			},
+			(item, e, index) => {
+				this.event(EUIPaymentMsg.OnListPaymentClick, this._paymentTypes[index]);
+			}
+		);
 	}
 
 	refresh(id: number, debtId?: string) {
@@ -53,12 +61,4 @@ export class UIPaymentView extends UIPayment {
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }
 	override onCloseAni() { return $uiUtil.popAlphaOut(this); }
-
-	private onListPaymentRender(index: number, item: fgui.GButton) {
-		item.icon = paymentIconMap[this._paymentTypes[index]];
-	}
-
-	private onListPaymentClick(_, __, index: number) {
-		this.event(EUIPaymentMsg.OnListPaymentClick, this._paymentTypes[index]);
-	}
 }

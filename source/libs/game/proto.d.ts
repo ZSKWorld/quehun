@@ -9153,19 +9153,19 @@ declare interface IResGameRecordList extends IResponse {
  */
 declare interface IReqGameRecordListV2 extends IRequest {
 	/** 标签，总览（全部）=0/段位=1/友人=2/活动=3/赛事=4（收藏是另外的逻辑） */
-	tag: number;
+	tag: ERecordTag;
 	/** 筛选的开始日期（精确到选择的0点），不填服务器默认为90天前的日期（也是0点） */
-	begin_time: number;
+	begin_time?: number;
 	/** 筛选的结束日期（精确到选择的23:59:59），不填服务器默认为今天的日期 */
-	end_time: number;
+	end_time?: number;
 	/** 筛选的顺位列表，1/2/3/4，长度为0等价于全选 */
-	ranks: number[];
+	ranks?: number[];
 	/** 筛选的模式列表，三人=3/四人=4，长度为0等价于全选 */
-	modes: number[];
+	modes?: number[];
 	/** 筛选的出现大和，全部=0/倍满以上=1/三倍满以上=2/役满以上=3 */
-	max_hu_type: number;
+	max_hu_type?: number;
 	/** 筛选的对局模式（仅段位筛选条件下有效），铜=1/银=2/金=3/玉=4/王座普通=5/王座巅峰=6，长度为0等价于全选 */
-	level_mode: number[];
+	level_mode?: number[];
 }
 
 /** .lq.ResGameRecordListV2 */

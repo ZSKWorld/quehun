@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080">
+  <displayList>
+    <component id="n0_h3uf" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="398,309"/>
+    <loader id="n1_h3uf" name="n1" xy="0,0" size="1920,1080" url="ui://ca43vz0eh3uf7plomy" fill="scaleFree"/>
+  </displayList>
+</component>

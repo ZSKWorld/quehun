@@ -15,7 +15,22 @@ export class ComBagGiftView extends ComBagGift {
 		btn_clear.onClick(this, this.onBtnClear);
 		btn_sell.onClick(this, this.onBtnSell);
 		btn_back.onClick(this, this.changeSelling, [false]);
-		$uiUtil.setList(list_item, true, this, this.onListItemRender, this.onListItemClick);
+		$uiUtil.initList<RenderBagGiftItemView>(
+			list_item, true, this,
+			(index, item) => {
+				item.onDeleteClick(this, this.onListItemDeleteClick, index);
+				this.refreshItem(item, index);
+			},
+			(item, e, index) => {
+				const info = this._items[index];
+				if (this._selling) {
+					this.changeSellCount(info, 1);
+					this.refreshItem(item, index);
+				} else {
+					this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: info.item_id, from: 1 });
+				}
+			}
+		);
 	}
 
 	override onEnable() {
@@ -59,21 +74,6 @@ export class ComBagGiftView extends ComBagGift {
 			this._sells.clear();
 			this.changeSelling(false);
 		});
-	}
-
-	private onListItemRender(index: number, item: RenderBagGiftItemView) {
-		item.onDeleteClick(this, this.onListItemDeleteClick, index);
-		this.refreshItem(item, index);
-	}
-
-	private onListItemClick(item: RenderBagGiftItemView, _, index: number) {
-		const info = this._items[index];
-		if (this._selling) {
-			this.changeSellCount(info, 1);
-			this.refreshItem(item, index);
-		} else {
-			this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: info.item_id, from: 1 });
-		}
 	}
 
 	private onListItemDeleteClick(item: RenderBagGiftItemView, index: number, evt: Laya.Event) {

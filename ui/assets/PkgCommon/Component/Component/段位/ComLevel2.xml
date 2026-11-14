@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="281,120" designImage="ui://ca43vz0ehdeo7plojg" designImageOffsetX="-1400" designImageOffsetY="-834" designImageAlpha="0">
+  <controller name="ht" exported="true" pages="0,,1," selected="0"/>
+  <controller name="star" exported="true" pages="0,,1,,2,,3," selected="3"/>
+  <displayList>
+    <loader id="n3_hdeo" name="icon" xy="-68,-68" pivot="0.5,0.5" size="256,256" aspect="true" scale="0.47,0.47" touchable="false" url="ui://ca43vz0ehk7r7ploij" fill="scaleFree"/>
+    <image id="n6_hdeo" name="n6" src="hdeoobbr" fileName="Texture/img_784.png" xy="123,37" pivot="0,0.5" size="60,52" aspect="true">
+      <gearDisplay controller="ht" pages="1"/>
+    </image>
+    <image id="n12_q5yi" name="n12" src="mde1b81" fileName="Texture/img_1512.png" xy="123,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi"/>
+    <image id="n11_q5yi" name="n11" src="mde1b81" fileName="Texture/img_1512.png" xy="174,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi"/>
+    <image id="n10_q5yi" name="n10" src="mde1b81" fileName="Texture/img_1512.png" xy="227,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi" aspect="true"/>
+    <image id="n15_q5yi" name="n15" src="mde1b82" fileName="Texture/img_1513.png" xy="123,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi">
+      <gearDisplay controller="star" pages="1,2,3"/>
+    </image>
+    <image id="n14_q5yi" name="n14" src="mde1b82" fileName="Texture/img_1513.png" xy="174,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi">
+      <gearDisplay controller="star" pages="2,3"/>
+    </image>
+    <image id="n13_q5yi" name="n13" src="mde1b82" fileName="Texture/img_1513.png" xy="227,34" pivot="0.5,0.5" size="55,52" group="n16_q5yi">
+      <gearDisplay controller="star" pages="3"/>
+    </image>
+    <group id="n16_q5yi" name="n16" xy="123,34" size="159,52" advanced="true">
+      <gearDisplay controller="ht" pages="0"/>
+    </group>
+    <text id="n7_hdeo" name="htLevel" xy="174,34" pivot="0,0.5" size="71,55" font="ui://vx9zwserhdeoobb8" fontSize="17" color="#fbfbfb" leading="0" letterSpacing="-7" text="28">
+      <gearDisplay controller="ht" pages="1"/>
+    </text>
+  </displayList>
+  <customProperty target="icon" propertyId="1"/>
+  <customProperty target="level" propertyId="0"/>
+</component>

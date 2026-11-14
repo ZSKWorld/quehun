@@ -1,3 +1,5 @@
+const TempPoint = new Laya.Point();
+const TempRect = new Laya.Rectangle();
 
 /** UI工具类 */
 @Singleton
@@ -23,7 +25,7 @@ export class UIUtil implements IUIUtil {
 	 * @param renderFunc 渲染回调
 	 * @param clickFunc 点击回调
 	 */
-	setList(
+	initList(
 		list: fgui.GList,
 		virtual: boolean = true,
 		caller?: any,
@@ -48,7 +50,7 @@ export class UIUtil implements IUIUtil {
 	 * @param defaultValue 默认值
 	 * @param showItemCount 下拉显示数量
 	 */
-	setCombox(
+	initCombox(
 		cmb: fgui.GComboBox,
 		items: string[],
 		values: any[],
@@ -150,5 +152,11 @@ export class UIUtil implements IUIUtil {
 			.replace(/<\/color>/g, "[/color]")
 			.replace(/<href=(.+?)>/g, `[color=${ hrefColor }][url=$1]`)
 			.replace(/<\/href>/g, "[/url][/color]");
+	}
+
+	checkPointInGobject(x: number, y: number, obj: fgui.GObject) {
+		if (!obj || obj.isDisposed) return false;
+		obj.globalToLocal(x, y, TempPoint);
+		return TempRect.setTo(0, 0, obj.width, obj.height).contains(TempPoint.x, TempPoint.y);
 	}
 }

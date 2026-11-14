@@ -71,7 +71,8 @@ export class AchievementDO extends BaseDO implements DO.IAchievementDO {
 
 	private calculateInfo() {
 		const { _statisticsInfo: info, _rewardedGroup } = this;
-		info.gold = info.silver = info.copper = info.total = info.groups.length = 0;
+		info.groups.clear();
+		info.gold = info.silver = info.copper = info.total = 0;
 		info.groupMap = {};
 		info.segmentAchieves = {};
 		const { groups, groupMap } = info;

@@ -61,8 +61,8 @@ export abstract class SceneBase<T> extends Observer implements IScene<T> {
 			throw e;
 		} finally {
 			this._progressHandlers.forEach(v => v.recover());
-			this._progressHandlers.length = 0;
-			this._progresses.length = 0;
+			this._progressHandlers.clear();
+			this._progresses.clear();
 			$uiMgr.closeAllView();
 		}
 	}

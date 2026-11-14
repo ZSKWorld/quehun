@@ -9,7 +9,7 @@ const Scroll_Threshold = 150; // 触底检查阈值
 
 export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> {
 	private _tabGroup = new RadioGroup();
-	private _applyPlayerLoader = new PlayerViewLoader<IResFriendApplyList_FriendApply>(new Laya.Handler(this, () => {
+	private _applyPlayerLoader = new PlayerViewLoader<IResFriendApplyList.IFriendApply>(new Laya.Handler(this, () => {
 		const brifesLen = this._applyPlayerLoader.briefs.length;
 		this.view.refreshApply(brifesLen);
 	}));
@@ -25,8 +25,20 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		this.addEvent(EUIFriendMsg.OnBtnFindClick, this.onBtnFindClick);
 		this.view.listApply.on(fgui.Events.SCROLL, this, this.onListApplyScroll);
 		this.view.listRecent.on(fgui.Events.SCROLL, this, this.onListRecentScroll);
-		$uiUtil.setList(this.view.listApply, true, this, this.onListApplyRender);
-		$uiUtil.setList(this.view.listRecent, true, this, this.onListRecentRender);
+		$uiUtil.initList<RenderFriendApplyView>(
+			this.view.listApply, true, this,
+			(index, item) => {
+				const { intro, briefs } = this._applyPlayerLoader;
+				item.refresh(intro[index].apply_time, briefs[index]);
+			}
+		);
+		$uiUtil.initList<RenderFriendRecentView>(
+			this.view.listRecent, true, this,
+			(index, item) => {
+				const { briefs } = this._recentPlayerLoader;
+				item.refresh(briefs[index]);
+			}
+		);
 		this._tabGroup.init(this.view.tabBtns, this, this.onTabChanged, EColorString._eab65e, EColorString._eab65e);
 	}
 
@@ -91,10 +103,6 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 			this._applyPlayerLoader.loadNext();
 		}
 	}
-	private onListApplyRender(index: number, item: RenderFriendApplyView) {
-		const { intro, briefs } = this._applyPlayerLoader;
-		item.refresh(intro[index].apply_time, briefs[index]);
-	}
 
 	private onListRecentScroll() {
 		const { contentHeight, viewHeight, posY } = this.view.listRecent.scrollPane;
@@ -102,10 +110,6 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 		if (contentHeight - posY - viewHeight <= Scroll_Threshold) {
 			this._recentPlayerLoader.loadNext();
 		}
-	}
-	private onListRecentRender(index: number, item: RenderFriendRecentView) {
-		const { briefs } = this._recentPlayerLoader;
-		item.refresh(briefs[index]);
 	}
 
 	@InjectNetEvent(ENetMessage.searchAccountByEid)

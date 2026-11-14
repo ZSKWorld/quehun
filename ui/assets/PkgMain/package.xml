@@ -268,6 +268,18 @@
     <image id="9c0bobj6" name="img_2987.png" path="/Texture/" scale="9grid" scale9grid="70,70,12,12"/>
     <component id="9c0bobj7" name="ComVisitIntro.xml" path="/Component/UIVisit/"/>
     <component id="efxiobj8" name="RenderVisitVoiceInfo.xml" path="/Component/UIVisit/"/>
+    <component id="h3ufobj9" name="RenderObserverItem.xml" path="/Component/UIObserver/"/>
+    <component id="h3ufobja" name="RenderObserverPlayer.xml" path="/Component/UIObserver/"/>
+    <image id="h3ufobjb" name="img_3807.png" path="/Texture/"/>
+    <component id="h3ufobjc" name="ComObserverWait.xml" path="/Component/UIObserver/"/>
+    <image id="ftegobjd" name="img_2007.png" path="/Texture/"/>
+    <image id="ftegobje" name="img_4100.png" path="/Texture/"/>
+    <component id="ftegobjf" name="RenderPaiPuItem.xml" path="/Component/UIPaiPu/"/>
+    <image id="ftegobjg" name="img_3930.png" path="/Texture/"/>
+    <image id="ftegobjh" name="img_1198.png" path="/Texture/"/>
+    <image id="ftegobji" name="img_1842.png" path="/Texture/" scale="9grid" scale9grid="20,0,129,46"/>
+    <image id="ftegobjj" name="img_4066.png" path="/Texture/"/>
+    <component id="ftegobjk" name="RenderPaiPuItem2.xml" path="/Component/UIPaiPu/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

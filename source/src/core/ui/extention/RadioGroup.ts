@@ -41,7 +41,7 @@ export class RadioGroup {
 	reset() {
 		this.clearSelection();
 		this._items.forEach(item => item.offClick(this, this.onItemClick));
-		this._items.length = 0;
+		this._items.clear();
 		this._valueChangedCaller = null;
 		this._onValueChanged = null;
 	}

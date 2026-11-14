@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1399,212">
+  <controller name="fold" pages="0,,1,,2," selected="0">
+    <action type="change_page" fromPage="" toPage="" objectId="n21_fteg" controller="type" targetPage="~1"/>
+    <action type="change_page" fromPage="" toPage="" objectId="n22_fteg" controller="type" targetPage="~1"/>
+    <action type="change_page" fromPage="" toPage="" objectId="n23_fteg" controller="type" targetPage="~1"/>
+    <action type="change_page" fromPage="" toPage="" objectId="n24_fteg" controller="type" targetPage="~1"/>
+  </controller>
+  <controller name="siMa" pages="0,,1," selected="0"/>
+  <displayList>
+    <loader id="n3_fteg" name="n3" xy="0,0" size="1399,212" url="ui://vith2b66ftegobjg" fill="scaleFree">
+      <gearSize controller="fold" pages="1,2" values="1399,336,1,1|1399,406,1,1" default="1399,212,1,1"/>
+      <gearIcon controller="fold" pages="0,1,2" values="ui://vith2b66ftegobjg|ui://vith2b66ftegobjj|ui://vith2b66ftegobje"/>
+    </loader>
+    <component id="n10_fteg" name="rename" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="918,11" size="52,52" group="n31_fteg">
+      <Button icon="ui://vx9zwserftegobls"/>
+    </component>
+    <component id="n9_fteg" name="collect" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="999,15" size="46,44" group="n31_fteg">
+      <Button icon="ui://vx9zwserftegoblq"/>
+    </component>
+    <component id="n8_fteg" name="share" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1074,11" size="52,52" group="n31_fteg">
+      <Button icon="ui://vx9zwserftegoblp"/>
+    </component>
+    <component id="n7_fteg" name="maka" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1155,11" size="52,52" group="n31_fteg">
+      <Button icon="ui://vith2b66ftegobjh"/>
+    </component>
+    <component id="n6_fteg" name="look" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1236,10" size="131,53" group="n31_fteg">
+      <Button title="查看" titleColor="#fcba72" titleFontSize="31" icon="ui://vx9zwsergsi2obee"/>
+    </component>
+    <group id="n31_fteg" name="n31" xy="918,10" size="449,53" advanced="true" layout="hz" colGap="29"/>
+    <image id="n19_fteg" name="n19" src="ftegobmj" fileName="Texture/img_333.png" pkg="vx9zwser" xy="1354,192" pivot="0.5,0.5" anchor="true">
+      <gearLook controller="fold" pages="1,2" values="1,180,0,0|1,180,0,0" default="1,0,0,0"/>
+      <relation target="n3_fteg" sidePair="bottom-bottom"/>
+    </image>
+    <component id="n21_fteg" name="info0" src="ftegobjk" fileName="Component/UIPaiPu/RenderPaiPuItem2.xml" xy="24,82" touchable="false" controller="type,0,my,0">
+      <gearXY controller="fold" pages="1,2" values="33,127|33,127" default="24,82"/>
+    </component>
+    <component id="n22_fteg" name="info1" src="ftegobjk" fileName="Component/UIPaiPu/RenderPaiPuItem2.xml" xy="688,82" touchable="false" controller="type,0,my,0">
+      <gearXY controller="fold" pages="0,1,2" values="688,82|33,198|33,198"/>
+    </component>
+    <component id="n23_fteg" name="info2" src="ftegobjk" fileName="Component/UIPaiPu/RenderPaiPuItem2.xml" xy="24,140" touchable="false" controller="type,0,my,0">
+      <gearXY controller="fold" pages="0,1,2" values="24,140|33,267|33,267"/>
+    </component>
+    <component id="n24_fteg" name="info3" src="ftegobjk" fileName="Component/UIPaiPu/RenderPaiPuItem2.xml" xy="688,140" touchable="false" controller="type,0,my,0">
+      <gearDisplay controller="siMa" pages="1"/>
+      <gearXY controller="fold" pages="1,2" values="33,337|33,337" default="688,140"/>
+    </component>
+    <text id="n4_fteg" name="name" xy="36,15" pivot="0,0.5" size="356,44" font="SimHei" fontSize="32" color="#fbbb70" vAlign="middle" leading="0" singleLine="true" text="段位场·铜之间·四人东"/>
+    <text id="n5_fteg" name="time" xy="608,16" pivot="0.5,0.5" size="232,38" fontSize="27" color="#72778d" vAlign="middle" leading="0" singleLine="true" text="2024/10/16 17:16"/>
+    <text id="n26_fteg" name="n26" xy="119,84" pivot="0.5,0.5" size="60,39" group="n30_fteg" fontSize="28" color="#73798c" vAlign="middle" leading="0" singleLine="true" text="玩家"/>
+    <text id="n27_fteg" name="n27" xy="409,85" pivot="0.5,0.5" size="159,39" group="n30_fteg" fontSize="28" color="#73798c" vAlign="middle" leading="0" singleLine="true" text="段位/PT变动"/>
+    <text id="n28_fteg" name="n28" xy="681,85" pivot="0.5,0.5" size="60,39" group="n30_fteg" fontSize="28" color="#73798c" vAlign="middle" leading="0" singleLine="true" text="点数"/>
+    <text id="n29_fteg" name="n29" xy="990,85" pivot="0.5,0.5" size="308,39" group="n30_fteg" fontSize="28" color="#73798c" vAlign="middle" leading="0" singleLine="true" text="立直 / 荣和 / 自摸 / 放铳"/>
+    <group id="n30_fteg" name="n30" xy="119,84" size="1179,39" advanced="true">
+      <gearDisplay controller="fold" pages="1,2"/>
+    </group>
+  </displayList>
+  <relation target="n3_fteg" sidePair="width-width,height-height"/>
+</component>

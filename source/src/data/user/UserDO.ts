@@ -11,6 +11,7 @@ import { FriendDO } from "./FriendDO";
 import { MailDO } from "./MailDO";
 import { QuestionnaireDO } from "./QuestionnaireDO";
 import { RechargeDO } from "./RechargeDO";
+import { RecordDO } from "./RecordDO";
 import { ServerSettingDO } from "./ServerSettingDO";
 import { SettingDO } from "./SettingDO";
 
@@ -48,6 +49,7 @@ export class UserDO extends BaseDO implements DO.IUserDO {
 	questionnaire = new QuestionnaireDO();
 
 	setting = new SettingDO();
+	record = new RecordDO();
 
 	@InjectNetEvent(ENetMessage.login)
 	@InjectNetEvent(ENetMessage.oauth2Login)

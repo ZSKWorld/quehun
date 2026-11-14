@@ -4,6 +4,10 @@ import { EUIPaipuMsg, UIPaipuView } from "../../view/uis/UIPaipuView";
 export class UIPaipuMediator extends MediatorBase<UIPaipuView, IUIPaipuData> {
 
 	override onAwake() {
-		
+		this.addEvent(EUIPaipuMsg.OnListInfoScrollEnd, this.onListInfoScrollEnd);
+	}
+
+	private onListInfoScrollEnd() {
+
 	}
 }

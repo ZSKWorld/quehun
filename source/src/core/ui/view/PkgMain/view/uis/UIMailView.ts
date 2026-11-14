@@ -21,8 +21,25 @@ export class UIMailView extends UIMail {
 		btn_getReward.onClick(this, this.event, [EUIMailMsg.OnBtnGetRewardClick]);
 		btn_delete.onClick(this, this.event, [EUIMailMsg.OnBtnDeleteClick]);
 
-		$uiUtil.setList(list_tab, true, this, this.onListTabRender, this.onListTabItemClick);
-		$uiUtil.setList(list_reward, true, this, this.onListRewardRender, this.onListRewardClick);
+		$uiUtil.initList<BtnMailTabView>(
+			list_tab, true, this,
+			(index, item) => {
+				item.refresh(this._mails[index]);
+			},
+			this.onListTabItemClick
+		);
+		$uiUtil.initList<RenderMailItemView>(
+			list_reward, true, this,
+			(index, item) => {
+				const { attachments, take_attachment } = this.curMail;
+				const reward = attachments[index];
+				item.refresh(reward.id, reward.count, take_attachment, true);
+			},
+			(item, e, index) => {
+				const reward = this.curMail.attachments[index];
+				this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: reward.id });
+			}
+		);
 	}
 
 	override onEnable() {
@@ -46,10 +63,6 @@ export class UIMailView extends UIMail {
 		}
 	}
 
-	private onListTabRender(index: number, item: BtnMailTabView) {
-		item.refresh(this._mails[index]);
-	}
-
 	private onListTabItemClick(_, __, index: number) {
 		const data = this.curMail;
 		const { ctrl_body, txt_title, label_content, list_reward, txt_expire, img_time } = this;
@@ -61,17 +74,6 @@ export class UIMailView extends UIMail {
 		txt_expire.text = this.getExpireDesc(data.expire_time - $timeUtil.second);
 
 		this.event(EUIMailMsg.OnTabSelectChanged, index);
-	}
-
-	private onListRewardRender(index: number, item: RenderMailItemView) {
-		const { attachments, take_attachment } = this.curMail;
-		const reward = attachments[index];
-		item.refresh(reward.id, reward.count, take_attachment, true);
-	}
-
-	private onListRewardClick(_, __, index: number) {
-		const reward = this.curMail.attachments[index];
-		this.openView<IUIItemDetailData>(EViewID.UIItemDetailView, { id: reward.id });
 	}
 
 	private getExpireDesc(second: number) {

@@ -7,9 +7,9 @@ export class RenderRecordItemView extends RenderRecordItem {
 		const { btn_rename, btn_collect, btn_share, btn_maka, btn_look, btn_foldArea, } = this;
 		btn_rename.onClick(this, this.onBtnRenameClick);
 		btn_collect.onClick(this, this.onBtnCollectClick);
-		// btn_share.onClick(this, this.event, [ERenderRecordItemMsg.OnBtnShareClick]);
+		btn_share.onClick(this, this.onBtnShareClick);
 		// btn_maka.onClick(this, this.event, [ERenderRecordItemMsg.OnBtnMakaClick]);
-		// btn_look.onClick(this, this.event, [ERenderRecordItemMsg.OnBtnLookClick]);
+		btn_look.onClick(this, this.onBtnLookClick);
 		btn_foldArea.onClick(this, this.onBtnFoldAreaClick);
 	}
 
@@ -59,7 +59,7 @@ export class RenderRecordItemView extends RenderRecordItem {
 	}
 
 	private onBtnRenameClick() {
-		const uuid = this._data.uuid;
+		const { uuid } = this._data;
 		if (!$user.record.isCollect(uuid)) return;
 
 		const { btn_rename, group_gremarks, itxt_remarks, txt_name } = this;
@@ -68,10 +68,11 @@ export class RenderRecordItemView extends RenderRecordItem {
 		itxt_remarks.text = txt_name.text;
 		(<Laya.Input>itxt_remarks.displayObject).select();
 
-		itxt_remarks.once(Laya.Event.BLUR, this, (a, b, c) => {
+		itxt_remarks.once(Laya.Event.BLUR, this, () => {
 			btn_rename.visible = true;
 			group_gremarks.visible = false;
 			const remarks = itxt_remarks.text;
+
 			if ($uiUtil.getWordsLen(remarks) > 30)
 				$confirmSma(2, $lang(2765));
 			else
@@ -87,11 +88,26 @@ export class RenderRecordItemView extends RenderRecordItem {
 			$confirmSma(3, $lang(3248)).then(v => {
 				v && $user.record.removeCollect(uuid);
 			});
-			let a:IUITextInputData
 		}
 		else {
-			$user.record.addCollect(uuid);
+			this.openView<IUIRecordRemarksData>(EViewID.UIRecordRemarksView, {
+				callback: (cancled, remarks) => {
+					if (cancled) return;
+					$user.record.addCollect(uuid, remarks);
+				}
+			});
 		}
+	}
+
+	private onBtnShareClick() {
+		this.openView<IUIRecordShareData>(EViewID.UIRecordShareView, {
+			type: 0,
+			uuid: this._data.uuid,
+		});
+	}
+
+	private onBtnLookClick() {
+		$tipMgr.showTip("暂未实现！！！");
 	}
 
 	private onBtnFoldAreaClick() {

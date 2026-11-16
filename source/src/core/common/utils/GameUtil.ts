@@ -267,5 +267,71 @@ export class GameUtil implements IGameUtil {
 		}
 		return [true, ...res] as any;
 	}
+
+	async copyText(text: string, tip: boolean = true) {
+		text = text == null ? "" : text;
+		let success = false;
+		if (navigator.clipboard && window.isSecureContext) {
+			try {
+				await navigator.clipboard.writeText(text);
+				success = true;
+			} catch (e) {
+				success = false;
+			}
+		}
+		if (!success)
+			success = this.fallbackCopy(text);
+
+		if (tip)
+			$tipMgr.showTip($lang(success ? 2125 : 0));
+
+		return success;
+	}
+
+	/**
+	 * 传统降级复制方案（兼容 HTTP / 旧浏览器 / 部分 WebView）
+	 */
+	private fallbackCopy(text: string) {
+		const textarea = document.createElement('textarea');
+		textarea.value = text;
+
+		// 防止页面滚动、避免闪动
+		textarea.style.position = 'fixed';
+		textarea.style.top = '-9999px';
+		textarea.style.left = '-9999px';
+		textarea.style.opacity = '0';
+		textarea.setAttribute('readonly', '');
+
+		document.body.appendChild(textarea);
+
+		// iOS 需要特殊处理选中范围
+		const isIOS = /ipad|iphone|ipod/i.test(navigator.userAgent);
+		if (isIOS) {
+			const range = document.createRange();
+			range.selectNodeContents(textarea);
+			const selection = window.getSelection();
+			selection?.removeAllRanges();
+			selection?.addRange(range);
+			textarea.setSelectionRange(0, text.length);
+		} else {
+			textarea.select();
+		}
+
+		let success = false;
+		try {
+			success = document.execCommand('copy');
+		} catch (e) {
+
+		}
+
+		document.body.removeChild(textarea);
+
+		// 清理 iOS 选区
+		if (isIOS) {
+			window.getSelection()?.removeAllRanges();
+		}
+
+		return success;
+	}
 }
 

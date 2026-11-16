@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
+  <controller name="type" pages="4,,5," selected="0"/>
+  <displayList>
+    <component id="n26_itoj" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
+      <Button icon="ui://vx9zwserieavob7l"/>
+    </component>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="452,302" size="1006,513"/>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1347,309">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <image id="n19_a7sx" name="n19" src="puubobff" fileName="Texture/img_811.png" pkg="vx9zwser" xy="550,417" size="811,172"/>
+    <component id="n28_itoj" name="hideId" src="mj5kb6p" fileName="Component/UIBag/BtnBagSkinCheck.xml" xy="540,604" size="588,48">
+      <gearDisplay controller="type" pages="4"/>
+      <Button title="匿名                                                          " titleColor="#9ca3b6" titleFontSize="32"/>
+    </component>
+    <component id="n14_j0dd" name="copy" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="841,676" size="240,88">
+      <gearDisplay controller="type" pages="4"/>
+      <Button title="复制" titleColor="#6c2e3a" titleFontSize="40" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <component id="n30_itoj" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="841,676" size="240,88">
+      <gearDisplay controller="type" pages="5"/>
+      <Button title="确定" titleColor="#6c2e3a" titleFontSize="40" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <text id="n23_itoj" name="input" xy="560,427" size="788,150" font="SimHei" fontSize="32" color="#b4bdc7" leading="0" autoSize="none" text="雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱雀魂牌谱" input="true" prompt="请输入牌谱链接"/>
+    <text id="n12_j0dd" name="title" xy="965,375" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="牌谱链接">
+      <gearText controller="type" pages="5" values="输入牌谱链接" default="牌谱链接"/>
+    </text>
+    <text id="n29_itoj" name="n29" xy="655,614" pivot="0,0.5" size="472,36" fontSize="26" color="#9ca3b6" vAlign="middle" singleLine="true" text="（玩家不能看到所有对局玩家的真实ID）">
+      <gearDisplay controller="type" pages="4"/>
+    </text>
+  </displayList>
+</component>

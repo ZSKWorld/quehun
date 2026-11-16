@@ -280,6 +280,7 @@
     <image id="ftegobji" name="img_1842.png" path="/Texture/" scale="9grid" scale9grid="20,0,129,46"/>
     <image id="ftegobjj" name="img_4066.png" path="/Texture/"/>
     <component id="ftegobjk" name="RenderRecordItem2.xml" path="/Component/UIRecord/"/>
+    <component id="itojobjl" name="UIRecordShare.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

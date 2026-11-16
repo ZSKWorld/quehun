@@ -79,13 +79,8 @@ export class UIFriendMediator extends MediatorBase<UIFriendView, IUIFriendData> 
 	}
 
 	private onBtnCopyClick() {
-		try {
-			const eid = $gameUtil.encodeAccountId($user.account.accountId).toString();
-			navigator.clipboard.writeText(eid)
-				.then(() => $tipMgr.showTip($lang(2125)));
-		} catch (error) {
-			$logger.error("复制失败", error);
-		}
+		const eid = $gameUtil.encodeAccountId($user.account.accountId).toString();
+		$gameUtil.copyText(eid);
 	}
 
 	private onBtnFindClick() {

@@ -282,6 +282,12 @@ declare interface IGameUtil {
 	safeCall(callback: SimpleHandler, ...args: any[]): any;
 	/** 循环确认加载 */
 	loopConfirmLoad<T extends readonly unknown[] | []>(promiseCreator: () => T, tip: string): Promise<[boolean, ...{ -readonly [P in keyof T]: Awaited<T[P]>; }]>;
+	/**
+	 * 通用复制文本方法
+	 * @param text 要复制的文本
+	 * @param tip 是否弹复制成功或失败提示，默认 true
+	 */
+	copyText(text: string, tip?: boolean): Promise<boolean>;
 }
 
 declare interface ITimeUtil {
@@ -312,7 +318,7 @@ declare interface ITimeUtil {
 	 * @param timestamp 
 	 * @param keepSec 是否保留秒数，默认true
 	 */
-	timeFormat1(timestamp: number, keepSec?:boolean): string;
+	timeFormat1(timestamp: number, keepSec?: boolean): string;
 	/** 将秒数转换成 `01:23:45` 的格式 */
 	timeFormat2(second: number): string;
 	/** 将秒数转换成 `1小时2分3秒` 的格式 */

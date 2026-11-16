@@ -2,7 +2,9 @@
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
   <controller name="format" pages="4,,5," selected="0"/>
   <displayList>
-    <component id="n21_a7sx" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
+    <component id="n26_itoj" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
+      <Button icon="ui://vx9zwserieavob7l"/>
+    </component>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="452,326" size="1006,429"/>
     <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1347,336" scale="0.8,0.8">
       <Button icon="ui://vx9zwserj0ddob7b"/>
@@ -12,10 +14,11 @@
       <gearDisplay controller="format" pages="0,2,3,4,5,6"/>
       <Button title="收藏" titleColor="#6c2e3a" titleFontSize="43" icon="ui://vx9zwserj0ddob73"/>
     </component>
-    <text id="n23_itoj" name="input" xy="555,495" pivot="0,0.5" size="802,44" font="SimHei" fontSize="32" color="#ffffff" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="段位场" input="true" prompt="用户名"/>
+    <text id="n23_itoj" name="input" xy="555,496" pivot="0,0.5" size="802,44" font="SimHei" fontSize="32" color="#ffffff" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="段位场" input="true"/>
     <text id="n12_j0dd" name="title" xy="967,381" pivot="0.5,0.5" anchor="true" size="184,60" font="ui://vx9zwserrpakobeu" fontSize="45" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="收藏牌谱">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
     <text id="n24_itoj" name="n24" xy="880,424" pivot="0.5,0.5" size="172,39" fontSize="28" color="#c1cceb" vAlign="middle" leading="0" singleLine="true" text="添加牌谱备注"/>
+    <text id="n25_itoj" name="tip" xy="556,558" size="124,29" visible="false" fontSize="20" color="#ff0000" leading="0" text="牌谱备注过长"/>
   </displayList>
 </component>

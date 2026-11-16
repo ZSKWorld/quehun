@@ -288,4 +288,37 @@ export class UIUtil implements IUIUtil {
 			default: return "";
 		}
 	}
+
+	getRecordShareUrl(uuid: string, hideId: boolean) {
+		const encryptAccountId = $gameUtil.encryptAccountId($user.account.accountId);
+		const url = $gameMgr.linkUrl;
+		if (hideId)
+			return `${ $lang(2126) }:${ url }?paipu=${ this.encodeRecordId(uuid) }_a${ encryptAccountId }_2`;
+		else
+			return `${ $lang(2126) }:${ url }?paipu=${ uuid }_a${ encryptAccountId }`;
+	}
+
+	private encodeRecordId(uuid: string) {
+		let s = "";
+		let code0 = "0".charCodeAt(0);
+		let codea = "a".charCodeAt(0);
+		for (let i = 0; i < uuid.length; i++) {
+			const c = uuid.charAt(i);
+			const code = c.charCodeAt(0);
+			let v = -1;
+			if (code >= code0 && code < code0 + 10) {
+				v = code - code0;
+			} else if (code >= codea && code < codea + 26) {
+				v = code - codea + 10;
+			}
+			if (v != -1) {
+				v = (v + 17 + i) % 36;
+				if (v < 10) s += String.fromCharCode(v + code0);
+				else s += String.fromCharCode(v + codea - 10);
+			} else {
+				s += c;
+			}
+		}
+		return s;
+	}
 }

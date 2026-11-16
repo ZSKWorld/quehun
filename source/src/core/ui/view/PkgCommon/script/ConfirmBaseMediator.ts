@@ -11,8 +11,17 @@ interface IConfirmView {
 }
 export abstract class ConfirmBaseMediator<V extends IView, D extends IUIConfirmData = IUIConfirmData> extends MediatorBase<V, D> {
 	protected _datas: IUIConfirmData[] = [];
+	private _confirmed: boolean = false;
 	override onEnable() {
+		this._confirmed = false;
 		this.refreshView();
+	}
+
+	override onDisable() {
+		if (this._confirmed)
+			$gameUtil.safeCall(this.data.onConfirm);
+		else
+			$gameUtil.safeCall(this.data.onCancel);
 	}
 
 	protected refreshView() {
@@ -25,12 +34,7 @@ export abstract class ConfirmBaseMediator<V extends IView, D extends IUIConfirmD
 	}
 
 	protected onBtnConfirmClick() {
-		this.data.onConfirm?.run();
-		this.closeSelf();
-	}
-
-	protected onBtnCancelClick() {
-		this.data.onCancel?.run();
+		this._confirmed = true;
 		this.closeSelf();
 	}
 }

@@ -10,6 +10,7 @@ export default class UIRecordRemarks extends GComponentView {
 	protected btn_confirm: fgui.GButton;
 	protected itxt_input: fgui.GTextInput;
 	protected txt_title: fgui.GTextField;
+	protected txt_tip: fgui.GTextField;
 	public static url: string = "ui://vx9zwseritojobmm";
 
 	public static createInstance(): UIRecordRemarks {
@@ -23,5 +24,6 @@ export default class UIRecordRemarks extends GComponentView {
 		this.btn_confirm = <fgui.GButton>(this.getChildAt(4));
 		this.itxt_input = <fgui.GTextInput>(this.getChildAt(5));
 		this.txt_title = <fgui.GTextField>(this.getChildAt(6));
+		this.txt_tip = <fgui.GTextField>(this.getChildAt(8));
 	}
 }

@@ -13,8 +13,14 @@ export class UIRecordView extends UIRecord {
 	private _tabGroup = new RadioGroup();
 
 	override onCreate() {
-		const { com_back, list_info, btn_overview, btn_level, btn_friend, btn_activity, btn_match, btn_collect } = this;
+		const {
+			com_back, list_info, btn_overview, btn_level, btn_friend, btn_activity, btn_match, btn_collect,
+			btn_other,
+		} = this;
 		com_back.onBackClick(this, this.closeSelf);
+		btn_other.onClick(this, () => {
+			this.openView<IUIRecordShareData>(EViewID.UIRecordShareView, { type: 1 });
+		});
 
 		this._tabGroup.init(
 			[btn_overview, btn_level, btn_friend, btn_activity, btn_match, btn_collect], this,

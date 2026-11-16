@@ -5,6 +5,7 @@ export class TipManager implements ITipManager {
 	private _inCD: boolean = false;
 
 	showTip(text: string) {
+		if (!text) return;
 		if (this._cache.includes(text)) return;
 		this._cache.push(text);
 		if (!this._inCD) this.showNext();

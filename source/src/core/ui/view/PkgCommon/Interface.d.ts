@@ -79,3 +79,7 @@ declare interface IUITextInputData {
 	/** 输入完成回调 */
 	callback?: Laya.Handler | ((text: string) => void);
 }
+
+declare interface IUIRecordRemarksData {
+	callback: Laya.Handler | ((cancled: boolean, remarks: string) => void);
+}

@@ -45,12 +45,13 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIAchievementDetailView]: [],
 			[EViewID.UIChangeSkinView]: [],
 			[EViewID.UIVisitView]: [],
+			[EViewID.UIRecordRemarksView]: [UIBottom, Popup],
 
 			[EViewID.UITestBezierView]: [UITop],
 			[EViewID.UITestMainView]: [UITop],
 			[EViewID.UITestSpineView]: [UITop],
 			[EViewID.UITestAStarView]: [UITop],
-			[EViewID.UITestSnakeView]: [UITop]
+			[EViewID.UITestSnakeView]: [UITop],
 		};
 		for (const viewId in viewMap) {
 			const [layer, category] = viewMap[viewId];

@@ -228,4 +228,6 @@ declare interface IUIUtil {
 	getBigHuTile(type: EBigHuType): string;
 	/** 获取maka等级图标 */
 	getMakaLevelTile(type: EMakaLevel): string;
+	/** 获取牌谱分享地址 */
+	getRecordShareUrl(uuid: string, hideId: boolean): string;
 }

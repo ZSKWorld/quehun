@@ -82,3 +82,9 @@ declare interface IUIVisitData {
 declare interface IUIChangeSkinData {
 	charId: number;
 }
+
+declare interface IUIRecordShareData {
+	/** 0-分享牌谱，1-查看其他牌谱 */
+	type: 0 | 1,
+	uuid?: string;
+}

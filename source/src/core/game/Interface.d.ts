@@ -57,6 +57,7 @@ declare interface IGameManager {
 	get config(): IConfig;
 	get ipInfo(): IIPInfo;
 	get zoneIds(): number[];
+	get linkUrl(): string;
 	init(ipIndex: number, config: IConfig): void;
 	showConfirm(msg: string): Promise<boolean>;
 	/**

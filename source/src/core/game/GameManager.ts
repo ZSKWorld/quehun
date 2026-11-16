@@ -111,6 +111,7 @@ export class GameManager extends Observer implements IGameManager {
 	get config() { return this._config; }
 	get ipInfo() { return this._config.ip[this._ipIndex]; }
 	get zoneIds() { return this.ipInfo.zone_ids; }
+	get linkUrl() { return location.href; }
 
 	init(ipIndex: number, config: IConfig) {
 		this._ipIndex = ipIndex;

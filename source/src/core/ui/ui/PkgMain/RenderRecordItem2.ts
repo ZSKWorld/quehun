@@ -10,7 +10,6 @@ export default class RenderRecordItem2 extends GComponentView {
 	protected ctrl_my: fgui.Controller;
 	protected loader_maka: fgui.GLoader;
 	protected loader_beilv: fgui.GLoader;
-	protected loader_icon: fgui.GLoader;
 	protected com_level: ComLevel2View;
 	protected label_name: LabelNameView;
 	protected txt_rank: fgui.GTextField;
@@ -31,15 +30,14 @@ export default class RenderRecordItem2 extends GComponentView {
 		this.ctrl_my = this.getControllerAt(1);
 		this.loader_maka = <fgui.GLoader>(this.getChildAt(1));
 		this.loader_beilv = <fgui.GLoader>(this.getChildAt(2));
-		this.loader_icon = <fgui.GLoader>(this.getChildAt(3));
-		this.com_level = <ComLevel2View>(this.getChildAt(4));
-		this.label_name = <LabelNameView>(this.getChildAt(5));
-		this.txt_rank = <fgui.GTextField>(this.getChildAt(6));
-		this.txt_score = <fgui.GTextField>(this.getChildAt(8));
-		this.txt_point = <fgui.GTextField>(this.getChildAt(9));
-		this.txt_lizhi = <fgui.GTextField>(this.getChildAt(10));
-		this.txt_ron = <fgui.GTextField>(this.getChildAt(11));
-		this.txt_zimo = <fgui.GTextField>(this.getChildAt(12));
-		this.txt_cong = <fgui.GTextField>(this.getChildAt(13));
+		this.com_level = <ComLevel2View>(this.getChildAt(3));
+		this.label_name = <LabelNameView>(this.getChildAt(4));
+		this.txt_rank = <fgui.GTextField>(this.getChildAt(5));
+		this.txt_score = <fgui.GTextField>(this.getChildAt(7));
+		this.txt_point = <fgui.GTextField>(this.getChildAt(8));
+		this.txt_lizhi = <fgui.GTextField>(this.getChildAt(9));
+		this.txt_ron = <fgui.GTextField>(this.getChildAt(10));
+		this.txt_zimo = <fgui.GTextField>(this.getChildAt(11));
+		this.txt_cong = <fgui.GTextField>(this.getChildAt(12));
 	}
 }

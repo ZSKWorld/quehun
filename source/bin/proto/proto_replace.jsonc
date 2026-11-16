@@ -20,5 +20,11 @@
         "modes": { "optional": true },
         "max_hu_type": { "optional": true },
         "level_mode": { "optional": true }
+    },
+    ".lq.SeerScore": {
+        "rating": { "type": "EMakaLevel" }
+    },
+    ".lq.SeerBrief": {
+        "state": { "type": "EMakaState" }
     }
 }

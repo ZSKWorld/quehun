@@ -771,7 +771,9 @@
         get y() {
             return this._y;
         }
-        set y(value) {
+		set y(value) {
+			if (this.name == "btn_foldArea")
+				$logger.error("111")
             this.setXY(this._x, value);
         }
         setXY(xv, yv) {

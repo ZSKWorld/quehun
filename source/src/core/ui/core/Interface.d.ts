@@ -183,6 +183,8 @@ declare interface IUIUtil {
 		showItemCount?: number
 	): void;
 
+	/** 获取字符串字节长度，一个亚洲字占两个字符，一个英文字符占1个字符 */
+	getWordsLen(str: string): number;
 	popAlphaIn(panel: fgui.GObject): Promise<void>;
 	popAlphaOut(panel: fgui.GObject): Promise<void>;
 	playTrans(trans: fgui.Transition, reverse?: boolean): Promise<void>;
@@ -196,4 +198,34 @@ declare interface IUIUtil {
 	parseUBBText(str: string, hrefColor?: string): string;
 	/** 检查全局位置是否在目标范围内 */
 	checkPointInGobject(x: number, y: number, obj: fgui.GObject): boolean;
+	/**
+	 * 0 四人一局
+	 * 1 四人东
+	 * 2 四人南
+	 * 3 四人人机
+	 * 4 四人一局
+	 * 10 三人一局
+	 * 11 三人东
+	 * 12 三人南
+	 * 13 三人人机
+	 * 14 三人一局
+	 * @param mode 房间模式
+	 */
+	getRoomModeDesc(mode: number): string;
+	/**
+	 * 获取牌谱标题 
+	 *  【段位场=三段】：段位场-王座之间-四人南（段位场-x之间-局数信息）
+	 *	【友人场=两段】：友人场-四人东（友人场-局数信息）
+	 *	【活动场=两段】：修罗之战-四人东（活动场使用规则名-局数信息）
+	 *	【赛事场=两段】：比赛场-四人东（比赛场-局数信息）
+	 * @param tag 标题类型 1排位赛 2友人场 3活动场 4比赛场
+	 * @param subtag 子标签，根据tag来 tag=1/3 就是matchmode.id，tag=2/4 就是mode.mode
+	 */
+	getRecordTitle(tag: number, subtag: number): string;
+	/** 获取隐藏后的昵称 */
+	getHidedName(data: { account_id: number, nickname: string, verified: number; }, flag?: EHideNameFlag): string;
+	/** 获取大胡图标 */
+	getBigHuTile(type: EBigHuType): string;
+	/** 获取maka等级图标 */
+	getMakaLevelTile(type: EMakaLevel): string;
 }

@@ -23,7 +23,76 @@ declare enum ERouteState {
 	/** 拒绝 */
 	Rejected = "rejected",
 }
-//#endregion
+
+declare enum EClientValueType {
+	None = 0,
+	CompleteRegistration = 1,
+	CompleteTutorial = 2,
+	Level_1 = 3,
+	Level_2 = 4,
+	Level_3 = 5,
+	Get_The_Title1 = 6,
+	Purchase_Click = 7,
+	Purchase = 8,
+	XinShouYinDao = 10,
+	G_Role_create = 1001, // 成功创建角色
+	G_Role_login = 1002, // 登录进所选服务器
+	G_Role_logout = 1003, // 角色离开服务器
+	G_tutorial_complete = 1004, // 完成新手引导
+	G_Purchase = 1005, // 成功充值
+	G_Purchase_click = 1006, // 点击充值相关按钮，辉玉，铜币等等
+	G_Purchase_first = 1007, // 历史上完成首次购买in-app purchase，排重
+	G_Role_level_1 = 1008, // 初心1星
+	G_Role_level_2 = 1009, // 初心2星
+	G_Role_level_3 = 1010, // 初心3星
+	G_Role_level_4 = 1011, // 雀士1星
+	G_Role_level_5 = 1012, // 雀士2星
+	G_Role_level_6 = 1013, // 雀士3星
+	G_Role_level_7 = 1014, // 雀杰1星
+	G_Role_level_8 = 1015, // 雀杰2星
+	G_Role_level_9 = 1016, // 雀杰3星
+	G_Role_level_10 = 1017, // 雀豪1星
+	G_Role_level_11 = 1018, // 雀豪2星
+	G_Role_level_12 = 1018, // 雀豪3星
+	G_Role_level_13 = 1020, // 雀圣1星
+	G_Role_level_14 = 1021, // 雀圣2星
+	G_Role_level_15 = 1022, // 雀圣3星
+	G_Role_level_16 = 1023, // 魂天
+	G_get_title_1 = 1024, // 获得称号魂之契约者（充值6元）
+	G_get_title_2 = 1025, // 获得称号魂之契约者（充值30元）
+	G_get_title_3 = 1026, // 获得称号魂之契约者（充值60元）
+	G_get_title_4 = 1027, // 获得称号魂之启迪者（充值100元）
+	G_get_title_5 = 1028, // 获得称号魂之启迪者（充值250元）
+	G_get_title_6 = 1029, // 获得称号魂之启迪者（充值500元）
+	G_get_title_7 = 1030, // 获得称号魂之缔造者（充值1000元）
+	G_get_title_8 = 1031, // 获得称号魂之缔造者（充值2000元）
+	G_get_title_9 = 1032, // 获得称号魂之缔造者（充值3000元）
+	G_get_title_10 = 1033, // 获得称号魂之超越者（充值4000元）
+	G_get_title_11 = 1034, // 猫粮供应商（充值5000元）
+	G_tutorial_jump = 1035, // 跳过新手引导
+
+	TW_Purchase = 2001, // 付费
+	TW_Signup = 2002, // 注册
+	TW_Tutorial_Completed = 2003, // 新手引导结束
+
+	Shilian_Reward = 3001,
+	Chunjie_Anim_Point = 3002,
+
+	Chara_Show_Star = 3003, //寮舍是否只显示角色
+	Recharge_Xieyi_Checked = 3004, // 充值协议确认
+	Chunjie_Yindao_Checked = 3005, // 春节活动是否展示过新手引导
+	event2403_followed = 3006, // 2403主播活动是否已关注
+	BA_Yindao_Checked = 3008, // ba活动是否展示过新手引导
+	HaiDao_Yindao_Checked = 3009, // 2406海岛活动是否展示过新手引导
+	Spot_2408_Checked = 3010, // 2408剧情活动是否展示过新手引导
+	Imas_Yindao_Checked = 3011, // 2411偶像大师活动是否展示过新手引导
+	BA2501_Yindao_Checked = 3012, //2501春节庙会动是否展示过新手引导
+	BA2501_LastEvent_Checked = 3013, //2501春节庙会动是否已完成最后一个事件
+	BA2501_PlayCG_Checked = 3014, //2501春节庙会动是否展示过告别cg
+	HF_Yindao_Checked = 3015, // 2404天之杯活动是否展示过新手引导
+
+}
+//#endregion--------------------------------------------------------------------
 
 //#region 麻将牌相关
 //0.筒子p,  1.万字m,  2.条子s,  3.字牌z,  4.百搭牌
@@ -69,9 +138,12 @@ declare enum EBigHuType {
 	/** 累计役满 */
 	E_Dadian_Title_leijiyiman = 11,
 }
+//#endregion--------------------------------------------------------------------
 
+//#region 牌谱相关
 /** 牌谱标签 */
 declare enum ERecordTag {
+	None = -1,
 	/** 总览（全部） */
 	All = 0,
 	/** 段位 */
@@ -85,7 +157,47 @@ declare enum ERecordTag {
 	/** 收藏 */
 	Collect = 5,
 }
-//#endregion
+
+/** maka分析状态 */
+declare enum EMakaState {
+	/** 未分析 */
+	UnAnalysis = 0,
+	/** 分析中 */
+	Analysising = 1,
+	/** 分析完成 */
+	Analysised = 2,
+	/** 分析内容过期 */
+	Expired = 3,
+}
+
+/** maka等级 */
+declare enum EMakaLevel {
+	None = 0,
+	S_Plus = 56,
+	S = 55,
+	S_Minus = 54,
+	A_Plus = 46,
+	A = 45,
+	A_Minus = 44,
+	B_Plus = 36,
+	B = 35,
+	B_Minus = 34,
+	C_Plus = 26,
+	C = 25,
+	C_Minus = 24,
+	D_Plus = 16,
+	D = 15,
+	E = 5,
+}
+//#endregion--------------------------------------------------------------------
+
+//#region 全局定义
+
+/** 全局常量定义 */
+declare enum EConstDefine {
+	/** 本地化资源根目录 */
+	LangResDir = "langRes/",
+}
 
 /** 本地化语言 */
 declare enum ELanguage {
@@ -139,6 +251,63 @@ declare enum ELocalDataKey {
 	/** 其他设置 */
 	OtherSetting = "LocalDataKey_OtherSetting",
 }
+
+/** 逻辑场景类型枚举 */
+declare enum ESceneType {
+	LoginScene = "LoginScene",
+	MainScene = "MainScene",
+}
+
+/** 配置表本地化字段名 */
+declare enum ECfgLangField {
+	name = "name",
+	name1 = "name1",
+	name2 = "name2",
+	desc = "desc",
+	desc2 = "desc2",
+	desc_cv = "desc_cv",
+	desc_item = "desc_item",
+	desc_func = "desc_func",
+	first_desc = "first_desc",
+	normal_desc = "normal_desc",
+	expire_desc = "expire_desc",
+	room_name = "room_name",
+	lock_tips = "lock_tips",
+}
+
+/** 颜色常量 */
+declare enum EColorString {
+	_000000 = "#000000",
+	_000080 = "#000080",
+	_0000ff = "#0000ff",
+	_00aaff = "#00aaff",
+	_00ff00 = "#00ff00",
+	_2a1e25 = "#2a1e25",
+	_51f1ff = "#51f1ff",
+	_58c4db = "#58c4db",
+	_66ccff = "#66ccff",
+	_8c8c8c = "#8c8c8c",
+	_8cb65f = "#8cb65f",
+	_8d6f61 = "#8d6f61",
+	_999999 = "#999999",
+	_a9d94d = "#a9d94d",
+	_d4815c = "#d4815c",
+	_d9b263 = "#d9b263",
+	_e0ab67 = "#e0ab67",
+	_e8af71 = "#e8af71",
+	_eab65e = "#eab65e",
+	_ebb661 = "#ebb661",
+	_edb26f = "#EDB26F",
+	_f17828 = "#f17828",
+	_f56aff = "#f56aff",
+	_f7b75d = "#f7b75d",
+	_ff0000 = "#ff0000",
+	_ffc8c8 = "#ffc8c8",
+	_ffc900 = "#ffc900",
+	_ffffff = "#ffffff",
+	_00000000 = "#00000000",
+}
+//#endregion--------------------------------------------------------------------
 
 //#region view相关
 
@@ -317,9 +486,9 @@ declare enum ELayer {
 	UITop = "UITop",
 }
 
-//#endregion
+//#endregion--------------------------------------------------------------------
 
-//#region 物品道具类型相关
+//#region 物品道具相关
 
 /** 全局物品类型 */
 declare enum EItemType {
@@ -427,469 +596,6 @@ declare enum ECurrencyType {
 	SeekTicket = 301001,
 	/** 信仰值 */
 	FaithValue = 100001,
-}
-//#endregion
-
-declare enum EClientValueType {
-	None = 0,
-	CompleteRegistration = 1,
-	CompleteTutorial = 2,
-	Level_1 = 3,
-	Level_2 = 4,
-	Level_3 = 5,
-	Get_The_Title1 = 6,
-	Purchase_Click = 7,
-	Purchase = 8,
-	XinShouYinDao = 10,
-	G_Role_create = 1001, // 成功创建角色
-	G_Role_login = 1002, // 登录进所选服务器
-	G_Role_logout = 1003, // 角色离开服务器
-	G_tutorial_complete = 1004, // 完成新手引导
-	G_Purchase = 1005, // 成功充值
-	G_Purchase_click = 1006, // 点击充值相关按钮，辉玉，铜币等等
-	G_Purchase_first = 1007, // 历史上完成首次购买in-app purchase，排重
-	G_Role_level_1 = 1008, // 初心1星
-	G_Role_level_2 = 1009, // 初心2星
-	G_Role_level_3 = 1010, // 初心3星
-	G_Role_level_4 = 1011, // 雀士1星
-	G_Role_level_5 = 1012, // 雀士2星
-	G_Role_level_6 = 1013, // 雀士3星
-	G_Role_level_7 = 1014, // 雀杰1星
-	G_Role_level_8 = 1015, // 雀杰2星
-	G_Role_level_9 = 1016, // 雀杰3星
-	G_Role_level_10 = 1017, // 雀豪1星
-	G_Role_level_11 = 1018, // 雀豪2星
-	G_Role_level_12 = 1018, // 雀豪3星
-	G_Role_level_13 = 1020, // 雀圣1星
-	G_Role_level_14 = 1021, // 雀圣2星
-	G_Role_level_15 = 1022, // 雀圣3星
-	G_Role_level_16 = 1023, // 魂天
-	G_get_title_1 = 1024, // 获得称号魂之契约者（充值6元）
-	G_get_title_2 = 1025, // 获得称号魂之契约者（充值30元）
-	G_get_title_3 = 1026, // 获得称号魂之契约者（充值60元）
-	G_get_title_4 = 1027, // 获得称号魂之启迪者（充值100元）
-	G_get_title_5 = 1028, // 获得称号魂之启迪者（充值250元）
-	G_get_title_6 = 1029, // 获得称号魂之启迪者（充值500元）
-	G_get_title_7 = 1030, // 获得称号魂之缔造者（充值1000元）
-	G_get_title_8 = 1031, // 获得称号魂之缔造者（充值2000元）
-	G_get_title_9 = 1032, // 获得称号魂之缔造者（充值3000元）
-	G_get_title_10 = 1033, // 获得称号魂之超越者（充值4000元）
-	G_get_title_11 = 1034, // 猫粮供应商（充值5000元）
-	G_tutorial_jump = 1035, // 跳过新手引导
-
-	TW_Purchase = 2001, // 付费
-	TW_Signup = 2002, // 注册
-	TW_Tutorial_Completed = 2003, // 新手引导结束
-
-	Shilian_Reward = 3001,
-	Chunjie_Anim_Point = 3002,
-
-	Chara_Show_Star = 3003, //寮舍是否只显示角色
-	Recharge_Xieyi_Checked = 3004, // 充值协议确认
-	Chunjie_Yindao_Checked = 3005, // 春节活动是否展示过新手引导
-	event2403_followed = 3006, // 2403主播活动是否已关注
-	BA_Yindao_Checked = 3008, // ba活动是否展示过新手引导
-	HaiDao_Yindao_Checked = 3009, // 2406海岛活动是否展示过新手引导
-	Spot_2408_Checked = 3010, // 2408剧情活动是否展示过新手引导
-	Imas_Yindao_Checked = 3011, // 2411偶像大师活动是否展示过新手引导
-	BA2501_Yindao_Checked = 3012, //2501春节庙会动是否展示过新手引导
-	BA2501_LastEvent_Checked = 3013, //2501春节庙会动是否已完成最后一个事件
-	BA2501_PlayCG_Checked = 3014, //2501春节庙会动是否展示过告别cg
-	HF_Yindao_Checked = 3015, // 2404天之杯活动是否展示过新手引导
-
-}
-
-/** 逻辑场景类型枚举 */
-declare enum ESceneType {
-	LoginScene = "LoginScene",
-	MainScene = "MainScene",
-}
-
-/** 各种UI对象池标识 */
-declare enum EUIPoolKey {
-	/** 文本提示 */
-	TipInfo = "EUIPoolKey_TipInfo",
-	/** 菜单 */
-	ContextMenu = "EUIPoolKey_ContextMenu",
-}
-
-/** 全局常量定义 */
-declare enum EConstDefine {
-	/** 本地化资源根目录 */
-	LangResDir = "langRes/",
-}
-
-/** 全局事件枚举 */
-declare enum EGlobalEvent {
-	/** 游戏回到前台事件 */
-	OnGameShow = "EGlobalEvent_OnGameShow",
-	/** 游戏隐藏后台事件 */
-	OnGameHide = "EGlobalEvent_OnGameHide",
-
-	/** 红点组件唤醒 */
-	RedDotCompAwake = "EGlobalEvent_RedDotCompAwake",
-	/** 红点组件销毁 */
-	RedDotCompDestroy = "EGlobalEvent_RedDotCompDestroy",
-	/** 初始完成 */
-	OnGameInited = "EGlobalEvent_OnGameInited",
-
-	//#region 网络相关
-	LobbyConnecting = "EGlobalEvent_LobbyConnectting",
-	LobbyReconnecting = "EGlobalEvent_LobbyReconnecting",
-	LobbyConnected = "EGlobalEvent_LobbyConnected",
-	LobbyClosed = "EGlobalEvent_LobbyClosed",
-	GameConnecting = "EGlobalEvent_GameConnecting",
-	GameReconnecting = "EGlobalEvent_GameReconnecting",
-	GameConnected = "EGlobalEvent_GameConnected",
-	GameClosed = "EGlobalEvent_GameClosed",
-	OBConnecting = "EGlobalEvent_OBConnecting",
-	OBReconnecting = "EGlobalEvent_OBReconnecting",
-	OBConnected = "EGlobalEvent_OBConnected",
-	OBClosed = "EGlobalEvent_OBClosed",
-	//#endregion
-
-	//#region 页面相关
-	/** 页面打开前 */
-	OnViewOpenBegin = "EGlobalEvent_OnViewOpenBegin",
-	/** 页面打开后 */
-	OnViewOpenEnd = "EGlobalEvent_OnViewOpenEnd",
-	/** 页面关闭前 */
-	OnViewCloseBegin = "EGlobalEvent_OnViewCloseBegin",
-	/** 页面关闭后 */
-	OnViewCloseEnd = "EGlobalEvent_OnViewCloseEnd",
-	//#endregion
-
-	/**绑定手机号完成 */
-	BindPhoneCompleted = "EGlobalEvent_BindPhoneCompleted",
-	/** 登录成功 */
-	LoginSuccess = "EGlobalEvent_LoginSuccess",
-
-	//#region logicScene相关
-	/** 场景开始加载 */
-	OnSceneLoadBegin = "EGlobalEvent_OnSceneLoadBegin",
-	/** 场景加载进度 */
-	OnSceneLoadProgress = "EGlobalEvent_OnSceneLoadProgress",
-	/** 场景加载结束 */
-	OnSceneLoadEnd = "EGlobalEvent_OnSceneLoadEnd",
-	/** 进入场景开始 */
-	OnSceneEnterBegin = "EGlobalEvent_OnSceneEnterBegin",
-	/** 进入场景结束 */
-	OnSceneEnterEnd = "EGlobalEvent_OnSceneEnterEnd",
-	/** 退出场景开始 */
-	OnSceneExitBegin = "EGlobalEvent_OnSceneExitBegin",
-	/** 退出场景结束 */
-	OnSceneExitEnd = "EGlobalEvent_OnSceneExitEnd",
-	//#endregion
-
-}
-
-/** 用户数据变化事件 */
-declare enum EUserEvent {
-	//#region 邮件相关
-	OnMailChanged = "EUserEvent_OnMailChanged",
-	//#endregion
-
-	//#region 公告相关
-	OnAnnouncementChanged = "EUserEvent_OnAnnouncementChanged",
-	//#endregion
-
-	//#region 好友相关
-	OnFriendsChanged = "EUserEvent_OnFriendsChanged",
-	OnFriendMaxCountChanged = "EUserEvent_OnFriendMaxCountChanged",
-	OnFriendApplyChanged = "EUserEvent_OnFriendApplyChanged",
-	//#endregion
-
-	//#region 背包相关
-	OnBagItemsChanged = "EUserEvent_OnBagItemsChanged",
-	OnBagDailyGainRecordChanged = "EUserEvent_OnBagDailyGainRecordChanged",
-	OnCGUsingChanged = "EUserEvent_OnCGUsingChanged",
-	//#endregion
-
-	//#region 角色相关
-	OnMainCharacterChanged = "EUserEvent_OnMainCharacterChanged",
-	OnCharacterChanged = "EUserEvent_OnCharacterChanged",
-	OnCharacterSortChanged = "EUserEvent_OnCharacterSortChanged",
-	//#endregion
-
-	//#region 装扮相关
-
-	/** 使用中的牌背变化 */
-	OnMjpBackUseChanged = "EUserEvent_OnMjpBackUseChanged",
-	/** 使用中的牌面变化 */
-	OnMjpFrontUseChanged = "EUserEvent_OnMjpFrontUseChanged",
-	/** 使用中的桌布变化 */
-	OnTableClothUseChanged = "EUserEvent_OnTableClothUseChanged",
-	/** 使用中的大厅背景变化 */
-	OnLobbyBgChanged = "EUserEvent_OnLobbyBgChanged",
-	/** 使用中的装扮变化 */
-	OnViewUseChanged = "EUserEvent_OnViewUseChanged",
-	/** 装扮数据变化 */
-	OnCommonViewChanged = "EUserEvent_OnCommonViewChanged",
-	/** 动皮开关变化 */
-	OnDynamicSkinChanged = "EUserEvent_OnDynamicSkinChanged",
-	//#endregion
-
-	//#region client_value相关
-	OnClientValueChanged = "EUserEvent_OnClientValueChanged",
-	//#endregion
-
-	//#region 活动相关
-	OnActivityListChanged = "EUserEvent_OnActivityListChanged",
-	OnActivityIntervalChanged = "EUserEvent_OnActivityIntervalChanged",
-	OnActivityBuffChanged = "EUserEvent_OnActivityBuffChanged",
-	OnActivityTaskProgressChanged = "EUserEvent_OnActivityTaskProgressChanged",
-	OnActivityFlipTaskProgressChanged = "EUserEvent_OnActivityFlipTaskProgressChanged",
-	OnActivityPeriodTaskProgressChanged = "EUserEvent_OnActivityPeriodTaskProgressChanged",
-	OnActivityRandomTaskProgressChanged = "EUserEvent_OnActivityRandomTaskProgressChanged",
-	OnActivitySegmentTaskProgressChanged = "EUserEvent_OnActivitySegmentTaskProgressChanged",
-	//#endregion
-
-	//#region 充值相关
-	/** vip经验变化 */
-	OnRechargeVipExpChanged = "EUserEvent_OnRechargeVipExpChanged",
-	/** 已充值档位变化 */
-	OnRechargeRechargedListChanged = "EUserEvent_OnRechargeRechargedListChanged",
-	/** 已领取的vip等级奖励变化 */
-	OnRechargeGainVipLevelChanged = "EUserEvent_OnRechargeGainVipLevelChanged",
-	//#endregion
-
-	//#region 成就相关
-	OnAchievementChanged = "EUserEvent_OnAchievementChanged",
-	OnNewAchievement = "EUserEvent_OnNewAchievement",
-
-	//#endregion
-
-	//#region 牌谱相关
-	OnRecordChanged = "EUserEvent_OnRecordChanged",
-	//#endregion
-}
-
-//#region 视频事件
-
-/** 视频加载事件 */
-declare enum EVideoLoadEvent {
-	/** 浏览器开始寻找媒体数据时。 */
-	LoadStart = "loadstart",
-	/** 视频的时长、尺寸、字幕等元数据加载完成。 */
-	LoadedMetadata = "loadedmetadata",
-	/** 当前帧的数据加载完成（视频首帧已就绪）。 */
-	LoadedData = "loadeddata",
-	/** 浏览器正在下载视频数据。 */
-	Progress = "progress",
-	/** 浏览器认为已经加载了足够的数据，可以开始播放。 */
-	CanPlay = "canplay",
-	/** 预计在不断网的情况下可以顺畅播放直至结束。 */
-	CanPlayThrough = "canplaythrough",
-}
-
-/** 视频播放状态事件 */
-declare enum EVideoPlaybackEvent {
-	/** 当 play() 方法被调用或 autoplay 生效 */
-	Play = "play",
-	/** 视频真正开始运行（从暂停或缓冲状态恢复） */
-	Playing = "playing",
-	/** 视频暂停 */
-	Pause = "pause",
-	/** 视频播放到末尾 */
-	Ended = "ended",
-	/** 播放因缓冲而停止（网络跟不上） */
-	Waiting = "waiting",
-	/** 浏览器尝试获取数据但数据不可用 */
-	Stalled = "stalled",
-}
-
-/** 视频互动与进度事件 */
-declare enum EVideoProgressAndInteractionEvent {
-	/** 播放位置改变（每秒触发约 4-66 次） */
-	TimeUpdate = "timeupdate",
-	/** 用户开始拖动进度条 */
-	Seeking = "seeking",
-	/** 用户完成拖动，新的位置已定位 */
-	Seeked = "seeked",
-	/** 音量改变或静音状态切换 */
-	VolumeChange = "volumechange",
-	/** 播放速率改变（如切换 2x */
-	RateChange = "ratechange",
-}
-
-/** 视频错误处理事件 */
-declare enum EVideoErrorEvent {
-	/** 发生错误（如视频格式不支持、404）。可通过 video.error 获取详情。 */
-	Error = "error",
-	/** 视频加载被中止（非错误原因，通常是用户操作）。 */
-	Abort = "abort",
-}
-//#endregion
-
-//#region spine相关
-
-/** spine布局类型 */
-declare enum ESpineLayout {
-	A0 = "A0",
-	B0 = "B0",
-	B1 = "B1",
-	B2 = "B2",
-	B3 = "B3",
-	C0 = "C0",
-	D0 = "D0",
-	E0 = "E0",
-	F0 = "F0",
-	F1 = "F1",
-	F2 = "F2",
-	G0 = "G0",
-	H0 = "H0",
-	I0 = "I0",
-	J0 = "J0",
-	K0 = "K0",
-	L0 = "L0",
-	Spot = "spot",
-	Treasure_Single_Small = "treasure_single_small",
-	Treasure_Single_Big = "treasure_single_big",
-	Treasure_Double_L_Small = "treasure_double_l_small",
-	Treasure_Double_L_Big = "treasure_double_l_big",
-	Treasure_Double_R_Small = "treasure_double_r_small",
-	Treasure_Double_R_Big = "treasure_double_r_big",
-}
-//#endregion
-
-//#region 红点相关
-/** 红点检测类型枚举 */
-declare enum ERDTriggerType {
-	/** 未读邮件红点 */
-	MailNotRead = "ERDTriggerType_MailNotRead",
-	/** 有奖励可领取邮件红点 */
-	MailHaveReward = "ERDTriggerType_MailHaveReward",
-	/** 未读公告红点 */
-	AnnouncementHaveNotRead = "ERDTriggerType_AnnouncementHaveNotRead",
-	/** 七日0有奖励可领取红点 */
-	SevenDay0HaveReward = "ERDTriggerType_SevenDay0HaveReward",
-	/** 七日1有奖励可领取红点 */
-	SevenDay1HaveReward = "ERDTriggerType_SevenDay1HaveReward",
-	/** 七日2有奖励可领取红点 */
-	SevenDay2HaveReward = "ERDTriggerType_SevenDay2HaveReward",
-	/** 七日3有奖励可领取红点 */
-	SevenDay3HaveReward = "ERDTriggerType_SevenDay3HaveReward",
-	/** 七日4有奖励可领取红点 */
-	SevenDay4HaveReward = "ERDTriggerType_SevenDay4HaveReward",
-	/** 七日5有奖励可领取红点 */
-	SevenDay5HaveReward = "ERDTriggerType_SevenDay5HaveReward",
-	/** 七日6有奖励可领取红点 */
-	SevenDay6HaveReward = "ERDTriggerType_SevenDay6HaveReward",
-}
-
-declare enum ERDName {
-	Root = "ERDName_Root",
-	Main_Mail = "ERDName_Main_Mail",
-	Main_Announcement = "ERDName_Main_Announcement",
-	Main_SevenDay = "ERDName_Main_SevenDay",
-	SevenDay_Day0 = "ERDName_SevenDay_Day0",
-	SevenDay_Day1 = "ERDName_SevenDay_Day1",
-	SevenDay_Day2 = "ERDName_SevenDay_Day2",
-	SevenDay_Day3 = "ERDName_SevenDay_Day3",
-	SevenDay_Day4 = "ERDName_SevenDay_Day4",
-	SevenDay_Day5 = "ERDName_SevenDay_Day5",
-	SevenDay_Day6 = "ERDName_SevenDay_Day6",
-
-}
-//#endregion
-
-/** 配置表本地化字段名 */
-declare enum ECfgLangField {
-	name = "name",
-	name1 = "name1",
-	name2 = "name2",
-	desc = "desc",
-	desc2 = "desc2",
-	desc_cv = "desc_cv",
-	desc_item = "desc_item",
-	desc_func = "desc_func",
-	first_desc = "first_desc",
-	normal_desc = "normal_desc",
-	expire_desc = "expire_desc",
-	room_name = "room_name",
-	lock_tips = "lock_tips",
-}
-
-declare enum EColorString {
-	_000000 = "#000000",
-	_000080 = "#000080",
-	_0000ff = "#0000ff",
-	_00aaff = "#00aaff",
-	_00ff00 = "#00ff00",
-	_2a1e25 = "#2a1e25",
-	_51f1ff = "#51f1ff",
-	_58c4db = "#58c4db",
-	_66ccff = "#66ccff",
-	_8c8c8c = "#8c8c8c",
-	_8cb65f = "#8cb65f",
-	_8d6f61 = "#8d6f61",
-	_999999 = "#999999",
-	_a9d94d = "#a9d94d",
-	_d4815c = "#d4815c",
-	_d9b263 = "#d9b263",
-	_e0ab67 = "#e0ab67",
-	_e8af71 = "#e8af71",
-	_eab65e = "#eab65e",
-	_ebb661 = "#ebb661",
-	_edb26f = "#EDB26F",
-	_f17828 = "#f17828",
-	_f56aff = "#f56aff",
-	_f7b75d = "#f7b75d",
-	_ff0000 = "#ff0000",
-	_ffc8c8 = "#ffc8c8",
-	_ffc900 = "#ffc900",
-	_ffffff = "#ffffff",
-	_00000000 = "#00000000",
-}
-
-//#region 充值相关
-
-/** 支付平台 */
-declare enum EPaymentPlatform {
-	DMM = "dmm",
-	GooglePlay = "google_play",
-	Iap = "iap",
-	MyCard = "mycard",
-	NintenDo = "nintendo",
-	PayPal = "paypal",
-	Steam = "steam",
-	AA32 = "aa32",
-	XSolla = "xsolla",
-	XSollaV4 = "xsolla_v4",
-	YoStarV4 = "yostar_v4",
-	YoStarV4_KR = "yostar_v4_kr",
-}
-
-/** 支付渠道 */
-declare enum EPaymentChannel {
-	UnionPay = "unionpay",
-	CreditCard = "creditcard",
-	WeChat = "wechat",
-	AliPay = "alipay"
-}
-
-/** 支付类型 */
-declare enum EPaymentType {
-	MyCard = 1,
-	PayPal = 2,
-	XSolla = 3,
-	YinLian = 4,
-	WeChat = 5,
-	AliPay = 6,
-	XinYongKa = 7,
-}
-//#endregion
-
-/** 奖励领取状态 */
-declare enum ERewardState {
-	/** 无奖励 */
-	NoReward = -1,
-	/** 不可领取 */
-	CanNotReward = 0,
-	/** 可领取 */
-	CanReward = 1,
-	/** 已领取 */
-	Rewarded = 2,
 }
 
 /** 背景音乐类型 */
@@ -1153,6 +859,96 @@ declare enum EVoiceType {
 	/** 特殊语音 - 友人房内准备 */
 	lobby_room_ready = "lobby_room_ready",
 }
+//#endregion--------------------------------------------------------------------
+
+//#region UI相关
+
+/** 各种UI对象池标识 */
+declare enum EUIPoolKey {
+	/** 文本提示 */
+	TipInfo = "EUIPoolKey_TipInfo",
+	/** 菜单 */
+	ContextMenu = "EUIPoolKey_ContextMenu",
+}
+/** 红点检测类型枚举 */
+declare enum ERDTriggerType {
+	/** 未读邮件红点 */
+	MailNotRead = "ERDTriggerType_MailNotRead",
+	/** 有奖励可领取邮件红点 */
+	MailHaveReward = "ERDTriggerType_MailHaveReward",
+	/** 未读公告红点 */
+	AnnouncementHaveNotRead = "ERDTriggerType_AnnouncementHaveNotRead",
+	/** 七日0有奖励可领取红点 */
+	SevenDay0HaveReward = "ERDTriggerType_SevenDay0HaveReward",
+	/** 七日1有奖励可领取红点 */
+	SevenDay1HaveReward = "ERDTriggerType_SevenDay1HaveReward",
+	/** 七日2有奖励可领取红点 */
+	SevenDay2HaveReward = "ERDTriggerType_SevenDay2HaveReward",
+	/** 七日3有奖励可领取红点 */
+	SevenDay3HaveReward = "ERDTriggerType_SevenDay3HaveReward",
+	/** 七日4有奖励可领取红点 */
+	SevenDay4HaveReward = "ERDTriggerType_SevenDay4HaveReward",
+	/** 七日5有奖励可领取红点 */
+	SevenDay5HaveReward = "ERDTriggerType_SevenDay5HaveReward",
+	/** 七日6有奖励可领取红点 */
+	SevenDay6HaveReward = "ERDTriggerType_SevenDay6HaveReward",
+}
+
+/** 红点名称 */
+declare enum ERDName {
+	Root = "ERDName_Root",
+	Main_Mail = "ERDName_Main_Mail",
+	Main_Announcement = "ERDName_Main_Announcement",
+	Main_SevenDay = "ERDName_Main_SevenDay",
+	SevenDay_Day0 = "ERDName_SevenDay_Day0",
+	SevenDay_Day1 = "ERDName_SevenDay_Day1",
+	SevenDay_Day2 = "ERDName_SevenDay_Day2",
+	SevenDay_Day3 = "ERDName_SevenDay_Day3",
+	SevenDay_Day4 = "ERDName_SevenDay_Day4",
+	SevenDay_Day5 = "ERDName_SevenDay_Day5",
+	SevenDay_Day6 = "ERDName_SevenDay_Day6",
+
+}
+
+/** spine布局类型 */
+declare enum ESpineLayout {
+	A0 = "A0",
+	B0 = "B0",
+	B1 = "B1",
+	B2 = "B2",
+	B3 = "B3",
+	C0 = "C0",
+	D0 = "D0",
+	E0 = "E0",
+	F0 = "F0",
+	F1 = "F1",
+	F2 = "F2",
+	G0 = "G0",
+	H0 = "H0",
+	I0 = "I0",
+	J0 = "J0",
+	K0 = "K0",
+	L0 = "L0",
+	Spot = "spot",
+	Treasure_Single_Small = "treasure_single_small",
+	Treasure_Single_Big = "treasure_single_big",
+	Treasure_Double_L_Small = "treasure_double_l_small",
+	Treasure_Double_L_Big = "treasure_double_l_big",
+	Treasure_Double_R_Small = "treasure_double_r_small",
+	Treasure_Double_R_Big = "treasure_double_r_big",
+}
+
+/** 奖励领取状态 */
+declare enum ERewardState {
+	/** 无奖励 */
+	NoReward = -1,
+	/** 不可领取 */
+	CanNotReward = 0,
+	/** 可领取 */
+	CanReward = 1,
+	/** 已领取 */
+	Rewarded = 2,
+}
 
 /** 问卷类型 */
 declare enum EQuestionnaireType {
@@ -1163,3 +959,263 @@ declare enum EQuestionnaireType {
 	/** 赛事问卷 */
 	Official = 3,
 }
+
+/** 主播模式昵称隐藏标志 */
+declare enum EHideNameFlag {
+	/** 跨服昵称 */
+	OtherZone = 1 << 0,
+	/** 匹配对局昵称 */
+	InGame = 1 << 1,
+	/** 牌谱昵称 */
+	Record = 1 << 2,
+	/** 观战昵称 */
+	Observer = 1 << 3,
+	/** 赛事昵称 */
+	Match = 1 << 4,
+	/** 排行榜昵称 */
+	Rank = 1 << 5,
+}
+//#endregion--------------------------------------------------------------------
+
+//#region 事件相关
+
+/** 全局事件枚举 */
+declare enum EGlobalEvent {
+	/** 游戏回到前台事件 */
+	OnGameShow = "EGlobalEvent_OnGameShow",
+	/** 游戏隐藏后台事件 */
+	OnGameHide = "EGlobalEvent_OnGameHide",
+
+	/** 红点组件唤醒 */
+	RedDotCompAwake = "EGlobalEvent_RedDotCompAwake",
+	/** 红点组件销毁 */
+	RedDotCompDestroy = "EGlobalEvent_RedDotCompDestroy",
+	/** 初始完成 */
+	OnGameInited = "EGlobalEvent_OnGameInited",
+	/** 跨天事件（游戏预定凌晨5点刷新, 通过和当前服务器时间比较, 全球统一按照+8时区的5点来刷新, 等价于+3时区的0点刷新） */
+	OnPassDay = "EGlobalEvent_OnPassDay",
+
+	//#region 网络相关
+	LobbyConnecting = "EGlobalEvent_LobbyConnectting",
+	LobbyReconnecting = "EGlobalEvent_LobbyReconnecting",
+	LobbyConnected = "EGlobalEvent_LobbyConnected",
+	LobbyClosed = "EGlobalEvent_LobbyClosed",
+	GameConnecting = "EGlobalEvent_GameConnecting",
+	GameReconnecting = "EGlobalEvent_GameReconnecting",
+	GameConnected = "EGlobalEvent_GameConnected",
+	GameClosed = "EGlobalEvent_GameClosed",
+	OBConnecting = "EGlobalEvent_OBConnecting",
+	OBReconnecting = "EGlobalEvent_OBReconnecting",
+	OBConnected = "EGlobalEvent_OBConnected",
+	OBClosed = "EGlobalEvent_OBClosed",
+	//#endregion
+
+	//#region 页面相关
+	/** 页面打开前 */
+	OnViewOpenBegin = "EGlobalEvent_OnViewOpenBegin",
+	/** 页面打开后 */
+	OnViewOpenEnd = "EGlobalEvent_OnViewOpenEnd",
+	/** 页面关闭前 */
+	OnViewCloseBegin = "EGlobalEvent_OnViewCloseBegin",
+	/** 页面关闭后 */
+	OnViewCloseEnd = "EGlobalEvent_OnViewCloseEnd",
+	//#endregion
+
+	/**绑定手机号完成 */
+	BindPhoneCompleted = "EGlobalEvent_BindPhoneCompleted",
+	/** 登录成功 */
+	LoginSuccess = "EGlobalEvent_LoginSuccess",
+
+	//#region logicScene相关
+	/** 场景开始加载 */
+	OnSceneLoadBegin = "EGlobalEvent_OnSceneLoadBegin",
+	/** 场景加载进度 */
+	OnSceneLoadProgress = "EGlobalEvent_OnSceneLoadProgress",
+	/** 场景加载结束 */
+	OnSceneLoadEnd = "EGlobalEvent_OnSceneLoadEnd",
+	/** 进入场景开始 */
+	OnSceneEnterBegin = "EGlobalEvent_OnSceneEnterBegin",
+	/** 进入场景结束 */
+	OnSceneEnterEnd = "EGlobalEvent_OnSceneEnterEnd",
+	/** 退出场景开始 */
+	OnSceneExitBegin = "EGlobalEvent_OnSceneExitBegin",
+	/** 退出场景结束 */
+	OnSceneExitEnd = "EGlobalEvent_OnSceneExitEnd",
+	//#endregion
+
+}
+
+/** 用户数据变化事件 */
+declare enum EUserEvent {
+	//#region 邮件相关
+	OnMailChanged = "EUserEvent_OnMailChanged",
+	//#endregion
+
+	//#region 公告相关
+	OnAnnouncementChanged = "EUserEvent_OnAnnouncementChanged",
+	//#endregion
+
+	//#region 好友相关
+	OnFriendsChanged = "EUserEvent_OnFriendsChanged",
+	OnFriendMaxCountChanged = "EUserEvent_OnFriendMaxCountChanged",
+	OnFriendApplyChanged = "EUserEvent_OnFriendApplyChanged",
+	//#endregion
+
+	//#region 背包相关
+	OnBagItemsChanged = "EUserEvent_OnBagItemsChanged",
+	OnBagDailyGainRecordChanged = "EUserEvent_OnBagDailyGainRecordChanged",
+	OnCGUsingChanged = "EUserEvent_OnCGUsingChanged",
+	//#endregion
+
+	//#region 角色相关
+	OnMainCharacterChanged = "EUserEvent_OnMainCharacterChanged",
+	OnCharacterChanged = "EUserEvent_OnCharacterChanged",
+	OnCharacterSortChanged = "EUserEvent_OnCharacterSortChanged",
+	//#endregion
+
+	//#region 装扮相关
+
+	/** 使用中的牌背变化 */
+	OnMjpBackUseChanged = "EUserEvent_OnMjpBackUseChanged",
+	/** 使用中的牌面变化 */
+	OnMjpFrontUseChanged = "EUserEvent_OnMjpFrontUseChanged",
+	/** 使用中的桌布变化 */
+	OnTableClothUseChanged = "EUserEvent_OnTableClothUseChanged",
+	/** 使用中的大厅背景变化 */
+	OnLobbyBgChanged = "EUserEvent_OnLobbyBgChanged",
+	/** 使用中的装扮变化 */
+	OnViewUseChanged = "EUserEvent_OnViewUseChanged",
+	/** 装扮数据变化 */
+	OnCommonViewChanged = "EUserEvent_OnCommonViewChanged",
+	/** 动皮开关变化 */
+	OnDynamicSkinChanged = "EUserEvent_OnDynamicSkinChanged",
+	//#endregion
+
+	//#region client_value相关
+	OnClientValueChanged = "EUserEvent_OnClientValueChanged",
+	//#endregion
+
+	//#region 活动相关
+	OnActivityListChanged = "EUserEvent_OnActivityListChanged",
+	OnActivityIntervalChanged = "EUserEvent_OnActivityIntervalChanged",
+	OnActivityBuffChanged = "EUserEvent_OnActivityBuffChanged",
+	OnActivityTaskProgressChanged = "EUserEvent_OnActivityTaskProgressChanged",
+	OnActivityFlipTaskProgressChanged = "EUserEvent_OnActivityFlipTaskProgressChanged",
+	OnActivityPeriodTaskProgressChanged = "EUserEvent_OnActivityPeriodTaskProgressChanged",
+	OnActivityRandomTaskProgressChanged = "EUserEvent_OnActivityRandomTaskProgressChanged",
+	OnActivitySegmentTaskProgressChanged = "EUserEvent_OnActivitySegmentTaskProgressChanged",
+	//#endregion
+
+	//#region 充值相关
+	/** vip经验变化 */
+	OnRechargeVipExpChanged = "EUserEvent_OnRechargeVipExpChanged",
+	/** 已充值档位变化 */
+	OnRechargeRechargedListChanged = "EUserEvent_OnRechargeRechargedListChanged",
+	/** 已领取的vip等级奖励变化 */
+	OnRechargeGainVipLevelChanged = "EUserEvent_OnRechargeGainVipLevelChanged",
+	//#endregion
+
+	//#region 成就相关
+	OnAchievementChanged = "EUserEvent_OnAchievementChanged",
+	OnNewAchievement = "EUserEvent_OnNewAchievement",
+
+	//#endregion
+
+	//#region 牌谱相关
+	OnRecordChanged = "EUserEvent_OnRecordChanged",
+	OnRecordMakaChanged = "EUserEvent_OnRecordMakaChanged",
+	//#endregion
+}
+
+/** 视频加载事件 */
+declare enum EVideoLoadEvent {
+	/** 浏览器开始寻找媒体数据时。 */
+	LoadStart = "loadstart",
+	/** 视频的时长、尺寸、字幕等元数据加载完成。 */
+	LoadedMetadata = "loadedmetadata",
+	/** 当前帧的数据加载完成（视频首帧已就绪）。 */
+	LoadedData = "loadeddata",
+	/** 浏览器正在下载视频数据。 */
+	Progress = "progress",
+	/** 浏览器认为已经加载了足够的数据，可以开始播放。 */
+	CanPlay = "canplay",
+	/** 预计在不断网的情况下可以顺畅播放直至结束。 */
+	CanPlayThrough = "canplaythrough",
+}
+
+/** 视频播放状态事件 */
+declare enum EVideoPlaybackEvent {
+	/** 当 play() 方法被调用或 autoplay 生效 */
+	Play = "play",
+	/** 视频真正开始运行（从暂停或缓冲状态恢复） */
+	Playing = "playing",
+	/** 视频暂停 */
+	Pause = "pause",
+	/** 视频播放到末尾 */
+	Ended = "ended",
+	/** 播放因缓冲而停止（网络跟不上） */
+	Waiting = "waiting",
+	/** 浏览器尝试获取数据但数据不可用 */
+	Stalled = "stalled",
+}
+
+/** 视频互动与进度事件 */
+declare enum EVideoProgressAndInteractionEvent {
+	/** 播放位置改变（每秒触发约 4-66 次） */
+	TimeUpdate = "timeupdate",
+	/** 用户开始拖动进度条 */
+	Seeking = "seeking",
+	/** 用户完成拖动，新的位置已定位 */
+	Seeked = "seeked",
+	/** 音量改变或静音状态切换 */
+	VolumeChange = "volumechange",
+	/** 播放速率改变（如切换 2x */
+	RateChange = "ratechange",
+}
+
+/** 视频错误处理事件 */
+declare enum EVideoErrorEvent {
+	/** 发生错误（如视频格式不支持、404）。可通过 video.error 获取详情。 */
+	Error = "error",
+	/** 视频加载被中止（非错误原因，通常是用户操作）。 */
+	Abort = "abort",
+}
+//#endregion--------------------------------------------------------------------
+
+//#region 充值相关
+
+/** 支付平台 */
+declare enum EPaymentPlatform {
+	DMM = "dmm",
+	GooglePlay = "google_play",
+	Iap = "iap",
+	MyCard = "mycard",
+	NintenDo = "nintendo",
+	PayPal = "paypal",
+	Steam = "steam",
+	AA32 = "aa32",
+	XSolla = "xsolla",
+	XSollaV4 = "xsolla_v4",
+	YoStarV4 = "yostar_v4",
+	YoStarV4_KR = "yostar_v4_kr",
+}
+
+/** 支付渠道 */
+declare enum EPaymentChannel {
+	UnionPay = "unionpay",
+	CreditCard = "creditcard",
+	WeChat = "wechat",
+	AliPay = "alipay"
+}
+
+/** 支付类型 */
+declare enum EPaymentType {
+	MyCard = 1,
+	PayPal = 2,
+	XSolla = 3,
+	YinLian = 4,
+	WeChat = 5,
+	AliPay = 6,
+	XinYongKa = 7,
+}
+//#endregion--------------------------------------------------------------------

@@ -38,7 +38,7 @@ export class InitGameCommand extends Command {
 		AFKManager.Inst.init();
 		LobbyBgManager.Inst.init();
 
-		const initRes = await $gameUtil.loopConfirmLoad(() => [
+		const loadRes = await $gameUtil.loopConfirmLoad(() => [
 			$loadMgr.fetch<IConfig>(ResPath.EConfigPath.GameConfig, Laya.Loader.JSON),
 			$loadMgr.loadPackage([
 				//#if DEBUG
@@ -49,8 +49,8 @@ export class InitGameCommand extends Command {
 			]),
 			$loadMgr.load([ResPath.EFontPath.HYWH, ResPath.EFontPath.Fengyu, ResPath.EFontPath.HYYANKAIW, ResPath.EFontPath.Hanyi]),
 		], "游戏初始资源加载失败，是否重试？");
-		if (!initRes.first) return $gameMgr.exitGame(false);
-		const [, config] = initRes;
+		if (!loadRes.first) return $gameMgr.exitGame(false);
+		const [, config] = loadRes;
 
 		//#if !DEBUG
 		$logger.setEnable(false);
@@ -68,15 +68,20 @@ export class InitGameCommand extends Command {
 		//#endif
 
 		config.ip.forEach(v => (v.zone_ids = v.zone_ids || []));
-		const ipIndex = await new Promise<number>(resolve => {
-			$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
-		});
+		// const ipIndex = await new Promise<number>(resolve => {
+		// 	$uiMgr.openView<IUIChooseServerData>(EViewID.UIChooseServerView, { ipInfos: config.ip, callback: resolve });
+		// });
+		const ipIndex = 0;
 
 		$gameMgr.init(ipIndex, config);
 		$uiMgr.openView(EViewID.UIEntranceView);
 
-		const success = await $gameUtil.loopConfirmLoad(() => [
+		const initPb = await $gameUtil.loopConfirmLoad(() => [
 			$pbMgr.init(),
+		], "游戏初始化失败，是否重试？");
+		if (!initPb.first) return $gameMgr.exitGame(false);
+
+		const success = await $gameUtil.loopConfirmLoad(() => [
 			$cfgMgr.init(),
 			$netMgr.init(),
 			$spineMgr.init(),

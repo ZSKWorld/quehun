@@ -86,7 +86,7 @@
 	"initlist2": {
 		"prefix": "initlist",
 		"body": [
-			"\\$uiUtil.setList${1:<${2:ItemType}>}(",
+			"\\$uiUtil.initList${1:<${2:ItemType}>}(",
 			"\t${3:list}, ${4:true}, ${5:this},",
 			"\t(index, item) => {",
 			"\t\t${0}",

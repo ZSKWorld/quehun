@@ -89,6 +89,19 @@ export class UIUtil implements IUIUtil {
 	// 	input.on(Laya.Event.INPUT, null, () => !duringComposition && onInput && onInput.run());
 	// }
 
+	getWordsLen(str: string) {
+		if (!str) return 0;
+		let len = 0;
+		for (let i = 0; i < str.length; i++) {
+			if (str.charCodeAt(i) > 255) {
+				len += 2;
+			} else {
+				len += 1;
+			}
+		}
+		return len;
+	}
+
 
 	popAlphaIn(panel: fgui.GObject) {
 		return new Promise<void>(resolve => {
@@ -158,5 +171,121 @@ export class UIUtil implements IUIUtil {
 		if (!obj || obj.isDisposed) return false;
 		obj.globalToLocal(x, y, TempPoint);
 		return TempRect.setTo(0, 0, obj.width, obj.height).contains(TempPoint.x, TempPoint.y);
+	}
+
+	getRoomModeDesc(mode: number) {
+		let smode = "";
+		switch (mode) {
+			//四人一局
+			case 0: smode = $lang(2026); break;
+			//四人东
+			case 1: smode = $lang(2027); break;
+			//四人南
+			case 2: smode = $lang(2028); break;
+			//四人人机
+			case 3: smode = $lang(2029); break;
+			//四人一局
+			case 4: smode = $lang(2026); break;
+			//三人一局
+			case 10: smode = $lang(2030); break;
+			//三人东
+			case 11: smode = $lang(2031); break;
+			//三人南
+			case 12: smode = $lang(2032); break;
+			//三人人机
+			case 13: smode = $lang(2033); break;
+			//三人一局
+			case 14: smode = $lang(2030); break;
+		}
+		return smode;
+	}
+
+	getRecordTitle(tag: number, subtag: number) {
+		let title = "";
+		let matchModeData: ISheetData_Desktop_Matchmode;
+		let mode: number;
+		switch (tag) {
+			case 1:
+				title += $lang(2271) + "·";
+				matchModeData = $cfgMgr.desktop.matchmode[subtag];
+				if (matchModeData) {
+					title += matchModeData.langField(ECfgLangField.room_name) + "·";
+					mode = matchModeData.mode;
+				}
+				title += this.getRoomModeDesc(mode);
+				break;
+			case 2:
+				title += $lang(2023) + "·";
+				title += this.getRoomModeDesc(subtag);
+				break;
+			case 3:
+				matchModeData = $cfgMgr.desktop.matchmode[subtag];
+				title += matchModeData.langField(ECfgLangField.room_name) + "·";
+				mode = matchModeData.mode;
+				title += this.getRoomModeDesc(mode);
+				break;
+			case 4:
+				title += $lang(2025) + "·";
+				title += this.getRoomModeDesc(subtag);
+				break;
+		}
+		return title;
+	}
+
+	getHidedName(data: { account_id: number, nickname: string, verified: number; }, flag?: EHideNameFlag) {
+		return data.nickname;
+	}
+
+	getBigHuTile(type: EBigHuType) {
+		switch (type) {
+			/** 流满 */
+			case EBigHuType.E_Dadian_Title_liuman:
+			/** 无 */
+			case EBigHuType.E_Dadian_Title_none: return "";
+			/** 满贯 */
+			case EBigHuType.E_Dadian_Title_manguan: return "ui://vx9zwserftegobm4";
+			/** 跳满 */
+			case EBigHuType.E_Dadian_Title_tiaoman: return "ui://vx9zwserftegobm1";
+			/** 倍满 */
+			case EBigHuType.E_Dadian_Title_beiman: return "ui://vx9zwserftegobm0";
+			/** 三倍满 */
+			case EBigHuType.E_Dadian_Title_sanbeiman: return "ui://vx9zwserftegoblz";
+			/** 役满 */
+			case EBigHuType.E_Dadian_Title_yiman: return "ui://vx9zwserftegobly";
+			/** 两倍役满 */
+			case EBigHuType.E_Dadian_Title_yiman2: return "ui://vx9zwserftegoblx";
+			/** 三倍役满 */
+			case EBigHuType.E_Dadian_Title_yiman3: return "ui://vx9zwserftegoblw";
+			/** 四倍役满 */
+			case EBigHuType.E_Dadian_Title_yiman4: return "ui://vx9zwserftegoblv";
+			/** 五倍役满 */
+			case EBigHuType.E_Dadian_Title_yiman5: return "ui://vx9zwserftegoblu";
+			/** 六倍役满 */
+			case EBigHuType.E_Dadian_Title_yiman6: return "ui://vx9zwserftegobm3";
+			/** 累计役满 */
+			case EBigHuType.E_Dadian_Title_leijiyiman: return "ui://vx9zwserftegobm2";
+			default: return "";
+		}
+	}
+
+	getMakaLevelTile(type: EMakaLevel) {
+		switch (type) {
+			case EMakaLevel.S_Plus: return "ui://PkgCommon/img_1012";
+			case EMakaLevel.S: return "ui://PkgCommon/img_1011";
+			case EMakaLevel.S_Minus: return "ui://PkgCommon/img_1010";
+			case EMakaLevel.A_Plus: return "ui://PkgCommon/img_1008";
+			case EMakaLevel.A: return "ui://PkgCommon/img_1007";
+			case EMakaLevel.A_Minus: return "ui://PkgCommon/img_1006";
+			case EMakaLevel.B_Plus: return "ui://PkgCommon/img_1005";
+			case EMakaLevel.B: return "ui://PkgCommon/img_1004";
+			case EMakaLevel.B_Minus: return "ui://PkgCommon/img_1003";
+			case EMakaLevel.C_Plus: return "ui://PkgCommon/img_1002";
+			case EMakaLevel.C: return "ui://PkgCommon/img_1001";
+			case EMakaLevel.C_Minus: return "ui://PkgCommon/img_1000";
+			case EMakaLevel.D_Plus: return "ui://PkgCommon/img_999";
+			case EMakaLevel.D: return "ui://PkgCommon/img_998";
+			case EMakaLevel.E: return "ui://PkgCommon/img_1009";
+			default: return "";
+		}
 	}
 }

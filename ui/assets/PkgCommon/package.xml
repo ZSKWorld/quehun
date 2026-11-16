@@ -410,6 +410,7 @@
     <image id="ftegobmi" name="img_999.png" path="/Texture/" exported="true"/>
     <image id="ftegobmj" name="img_333.png" path="/Texture/" exported="true"/>
     <component id="ftegobml" name="ComLevel2.xml" path="/Component/Component/段位/" exported="true"/>
+    <component id="itojobmm" name="UIRecordRemarks.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

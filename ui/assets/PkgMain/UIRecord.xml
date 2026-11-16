@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ejdu67plnfc" designImageAlpha="0">
+<component size="1920,1080" designImage="ui://ca43vz0efteg7plon1" designImageOffsetY="328" designImageAlpha="75">
   <displayList>
     <component id="n0_p5uz" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="牌谱"/>
@@ -10,7 +10,7 @@
     <component id="n4_fteg" name="other" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="1592,53" size="234,80" group="n14_fteg">
       <Button title="其他牌谱" titleColor="#e6ba78" titleFontSize="40" icon="ui://vx9zwserieavob7x"/>
     </component>
-    <text id="n3_fteg" name="collectNum" xy="1364,68" pivot="1,0.5" size="210,49" group="n14_fteg" fontSize="36" color="#dcaf71" vAlign="middle" leading="0" singleLine="true" text="收藏：18/55"/>
+    <text id="n3_fteg" name="collectNum" xy="1365,70" pivot="1,0.5" size="210,49" group="n14_fteg" fontSize="36" color="#dcaf71" vAlign="middle" leading="0" singleLine="true" text="收藏：18/55"/>
     <group id="n14_fteg" name="n14" xy="1218,50" size="608,90" advanced="true"/>
     <image id="n5_fteg" name="n5" src="q5yiobc0" fileName="Texture/img_3555.png" pkg="vx9zwser" xy="328,153" size="1527,870" group="n10_fteg"/>
     <component id="n6_fteg" name="overview" src="q5yiobbz" fileName="Component/Button/BtnNormalFitNoScale.xml" pkg="vx9zwser" xy="47,204" pivot="0.873,0.5" size="336,140" group="n10_fteg" aspect="true">

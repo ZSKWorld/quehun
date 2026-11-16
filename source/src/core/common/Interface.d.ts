@@ -307,8 +307,12 @@ declare interface ITimeUtil {
 	setServerTime(time: number): void;
 	/** 将yyyy-mm-dd转换成时间戳 */
 	getTimeByString(timeStr: string): number;
-	/** 将毫秒数转化成 `1970/1/1 08:00:15` 的格式 */
-	timeFormat1(timestamp: number): string;
+	/**
+	 * 将毫秒数转化成 `1970/1/1 08:00:15` 的格式
+	 * @param timestamp 
+	 * @param keepSec 是否保留秒数，默认true
+	 */
+	timeFormat1(timestamp: number, keepSec?:boolean): string;
 	/** 将秒数转换成 `01:23:45` 的格式 */
 	timeFormat2(second: number): string;
 	/** 将秒数转换成 `1小时2分3秒` 的格式 */

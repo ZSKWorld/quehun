@@ -268,6 +268,7 @@ export class UILoginMediator extends MediatorBase<UILoginView, IUILoginData> {
 			$user.announcement.fetchAnnouncement(),
 			$user.questionnaire.fetchQuestionnaire(),
 			$netMgr.requests.fetchInfo(),
+			$user.record.maka.init(),
 		]);
 		this.dispatch(EGlobalEvent.LoginSuccess);
 		$sceneMgr.enterScene(ESceneType.MainScene);

@@ -20,6 +20,71 @@ ERouteState = {
 	Rejected: "rejected",
 }
 
+EClientValueType = {
+	None: 0,
+	CompleteRegistration: 1,
+	CompleteTutorial: 2,
+	Level_1: 3,
+	Level_2: 4,
+	Level_3: 5,
+	Get_The_Title1: 6,
+	Purchase_Click: 7,
+	Purchase: 8,
+	XinShouYinDao: 10,
+	G_Role_create: 1001,
+	G_Role_login: 1002,
+	G_Role_logout: 1003,
+	G_tutorial_complete: 1004,
+	G_Purchase: 1005,
+	G_Purchase_click: 1006,
+	G_Purchase_first: 1007,
+	G_Role_level_1: 1008,
+	G_Role_level_2: 1009,
+	G_Role_level_3: 1010,
+	G_Role_level_4: 1011,
+	G_Role_level_5: 1012,
+	G_Role_level_6: 1013,
+	G_Role_level_7: 1014,
+	G_Role_level_8: 1015,
+	G_Role_level_9: 1016,
+	G_Role_level_10: 1017,
+	G_Role_level_11: 1018,
+	G_Role_level_12: 1018,
+	G_Role_level_13: 1020,
+	G_Role_level_14: 1021,
+	G_Role_level_15: 1022,
+	G_Role_level_16: 1023,
+	G_get_title_1: 1024,
+	G_get_title_2: 1025,
+	G_get_title_3: 1026,
+	G_get_title_4: 1027,
+	G_get_title_5: 1028,
+	G_get_title_6: 1029,
+	G_get_title_7: 1030,
+	G_get_title_8: 1031,
+	G_get_title_9: 1032,
+	G_get_title_10: 1033,
+	G_get_title_11: 1034,
+	G_tutorial_jump: 1035,
+	TW_Purchase: 2001,
+	TW_Signup: 2002,
+	TW_Tutorial_Completed: 2003,
+	Shilian_Reward: 3001,
+	Chunjie_Anim_Point: 3002,
+	Chara_Show_Star: 3003,
+	Recharge_Xieyi_Checked: 3004,
+	Chunjie_Yindao_Checked: 3005,
+	event2403_followed: 3006,
+	BA_Yindao_Checked: 3008,
+	HaiDao_Yindao_Checked: 3009,
+	Spot_2408_Checked: 3010,
+	Imas_Yindao_Checked: 3011,
+	BA2501_Yindao_Checked: 3012,
+	BA2501_LastEvent_Checked: 3013,
+	BA2501_PlayCG_Checked: 3014,
+	HF_Yindao_Checked: 3015,
+}
+
 EMjpType = {
 	P: "p",
 	M: "m",
@@ -51,6 +116,36 @@ ERecordTag = {
 	Activity: 3,
 	Match: 4,
 	Collect: 5,
+}
+
+EMakaState = {
+	UnAnalysis: 0,
+	Analysising: 1,
+	Analysised: 2,
+	Expired: 3,
+}
+
+EMakaLevel = {
+	None: 0,
+	S_Plus: 56,
+	S: 55,
+	S_Minus: 54,
+	A_Plus: 46,
+	A: 45,
+	A_Minus: 44,
+	B_Plus: 36,
+	B: 35,
+	B_Minus: 34,
+	C_Plus: 26,
+	C: 25,
+	C_Minus: 24,
+	D_Plus: 16,
+	D: 15,
+	E: 5,
+}
+
+EConstDefine = {
+	LangResDir: "langRes/",
 }
 
 ELanguage = {
@@ -89,6 +184,59 @@ ELocalDataKey = {
 	PreferSetting: "LocalDataKey_PreferSetting",
 	LangSetting: "LocalDataKey_LangSetting",
 	OtherSetting: "LocalDataKey_OtherSetting",
+}
+
+ESceneType = {
+	LoginScene: "LoginScene",
+	MainScene: "MainScene",
+}
+
+ECfgLangField = {
+	name: "name",
+	name1: "name1",
+	name2: "name2",
+	desc: "desc",
+	desc2: "desc2",
+	desc_cv: "desc_cv",
+	desc_item: "desc_item",
+	desc_func: "desc_func",
+	first_desc: "first_desc",
+	normal_desc: "normal_desc",
+	expire_desc: "expire_desc",
+	room_name: "room_name",
+	lock_tips: "lock_tips",
+}
+
+EColorString = {
+	_000000: "#000000",
+	_000080: "#000080",
+	_0000ff: "#0000ff",
+	_00aaff: "#00aaff",
+	_00ff00: "#00ff00",
+	_2a1e25: "#2a1e25",
+	_51f1ff: "#51f1ff",
+	_58c4db: "#58c4db",
+	_66ccff: "#66ccff",
+	_8c8c8c: "#8c8c8c",
+	_8cb65f: "#8cb65f",
+	_8d6f61: "#8d6f61",
+	_999999: "#999999",
+	_a9d94d: "#a9d94d",
+	_d4815c: "#d4815c",
+	_d9b263: "#d9b263",
+	_e0ab67: "#e0ab67",
+	_e8af71: "#e8af71",
+	_eab65e: "#eab65e",
+	_ebb661: "#ebb661",
+	_edb26f: "#EDB26F",
+	_f17828: "#f17828",
+	_f56aff: "#f56aff",
+	_f7b75d: "#f7b75d",
+	_ff0000: "#ff0000",
+	_ffc8c8: "#ffc8c8",
+	_ffc900: "#ffc900",
+	_ffffff: "#ffffff",
+	_00000000: "#00000000",
 }
 
 EKeyCode = {
@@ -311,325 +459,6 @@ ECurrencyType = {
 	FaithValue: 100001,
 }
 
-EClientValueType = {
-	None: 0,
-	CompleteRegistration: 1,
-	CompleteTutorial: 2,
-	Level_1: 3,
-	Level_2: 4,
-	Level_3: 5,
-	Get_The_Title1: 6,
-	Purchase_Click: 7,
-	Purchase: 8,
-	XinShouYinDao: 10,
-	G_Role_create: 1001,
-	G_Role_login: 1002,
-	G_Role_logout: 1003,
-	G_tutorial_complete: 1004,
-	G_Purchase: 1005,
-	G_Purchase_click: 1006,
-	G_Purchase_first: 1007,
-	G_Role_level_1: 1008,
-	G_Role_level_2: 1009,
-	G_Role_level_3: 1010,
-	G_Role_level_4: 1011,
-	G_Role_level_5: 1012,
-	G_Role_level_6: 1013,
-	G_Role_level_7: 1014,
-	G_Role_level_8: 1015,
-	G_Role_level_9: 1016,
-	G_Role_level_10: 1017,
-	G_Role_level_11: 1018,
-	G_Role_level_12: 1018,
-	G_Role_level_13: 1020,
-	G_Role_level_14: 1021,
-	G_Role_level_15: 1022,
-	G_Role_level_16: 1023,
-	G_get_title_1: 1024,
-	G_get_title_2: 1025,
-	G_get_title_3: 1026,
-	G_get_title_4: 1027,
-	G_get_title_5: 1028,
-	G_get_title_6: 1029,
-	G_get_title_7: 1030,
-	G_get_title_8: 1031,
-	G_get_title_9: 1032,
-	G_get_title_10: 1033,
-	G_get_title_11: 1034,
-	G_tutorial_jump: 1035,
-	TW_Purchase: 2001,
-	TW_Signup: 2002,
-	TW_Tutorial_Completed: 2003,
-	Shilian_Reward: 3001,
-	Chunjie_Anim_Point: 3002,
-	Chara_Show_Star: 3003,
-	Recharge_Xieyi_Checked: 3004,
-	Chunjie_Yindao_Checked: 3005,
-	event2403_followed: 3006,
-	BA_Yindao_Checked: 3008,
-	HaiDao_Yindao_Checked: 3009,
-	Spot_2408_Checked: 3010,
-	Imas_Yindao_Checked: 3011,
-	BA2501_Yindao_Checked: 3012,
-	BA2501_LastEvent_Checked: 3013,
-	BA2501_PlayCG_Checked: 3014,
-	HF_Yindao_Checked: 3015,
-}
-
-ESceneType = {
-	LoginScene: "LoginScene",
-	MainScene: "MainScene",
-}
-
-EUIPoolKey = {
-	TipInfo: "EUIPoolKey_TipInfo",
-	ContextMenu: "EUIPoolKey_ContextMenu",
-}
-
-EConstDefine = {
-	LangResDir: "langRes/",
-}
-
-EGlobalEvent = {
-	OnGameShow: "EGlobalEvent_OnGameShow",
-	OnGameHide: "EGlobalEvent_OnGameHide",
-	RedDotCompAwake: "EGlobalEvent_RedDotCompAwake",
-	RedDotCompDestroy: "EGlobalEvent_RedDotCompDestroy",
-	OnGameInited: "EGlobalEvent_OnGameInited",
-	LobbyConnecting: "EGlobalEvent_LobbyConnectting",
-	LobbyReconnecting: "EGlobalEvent_LobbyReconnecting",
-	LobbyConnected: "EGlobalEvent_LobbyConnected",
-	LobbyClosed: "EGlobalEvent_LobbyClosed",
-	GameConnecting: "EGlobalEvent_GameConnecting",
-	GameReconnecting: "EGlobalEvent_GameReconnecting",
-	GameConnected: "EGlobalEvent_GameConnected",
-	GameClosed: "EGlobalEvent_GameClosed",
-	OBConnecting: "EGlobalEvent_OBConnecting",
-	OBReconnecting: "EGlobalEvent_OBReconnecting",
-	OBConnected: "EGlobalEvent_OBConnected",
-	OBClosed: "EGlobalEvent_OBClosed",
-	OnViewOpenBegin: "EGlobalEvent_OnViewOpenBegin",
-	OnViewOpenEnd: "EGlobalEvent_OnViewOpenEnd",
-	OnViewCloseBegin: "EGlobalEvent_OnViewCloseBegin",
-	OnViewCloseEnd: "EGlobalEvent_OnViewCloseEnd",
-	BindPhoneCompleted: "EGlobalEvent_BindPhoneCompleted",
-	LoginSuccess: "EGlobalEvent_LoginSuccess",
-	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
-	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
-	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",
-	OnSceneEnterBegin: "EGlobalEvent_OnSceneEnterBegin",
-	OnSceneEnterEnd: "EGlobalEvent_OnSceneEnterEnd",
-	OnSceneExitBegin: "EGlobalEvent_OnSceneExitBegin",
-	OnSceneExitEnd: "EGlobalEvent_OnSceneExitEnd",
-}
-
-EUserEvent = {
-	OnMailChanged: "EUserEvent_OnMailChanged",
-	OnAnnouncementChanged: "EUserEvent_OnAnnouncementChanged",
-	OnFriendsChanged: "EUserEvent_OnFriendsChanged",
-	OnFriendMaxCountChanged: "EUserEvent_OnFriendMaxCountChanged",
-	OnFriendApplyChanged: "EUserEvent_OnFriendApplyChanged",
-	OnBagItemsChanged: "EUserEvent_OnBagItemsChanged",
-	OnBagDailyGainRecordChanged: "EUserEvent_OnBagDailyGainRecordChanged",
-	OnCGUsingChanged: "EUserEvent_OnCGUsingChanged",
-	OnMainCharacterChanged: "EUserEvent_OnMainCharacterChanged",
-	OnCharacterChanged: "EUserEvent_OnCharacterChanged",
-	OnCharacterSortChanged: "EUserEvent_OnCharacterSortChanged",
-	OnMjpBackUseChanged: "EUserEvent_OnMjpBackUseChanged",
-	OnMjpFrontUseChanged: "EUserEvent_OnMjpFrontUseChanged",
-	OnTableClothUseChanged: "EUserEvent_OnTableClothUseChanged",
-	OnLobbyBgChanged: "EUserEvent_OnLobbyBgChanged",
-	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
-	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
-	OnDynamicSkinChanged: "EUserEvent_OnDynamicSkinChanged",
-	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
-	OnActivityListChanged: "EUserEvent_OnActivityListChanged",
-	OnActivityIntervalChanged: "EUserEvent_OnActivityIntervalChanged",
-	OnActivityBuffChanged: "EUserEvent_OnActivityBuffChanged",
-	OnActivityTaskProgressChanged: "EUserEvent_OnActivityTaskProgressChanged",
-	OnActivityFlipTaskProgressChanged: "EUserEvent_OnActivityFlipTaskProgressChanged",
-	OnActivityPeriodTaskProgressChanged: "EUserEvent_OnActivityPeriodTaskProgressChanged",
-	OnActivityRandomTaskProgressChanged: "EUserEvent_OnActivityRandomTaskProgressChanged",
-	OnActivitySegmentTaskProgressChanged: "EUserEvent_OnActivitySegmentTaskProgressChanged",
-	OnRechargeVipExpChanged: "EUserEvent_OnRechargeVipExpChanged",
-	OnRechargeRechargedListChanged: "EUserEvent_OnRechargeRechargedListChanged",
-	OnRechargeGainVipLevelChanged: "EUserEvent_OnRechargeGainVipLevelChanged",
-	OnAchievementChanged: "EUserEvent_OnAchievementChanged",
-	OnNewAchievement: "EUserEvent_OnNewAchievement",
-}
-
-EVideoLoadEvent = {
-	LoadStart: "loadstart",
-	LoadedMetadata: "loadedmetadata",
-	LoadedData: "loadeddata",
-	Progress: "progress",
-	CanPlay: "canplay",
-	CanPlayThrough: "canplaythrough",
-}
-
-EVideoPlaybackEvent = {
-	Play: "play",
-	Playing: "playing",
-	Pause: "pause",
-	Ended: "ended",
-	Waiting: "waiting",
-	Stalled: "stalled",
-}
-
-EVideoProgressAndInteractionEvent = {
-	TimeUpdate: "timeupdate",
-	Seeking: "seeking",
-	Seeked: "seeked",
-	VolumeChange: "volumechange",
-	RateChange: "ratechange",
-}
-
-EVideoErrorEvent = {
-	Error: "error",
-	Abort: "abort",
-}
-
-ESpineLayout = {
-	A0: "A0",
-	B0: "B0",
-	B1: "B1",
-	B2: "B2",
-	B3: "B3",
-	C0: "C0",
-	D0: "D0",
-	E0: "E0",
-	F0: "F0",
-	F1: "F1",
-	F2: "F2",
-	G0: "G0",
-	H0: "H0",
-	I0: "I0",
-	J0: "J0",
-	K0: "K0",
-	L0: "L0",
-	Spot: "spot",
-	Treasure_Single_Small: "treasure_single_small",
-	Treasure_Single_Big: "treasure_single_big",
-	Treasure_Double_L_Small: "treasure_double_l_small",
-	Treasure_Double_L_Big: "treasure_double_l_big",
-	Treasure_Double_R_Small: "treasure_double_r_small",
-	Treasure_Double_R_Big: "treasure_double_r_big",
-}
-
-ERDTriggerType = {
-	MailNotRead: "ERDTriggerType_MailNotRead",
-	MailHaveReward: "ERDTriggerType_MailHaveReward",
-	AnnouncementHaveNotRead: "ERDTriggerType_AnnouncementHaveNotRead",
-	SevenDay0HaveReward: "ERDTriggerType_SevenDay0HaveReward",
-	SevenDay1HaveReward: "ERDTriggerType_SevenDay1HaveReward",
-	SevenDay2HaveReward: "ERDTriggerType_SevenDay2HaveReward",
-	SevenDay3HaveReward: "ERDTriggerType_SevenDay3HaveReward",
-	SevenDay4HaveReward: "ERDTriggerType_SevenDay4HaveReward",
-	SevenDay5HaveReward: "ERDTriggerType_SevenDay5HaveReward",
-	SevenDay6HaveReward: "ERDTriggerType_SevenDay6HaveReward",
-}
-
-ERDName = {
-	Root: "ERDName_Root",
-	Main_Mail: "ERDName_Main_Mail",
-	Main_Announcement: "ERDName_Main_Announcement",
-	Main_SevenDay: "ERDName_Main_SevenDay",
-	SevenDay_Day0: "ERDName_SevenDay_Day0",
-	SevenDay_Day1: "ERDName_SevenDay_Day1",
-	SevenDay_Day2: "ERDName_SevenDay_Day2",
-	SevenDay_Day3: "ERDName_SevenDay_Day3",
-	SevenDay_Day4: "ERDName_SevenDay_Day4",
-	SevenDay_Day5: "ERDName_SevenDay_Day5",
-	SevenDay_Day6: "ERDName_SevenDay_Day6",
-}
-
-ECfgLangField = {
-	name: "name",
-	name1: "name1",
-	name2: "name2",
-	desc: "desc",
-	desc2: "desc2",
-	desc_cv: "desc_cv",
-	desc_item: "desc_item",
-	desc_func: "desc_func",
-	first_desc: "first_desc",
-	normal_desc: "normal_desc",
-	expire_desc: "expire_desc",
-	room_name: "room_name",
-	lock_tips: "lock_tips",
-}
-
-EColorString = {
-	_000000: "#000000",
-	_000080: "#000080",
-	_0000ff: "#0000ff",
-	_00aaff: "#00aaff",
-	_00ff00: "#00ff00",
-	_2a1e25: "#2a1e25",
-	_51f1ff: "#51f1ff",
-	_58c4db: "#58c4db",
-	_66ccff: "#66ccff",
-	_8c8c8c: "#8c8c8c",
-	_8cb65f: "#8cb65f",
-	_8d6f61: "#8d6f61",
-	_999999: "#999999",
-	_a9d94d: "#a9d94d",
-	_d4815c: "#d4815c",
-	_d9b263: "#d9b263",
-	_e0ab67: "#e0ab67",
-	_e8af71: "#e8af71",
-	_eab65e: "#eab65e",
-	_ebb661: "#ebb661",
-	_edb26f: "#EDB26F",
-	_f17828: "#f17828",
-	_f56aff: "#f56aff",
-	_f7b75d: "#f7b75d",
-	_ff0000: "#ff0000",
-	_ffc8c8: "#ffc8c8",
-	_ffc900: "#ffc900",
-	_ffffff: "#ffffff",
-	_00000000: "#00000000",
-}
-
-EPaymentPlatform = {
-	DMM: "dmm",
-	GooglePlay: "google_play",
-	Iap: "iap",
-	MyCard: "mycard",
-	NintenDo: "nintendo",
-	PayPal: "paypal",
-	Steam: "steam",
-	AA32: "aa32",
-	XSolla: "xsolla",
-	XSollaV4: "xsolla_v4",
-	YoStarV4: "yostar_v4",
-	YoStarV4_KR: "yostar_v4_kr",
-}
-
-EPaymentChannel = {
-	UnionPay: "unionpay",
-	CreditCard: "creditcard",
-	WeChat: "wechat",
-	AliPay: "alipay",
-}
-
-EPaymentType = {
-	MyCard: 1,
-	PayPal: 2,
-	XSolla: 3,
-	YinLian: 4,
-	WeChat: 5,
-	AliPay: 6,
-	XinYongKa: 7,
-}
-
-ERewardState = {
-	NoReward: -1,
-	CanNotReward: 0,
-	CanReward: 1,
-	Rewarded: 2,
-}
-
 EBgmType = {
 	Lobby: "lobby",
 	Mj: "mj",
@@ -764,8 +593,217 @@ EVoiceType = {
 	lobby_room_ready: "lobby_room_ready",
 }
 
+EUIPoolKey = {
+	TipInfo: "EUIPoolKey_TipInfo",
+	ContextMenu: "EUIPoolKey_ContextMenu",
+}
+
+ERDTriggerType = {
+	MailNotRead: "ERDTriggerType_MailNotRead",
+	MailHaveReward: "ERDTriggerType_MailHaveReward",
+	AnnouncementHaveNotRead: "ERDTriggerType_AnnouncementHaveNotRead",
+	SevenDay0HaveReward: "ERDTriggerType_SevenDay0HaveReward",
+	SevenDay1HaveReward: "ERDTriggerType_SevenDay1HaveReward",
+	SevenDay2HaveReward: "ERDTriggerType_SevenDay2HaveReward",
+	SevenDay3HaveReward: "ERDTriggerType_SevenDay3HaveReward",
+	SevenDay4HaveReward: "ERDTriggerType_SevenDay4HaveReward",
+	SevenDay5HaveReward: "ERDTriggerType_SevenDay5HaveReward",
+	SevenDay6HaveReward: "ERDTriggerType_SevenDay6HaveReward",
+}
+
+ERDName = {
+	Root: "ERDName_Root",
+	Main_Mail: "ERDName_Main_Mail",
+	Main_Announcement: "ERDName_Main_Announcement",
+	Main_SevenDay: "ERDName_Main_SevenDay",
+	SevenDay_Day0: "ERDName_SevenDay_Day0",
+	SevenDay_Day1: "ERDName_SevenDay_Day1",
+	SevenDay_Day2: "ERDName_SevenDay_Day2",
+	SevenDay_Day3: "ERDName_SevenDay_Day3",
+	SevenDay_Day4: "ERDName_SevenDay_Day4",
+	SevenDay_Day5: "ERDName_SevenDay_Day5",
+	SevenDay_Day6: "ERDName_SevenDay_Day6",
+}
+
+ESpineLayout = {
+	A0: "A0",
+	B0: "B0",
+	B1: "B1",
+	B2: "B2",
+	B3: "B3",
+	C0: "C0",
+	D0: "D0",
+	E0: "E0",
+	F0: "F0",
+	F1: "F1",
+	F2: "F2",
+	G0: "G0",
+	H0: "H0",
+	I0: "I0",
+	J0: "J0",
+	K0: "K0",
+	L0: "L0",
+	Spot: "spot",
+	Treasure_Single_Small: "treasure_single_small",
+	Treasure_Single_Big: "treasure_single_big",
+	Treasure_Double_L_Small: "treasure_double_l_small",
+	Treasure_Double_L_Big: "treasure_double_l_big",
+	Treasure_Double_R_Small: "treasure_double_r_small",
+	Treasure_Double_R_Big: "treasure_double_r_big",
+}
+
+ERewardState = {
+	NoReward: -1,
+	CanNotReward: 0,
+	CanReward: 1,
+	Rewarded: 2,
+}
+
 EQuestionnaireType = {
 	Normal: 1,
 	SiXiang: 2,
 	Official: 3,
+}
+
+EHideNameFlag = {
+	OtherZone: 1,
+	InGame: 2,
+	Record: 4,
+	Observer: 8,
+	Match: 16,
+	Rank: 32,
+}
+
+EGlobalEvent = {
+	OnGameShow: "EGlobalEvent_OnGameShow",
+	OnGameHide: "EGlobalEvent_OnGameHide",
+	RedDotCompAwake: "EGlobalEvent_RedDotCompAwake",
+	RedDotCompDestroy: "EGlobalEvent_RedDotCompDestroy",
+	OnGameInited: "EGlobalEvent_OnGameInited",
+	OnPassDay: "EGlobalEvent_OnPassDay",
+	LobbyConnecting: "EGlobalEvent_LobbyConnectting",
+	LobbyReconnecting: "EGlobalEvent_LobbyReconnecting",
+	LobbyConnected: "EGlobalEvent_LobbyConnected",
+	LobbyClosed: "EGlobalEvent_LobbyClosed",
+	GameConnecting: "EGlobalEvent_GameConnecting",
+	GameReconnecting: "EGlobalEvent_GameReconnecting",
+	GameConnected: "EGlobalEvent_GameConnected",
+	GameClosed: "EGlobalEvent_GameClosed",
+	OBConnecting: "EGlobalEvent_OBConnecting",
+	OBReconnecting: "EGlobalEvent_OBReconnecting",
+	OBConnected: "EGlobalEvent_OBConnected",
+	OBClosed: "EGlobalEvent_OBClosed",
+	OnViewOpenBegin: "EGlobalEvent_OnViewOpenBegin",
+	OnViewOpenEnd: "EGlobalEvent_OnViewOpenEnd",
+	OnViewCloseBegin: "EGlobalEvent_OnViewCloseBegin",
+	OnViewCloseEnd: "EGlobalEvent_OnViewCloseEnd",
+	BindPhoneCompleted: "EGlobalEvent_BindPhoneCompleted",
+	LoginSuccess: "EGlobalEvent_LoginSuccess",
+	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
+	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
+	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",
+	OnSceneEnterBegin: "EGlobalEvent_OnSceneEnterBegin",
+	OnSceneEnterEnd: "EGlobalEvent_OnSceneEnterEnd",
+	OnSceneExitBegin: "EGlobalEvent_OnSceneExitBegin",
+	OnSceneExitEnd: "EGlobalEvent_OnSceneExitEnd",
+}
+
+EUserEvent = {
+	OnMailChanged: "EUserEvent_OnMailChanged",
+	OnAnnouncementChanged: "EUserEvent_OnAnnouncementChanged",
+	OnFriendsChanged: "EUserEvent_OnFriendsChanged",
+	OnFriendMaxCountChanged: "EUserEvent_OnFriendMaxCountChanged",
+	OnFriendApplyChanged: "EUserEvent_OnFriendApplyChanged",
+	OnBagItemsChanged: "EUserEvent_OnBagItemsChanged",
+	OnBagDailyGainRecordChanged: "EUserEvent_OnBagDailyGainRecordChanged",
+	OnCGUsingChanged: "EUserEvent_OnCGUsingChanged",
+	OnMainCharacterChanged: "EUserEvent_OnMainCharacterChanged",
+	OnCharacterChanged: "EUserEvent_OnCharacterChanged",
+	OnCharacterSortChanged: "EUserEvent_OnCharacterSortChanged",
+	OnMjpBackUseChanged: "EUserEvent_OnMjpBackUseChanged",
+	OnMjpFrontUseChanged: "EUserEvent_OnMjpFrontUseChanged",
+	OnTableClothUseChanged: "EUserEvent_OnTableClothUseChanged",
+	OnLobbyBgChanged: "EUserEvent_OnLobbyBgChanged",
+	OnViewUseChanged: "EUserEvent_OnViewUseChanged",
+	OnCommonViewChanged: "EUserEvent_OnCommonViewChanged",
+	OnDynamicSkinChanged: "EUserEvent_OnDynamicSkinChanged",
+	OnClientValueChanged: "EUserEvent_OnClientValueChanged",
+	OnActivityListChanged: "EUserEvent_OnActivityListChanged",
+	OnActivityIntervalChanged: "EUserEvent_OnActivityIntervalChanged",
+	OnActivityBuffChanged: "EUserEvent_OnActivityBuffChanged",
+	OnActivityTaskProgressChanged: "EUserEvent_OnActivityTaskProgressChanged",
+	OnActivityFlipTaskProgressChanged: "EUserEvent_OnActivityFlipTaskProgressChanged",
+	OnActivityPeriodTaskProgressChanged: "EUserEvent_OnActivityPeriodTaskProgressChanged",
+	OnActivityRandomTaskProgressChanged: "EUserEvent_OnActivityRandomTaskProgressChanged",
+	OnActivitySegmentTaskProgressChanged: "EUserEvent_OnActivitySegmentTaskProgressChanged",
+	OnRechargeVipExpChanged: "EUserEvent_OnRechargeVipExpChanged",
+	OnRechargeRechargedListChanged: "EUserEvent_OnRechargeRechargedListChanged",
+	OnRechargeGainVipLevelChanged: "EUserEvent_OnRechargeGainVipLevelChanged",
+	OnAchievementChanged: "EUserEvent_OnAchievementChanged",
+	OnNewAchievement: "EUserEvent_OnNewAchievement",
+	OnRecordChanged: "EUserEvent_OnRecordChanged",
+	OnRecordMakaChanged: "EUserEvent_OnRecordMakaChanged",
+}
+
+EVideoLoadEvent = {
+	LoadStart: "loadstart",
+	LoadedMetadata: "loadedmetadata",
+	LoadedData: "loadeddata",
+	Progress: "progress",
+	CanPlay: "canplay",
+	CanPlayThrough: "canplaythrough",
+}
+
+EVideoPlaybackEvent = {
+	Play: "play",
+	Playing: "playing",
+	Pause: "pause",
+	Ended: "ended",
+	Waiting: "waiting",
+	Stalled: "stalled",
+}
+
+EVideoProgressAndInteractionEvent = {
+	TimeUpdate: "timeupdate",
+	Seeking: "seeking",
+	Seeked: "seeked",
+	VolumeChange: "volumechange",
+	RateChange: "ratechange",
+}
+
+EVideoErrorEvent = {
+	Error: "error",
+	Abort: "abort",
+}
+
+EPaymentPlatform = {
+	DMM: "dmm",
+	GooglePlay: "google_play",
+	Iap: "iap",
+	MyCard: "mycard",
+	NintenDo: "nintendo",
+	PayPal: "paypal",
+	Steam: "steam",
+	AA32: "aa32",
+	XSolla: "xsolla",
+	XSollaV4: "xsolla_v4",
+	YoStarV4: "yostar_v4",
+	YoStarV4_KR: "yostar_v4_kr",
+}
+
+EPaymentChannel = {
+	UnionPay: "unionpay",
+	CreditCard: "creditcard",
+	WeChat: "wechat",
+	AliPay: "alipay",
+}
+
+EPaymentType = {
+	MyCard: 1,
+	PayPal: 2,
+	XSolla: 3,
+	YinLian: 4,
+	WeChat: 5,
+	AliPay: 6,
+	XinYongKa: 7,
 }

@@ -1,9 +1,5 @@
 import ComLevel from "../../../../ui/PkgCommon/ComLevel";
 
-export const enum EComLevelMsg {
-
-}
-
 export class ComLevelView extends ComLevel {
 
 	refresh(data: IAccountLevel) {

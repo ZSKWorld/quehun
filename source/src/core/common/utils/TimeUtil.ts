@@ -8,6 +8,7 @@ const YearSec = MonthSec * 12;
 @Singleton
 export class TimeUtil implements ITimeUtil {
 	private _date = new Date();
+	private _passDaySec: number = 0;
 	private _serverDelta: number = 0;
 
 	readonly MinSec = MinSec;
@@ -18,7 +19,7 @@ export class TimeUtil implements ITimeUtil {
 	readonly YearSec = YearSec;
 
 	get milliSecond() { return Date.now() + this._serverDelta; }
-	get second() { return Math.floor(this.milliSecond / 1000); }
+	get second() { return ~~(this.milliSecond / 1000); }
 	get year() { return this._date.setTime(this.milliSecond), this._date.getFullYear(); }
 	get month() { return this._date.setTime(this.milliSecond), this._date.getMonth() + 1; }
 	get date() { return this._date.setTime(this.milliSecond), this._date.getDate(); }
@@ -26,6 +27,8 @@ export class TimeUtil implements ITimeUtil {
 
 	setServerTime(time: number) {
 		this._serverDelta = time - Date.now();
+		this._passDaySec = this.second;
+		Laya.timer.loop(1000, this, this.loopPassDay);
 	}
 
 	getTimeByString(timeStr: string) {
@@ -57,14 +60,16 @@ export class TimeUtil implements ITimeUtil {
 		return `${ hh }${ split || ":" }${ mm }`;
 	}
 
-	timeFormat1(timestamp: number) {
+	timeFormat1(timestamp: number, keepSec:boolean = true) {
 		this._date.setTime(timestamp);
-		return this._date.toLocaleString();
+		const str = this._date.toLocaleString();
+		if (keepSec) return str;
+		return str.substring(0, str.lastIndexOf(":"));
 	}
 
 	timeFormat2(second: number) {
-		const h = Math.floor(second / HourSec);
-		const m = Math.floor(second % HourSec / MinSec);
+		const h = ~~(second / HourSec);
+		const m = ~~(second % HourSec / MinSec);
 		const s = second % MinSec;
 
 		let str = "";
@@ -75,8 +80,8 @@ export class TimeUtil implements ITimeUtil {
 	}
 
 	timeFormat3(second: number) {
-		const h = Math.floor(second / HourSec);
-		const m = Math.floor(second % HourSec / MinSec);
+		const h = ~~(second / HourSec);
+		const m = ~~(second % HourSec / MinSec);
 		const s = second % MinSec;
 
 		let str = "";
@@ -87,10 +92,10 @@ export class TimeUtil implements ITimeUtil {
 	}
 
 	timeFormat4(second: number) {
-		if (second >= DaySec) return Math.floor(second / DaySec) + $lang(2022);
-		if (second >= HourSec) return Math.floor(second / HourSec) + $lang(2021);
-		if (second >= MinSec) return Math.floor(second / MinSec) + $lang(2020);
-		return Math.floor(second) + $lang(2019);
+		if (second >= DaySec) return ~~(second / DaySec) + $lang(2022);
+		if (second >= HourSec) return ~~(second / HourSec) + $lang(2021);
+		if (second >= MinSec) return ~~(second / MinSec) + $lang(2020);
+		return ~~(second) + $lang(2019);
 	}
 
 	timeFormat5(second: number) {
@@ -103,27 +108,27 @@ export class TimeUtil implements ITimeUtil {
 
 		// 1小时以内：10, 20...50分钟前
 		if (delta < HourSec) {
-			const tensOfMinutes = Math.floor(delta / (10 * MinSec));
+			const tensOfMinutes = ~~(delta / (10 * MinSec));
 			return `${ tensOfMinutes }0${ $lang(2014) }`;
 		}
 
 		// 24小时以内：X小时前
 		if (delta < DaySec) {
-			return Math.floor(delta / HourSec) + $lang(2015);
+			return ~~(delta / HourSec) + $lang(2015);
 		}
 
 		// 7天以内：X天前
 		if (delta < WeekSec) {
-			return Math.floor(delta / DaySec) + $lang(2016);
+			return ~~(delta / DaySec) + $lang(2016);
 		}
 
 		// 4周以内：X周前
 		if (delta < MonthSec) {
-			return Math.floor(delta / WeekSec) + $lang(2017);
+			return ~~(delta / WeekSec) + $lang(2017);
 		}
 
 		// 超过4周：x个月前
-		return Math.floor(delta / MonthSec) + $lang(2018);
+		return ~~(delta / MonthSec) + $lang(2018);
 	}
 
 	wait(milSec: number) {
@@ -136,5 +141,14 @@ export class TimeUtil implements ITimeUtil {
 		return new Promise<void>(resolve => {
 			Laya.timer.frameOnce(frame, null, resolve);
 		});
+	}
+
+	private loopPassDay() {
+		const curSec = this.second;
+		const passed = ~~((this._passDaySec + 3 * 3600) / 86400) != ~~((curSec + 3 * 3600) / 86400);
+		if (passed) {
+			this._passDaySec = curSec;
+			$facade.dispatch(EGlobalEvent.OnPassDay);
+		}
 	}
 }

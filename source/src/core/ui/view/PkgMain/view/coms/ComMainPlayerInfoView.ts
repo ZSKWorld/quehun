@@ -15,9 +15,9 @@ export class ComMainPlayerInfoView extends ComMainPlayerInfo {
 	}
 
 	refresh() {
-		const { title, nickName: nickname, verified } = $user.account;
+		const { title, nickName: nickname, verified, accountId: account_id } = $user.account;
 		this.com_title.refreshIcon(title);
-		this.label_name.refresh({ nickname, verified });
+		this.label_name.refresh({ nickname, verified, account_id });
 		this.refreshPlayerLevel(false);
 	}
 

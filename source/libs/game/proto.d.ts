@@ -7287,14 +7287,14 @@ declare interface ISeerScore extends IProto {
 	 ** 等级 56=S+ 55=S 54=S- 46=A+ 45=A 44=A- 36=B+ 35=B 34=B- 26=C+ 25=C 24=C- 16=D+ 15=D 5=E
 	 ** 不使用具体数字，避免解包玩家从数值和推荐权重反推出雀魂的计算方式
 	 */
-	rating: number;
+	rating: EMakaLevel;
 }
 
 /** .lq.SeerBrief */
 declare interface ISeerBrief extends IProto {
 	uuid: string;
 	/** 1-正在分析 2-分析完毕且未过期 */
-	state: number;
+	state: EMakaState;
 	/** 过期时间 */
 	expire_time: number;
 	player_scores: ISeerScore[];

@@ -1,14 +1,6 @@
 import ComLevel1 from "../../../../ui/PkgCommon/ComLevel1";
 
-export const enum EComLevel1Msg {
-
-}
-
 export class ComLevel1View extends ComLevel1 {
-
-	override onCreate() {
-
-	}
 
 	refresh(data: IAccountLevel) {
 		const { ctrl_ht, ctrl_star, txt_htScore, com_level } = this;

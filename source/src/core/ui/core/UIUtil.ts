@@ -123,11 +123,11 @@ export class UIUtil implements IUIUtil {
 		});
 	}
 
-	playTrans(trans: fgui.Transition, reverse?: boolean) {
+	playTrans(trans: fgui.Transition, reverse?: boolean, startTime?:number) {
 		return new Promise<void>(resolve => {
 			if (!trans) return resolve();
-			if (reverse) trans.playReverse(Laya.Handler.create(null, resolve));
-			else trans.play(Laya.Handler.create(null, resolve));
+			if (reverse) trans.playReverse(resolve, 1, 0, startTime);
+			else trans.play(resolve, 1, 0, startTime);
 		});
 	}
 

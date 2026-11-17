@@ -110,6 +110,7 @@ EBigHuType = {
 }
 
 ERecordTag = {
+	None: -1,
 	All: 0,
 	Level: 1,
 	Friend: 2,
@@ -237,6 +238,16 @@ EColorString = {
 	_ffc900: "#ffc900",
 	_ffffff: "#ffffff",
 	_00000000: "#00000000",
+}
+
+EWeekDay = {
+	Monday: 0,
+	Tuesday: 1,
+	Wednesday: 2,
+	Thursday: 3,
+	Friday: 4,
+	Saturday: 5,
+	Sunday: 6,
 }
 
 EKeyCode = {

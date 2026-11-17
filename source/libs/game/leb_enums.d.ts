@@ -307,6 +307,24 @@ declare enum EColorString {
 	_ffffff = "#ffffff",
 	_00000000 = "#00000000",
 }
+
+/** 一周定义 */
+declare enum EWeekDay {
+	/** 周一 */
+	Monday = 0,
+	/** 周二 */
+	Tuesday = 1,
+	/** 周三 */
+	Wednesday = 2,
+	/** 周四 */
+	Thursday = 3,
+	/** 周五 */
+	Friday = 4,
+	/** 周六 */
+	Saturday = 5,
+	/** 周日 */
+	Sunday = 6,
+}
 //#endregion--------------------------------------------------------------------
 
 //#region view相关

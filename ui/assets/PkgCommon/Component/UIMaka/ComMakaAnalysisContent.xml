@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" opaque="false" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
+  <controller name="self" pages="0,,1,,2,,3," selected="0"/>
+  <controller name="siMa" pages="0,,1," selected="0"/>
+  <displayList>
+    <image id="n93_jbd2" name="n93" src="ftegobjg" fileName="Texture/img_3930.png" xy="260,400" size="1399,212"/>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="788,683" size="344,124">
+      <Button title="开始分析" titleColor="#442334" titleFontSize="36" icon="ui://vx9zwserjbd2obmr"/>
+    </component>
+    <image id="n59_jbd2" name="n59" src="jbd2obn0" fileName="Texture/img_1842.png" xy="285,492" size="467,46" group="n91_jbd2">
+      <gearXY controller="self" pages="1,2,3" values="980,492|285,550|980,550" default="285,492"/>
+    </image>
+    <loader id="n60_jbd2" name="maka0" xy="742,493" size="46,46" group="n91_jbd2" touchable="false" url="ui://vx9zwserftegobmc" fill="scaleFree"/>
+    <loader id="n68_jbd2" name="maka1" xy="1437,493" size="46,46" group="n91_jbd2" touchable="false" url="ui://vx9zwserftegobmc" fill="scaleFree"/>
+    <loader id="n76_jbd2" name="maka2" xy="742,551" size="46,46" group="n91_jbd2" touchable="false" url="ui://vx9zwserftegobmc" fill="scaleFree"/>
+    <loader id="n84_jbd2" name="maka3" xy="1437,551" size="46,46" group="n91_jbd2" touchable="false" url="ui://vx9zwserftegobmc" fill="scaleFree">
+      <gearDisplay controller="siMa" pages="1"/>
+    </loader>
+    <loader id="n61_jbd2" name="beilv0" xy="789,492" size="140,47" group="n91_jbd2" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree"/>
+    <loader id="n69_jbd2" name="beilv1" xy="1484,492" size="140,47" group="n91_jbd2" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree"/>
+    <loader id="n77_jbd2" name="beilv2" xy="789,550" size="140,47" group="n91_jbd2" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree"/>
+    <loader id="n85_jbd2" name="beilv3" xy="1484,550" size="140,47" group="n91_jbd2" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree">
+      <gearDisplay controller="siMa" pages="1"/>
+    </loader>
+    <component id="n62_jbd2" name="name0" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,501" size="1146,36" group="n91_jbd2" touchable="false">
+      <Label title="hanser25505" titleColor="#fbfbfb"/>
+    </component>
+    <component id="n70_jbd2" name="name1" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,501" size="1248,36" group="n91_jbd2" touchable="false">
+      <Label title="hanser25505" titleColor="#fbfbfb"/>
+    </component>
+    <component id="n78_jbd2" name="name2" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,559" size="1248,36" group="n91_jbd2" touchable="false">
+      <Label title="hanser25505" titleColor="#fbfbfb"/>
+    </component>
+    <component id="n86_jbd2" name="name3" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,559" size="1248,36" group="n91_jbd2" touchable="false">
+      <gearDisplay controller="siMa" pages="1"/>
+      <Label title="hanser25505" titleColor="#fbfbfb"/>
+    </component>
+    <text id="n65_jbd2" name="score0" xy="669,518" pivot="0.5,0.5" anchor="true" size="88,39" group="n91_jbd2" fontSize="28" color="#e7d074" vAlign="middle" leading="0" singleLine="true" text="46200">
+      <gearColor controller="self" pages="1,2,3" values="#b98930,#000000|#b98930,#000000|#b98930,#000000" default="#e7d074,#000000"/>
+    </text>
+    <text id="n73_jbd2" name="score1" xy="1364,518" pivot="0.5,0.5" anchor="true" size="88,39" group="n91_jbd2" fontSize="28" color="#b98930" vAlign="middle" leading="0" singleLine="true" text="46200">
+      <gearColor controller="self" pages="0,2,3" values="#b98930,#000000|#b98930,#000000|#b98930,#000000" default="#e7d074,#000000"/>
+    </text>
+    <text id="n81_jbd2" name="score2" xy="669,576" pivot="0.5,0.5" anchor="true" size="88,39" group="n91_jbd2" fontSize="28" color="#b98930" vAlign="middle" leading="0" singleLine="true" text="46200">
+      <gearColor controller="self" pages="0,1,3" values="#b98930,#000000|#b98930,#000000|#b98930,#000000" default="#e7d074,#000000"/>
+    </text>
+    <text id="n89_jbd2" name="score3" xy="1364,576" pivot="0.5,0.5" anchor="true" size="88,39" group="n91_jbd2" fontSize="28" color="#b98930" vAlign="middle" leading="0" singleLine="true" text="46200">
+      <gearDisplay controller="siMa" pages="1"/>
+      <gearColor controller="self" pages="0,1,2" values="#b98930,#000000|#b98930,#000000|#b98930,#000000" default="#e7d074,#000000"/>
+    </text>
+    <text id="n63_jbd2" name="n63" xy="311,493" pivot="0,0.5" size="17,48" group="n91_jbd2" font="ui://vx9zwserrpakobex" fontSize="35" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="1"/>
+    <text id="n71_jbd2" name="n71" xy="1006,493" pivot="0,0.5" size="21,48" group="n91_jbd2" font="ui://vx9zwserrpakobex" fontSize="35" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="2"/>
+    <text id="n79_jbd2" name="n79" xy="311,551" pivot="0,0.5" size="22,48" group="n91_jbd2" font="ui://vx9zwserrpakobex" fontSize="35" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="3"/>
+    <text id="n87_jbd2" name="n87" xy="1006,551" pivot="0,0.5" size="24,48" group="n91_jbd2" font="ui://vx9zwserrpakobex" fontSize="35" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="4">
+      <gearDisplay controller="siMa" pages="1"/>
+    </text>
+    <text id="n64_jbd2" name="n64" xy="326,494" pivot="0,0.5" size="35,43" group="n91_jbd2" font="ui://vx9zwserrpakobeu" fontSize="31" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="位"/>
+    <text id="n72_jbd2" name="n72" xy="1021,494" pivot="0,0.5" size="35,43" group="n91_jbd2" font="ui://vx9zwserrpakobeu" fontSize="31" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="位"/>
+    <text id="n80_jbd2" name="n80" xy="326,552" pivot="0,0.5" size="35,43" group="n91_jbd2" font="ui://vx9zwserrpakobeu" fontSize="31" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="位"/>
+    <text id="n88_jbd2" name="n88" xy="1021,552" pivot="0,0.5" size="35,43" group="n91_jbd2" font="ui://vx9zwserrpakobeu" fontSize="31" color="#56c5fc" vAlign="middle" leading="0" singleLine="true" text="位">
+      <gearDisplay controller="siMa" pages="1"/>
+    </text>
+    <group id="n91_jbd2" name="n91" xy="311,492" size="1898,107"/>
+    <text id="n33_jbd2" name="n33" xy="833,650" pivot="0.5,0.5" size="254,36" fontSize="26" color="#8895a8" vAlign="middle" leading="0" singleLine="true" text="单次分析结果保留7天"/>
+    <text id="n48_jbd2" name="name" xy="296,417" pivot="0,0.5" size="356,44" font="SimHei" fontSize="32" color="#fbbb70" vAlign="middle" leading="0" singleLine="true" text="段位场·铜之间·四人东"/>
+    <text id="n49_jbd2" name="time" xy="1394,421" pivot="1,0.5" size="232,38" fontSize="27" color="#72778d" vAlign="middle" leading="0" singleLine="true" text="2024/10/16 17:16"/>
+  </displayList>
+</component>

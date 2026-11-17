@@ -23,7 +23,12 @@ export class TimeUtil implements ITimeUtil {
 	get year() { return this._date.setTime(this.milliSecond), this._date.getFullYear(); }
 	get month() { return this._date.setTime(this.milliSecond), this._date.getMonth() + 1; }
 	get date() { return this._date.setTime(this.milliSecond), this._date.getDate(); }
-	get day() { return this._date.setTime(this.milliSecond), this._date.getDay(); }
+	get day() {
+		this._date.setTime(this.milliSecond);
+		const day = this._date.getDay();
+		if (day == 0) return EWeekDay.Sunday;
+		else return (day - 1) as EWeekDay;
+	}
 
 	setServerTime(time: number) {
 		this._serverDelta = time - Date.now();
@@ -60,7 +65,7 @@ export class TimeUtil implements ITimeUtil {
 		return `${ hh }${ split || ":" }${ mm }`;
 	}
 
-	timeFormat1(timestamp: number, keepSec:boolean = true) {
+	timeFormat1(timestamp: number, keepSec: boolean = true) {
 		this._date.setTime(timestamp);
 		const str = this._date.toLocaleString();
 		if (keepSec) return str;

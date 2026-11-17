@@ -1769,6 +1769,8 @@
     <image id="fteg7plon1" name="3.jpg" path="/11/牌谱/"/>
     <image id="itoj7plon2" name="4.jpg" path="/11/牌谱/"/>
     <image id="itoj7plon3" name="5.jpg" path="/11/牌谱/"/>
+    <image id="jbd27plon4" name="img_4141.png" path="/11/牌谱/"/>
+    <image id="jbd27plon5" name="6.jpg" path="/11/牌谱/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

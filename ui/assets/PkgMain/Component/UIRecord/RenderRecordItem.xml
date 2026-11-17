@@ -8,9 +8,9 @@
   </controller>
   <controller name="siMa" pages="0,,1," selected="0"/>
   <displayList>
-    <loader id="n3_fteg" name="n3" xy="0,0" size="1399,212" url="ui://vith2b66ftegobjg" fill="scaleFree">
+    <loader id="n3_fteg" name="n3" xy="0,0" size="1399,212" url="ui://vx9zwserftegobjg" fill="scaleFree">
       <gearSize controller="fold" pages="1,2" values="1399,336,1,1|1399,406,1,1" default="1399,212,1,1"/>
-      <gearIcon controller="fold" pages="0,1,2" values="ui://vith2b66ftegobjg|ui://vith2b66ftegobjj|ui://vith2b66ftegobje"/>
+      <gearIcon controller="fold" pages="0,1,2" values="ui://vx9zwserftegobjg|ui://vith2b66ftegobjj|ui://vith2b66ftegobje"/>
     </loader>
     <component id="n10_fteg" name="rename" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="918,11" size="52,52" group="n31_fteg">
       <Button icon="ui://vx9zwserftegobls"/>

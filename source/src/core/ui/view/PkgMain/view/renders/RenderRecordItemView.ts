@@ -8,7 +8,7 @@ export class RenderRecordItemView extends RenderRecordItem {
 		btn_rename.onClick(this, this.onBtnRenameClick);
 		btn_collect.onClick(this, this.onBtnCollectClick);
 		btn_share.onClick(this, this.onBtnShareClick);
-		// btn_maka.onClick(this, this.event, [ERenderRecordItemMsg.OnBtnMakaClick]);
+		btn_maka.onClick(this, this.onBtnMakaClick);
 		btn_look.onClick(this, this.onBtnLookClick);
 		btn_foldArea.onClick(this, this.onBtnFoldAreaClick);
 	}
@@ -104,6 +104,10 @@ export class RenderRecordItemView extends RenderRecordItem {
 			type: 0,
 			uuid: this._data.uuid,
 		});
+	}
+
+	private onBtnMakaClick() {
+		this.openView(EViewID.UIMakaAnalysisView, this._data.uuid);
 	}
 
 	private onBtnLookClick() {

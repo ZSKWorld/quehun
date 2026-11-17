@@ -307,8 +307,8 @@ declare interface ITimeUtil {
 	get month(): number;
 	/** 当前日期，1-28|29|30|31 */
 	get date(): number;
-	/** 当前星期，0-6, 0是周日 */
-	get day(): number;
+	/** 当前星期 */
+	get day(): EWeekDay;
 	/** 设置服务器时间，ms */
 	setServerTime(time: number): void;
 	/** 将yyyy-mm-dd转换成时间戳 */

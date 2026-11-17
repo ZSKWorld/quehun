@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" opaque="false" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
+  <displayList>
+    <graph id="n92_jbd2" name="n92" xy="0,260" size="1920,557" type="rect" lineSize="0" fillColor="#00ffffff"/>
+    <loader id="n0_j0dd" name="bg" xy="-85,232" size="2090,615" touchable="false" url="ui://ca43vz0ejbd27plon4" fill="scaleFree"/>
+    <image id="n29_jbd2" name="n29" src="jbd2obmp" fileName="Texture/img_2362.png" xy="265,287"/>
+    <image id="n30_jbd2" name="n30" src="jbd2obmq" fileName="Texture/img_1256.png" xy="1358,290" size="223,42"/>
+    <component id="n28_jbd2" name="info" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" xy="531,291" size="40,40">
+      <Button icon="ui://vx9zwsergsi2obd0"/>
+    </component>
+    <component id="n96_jbd2" name="circle" src="jbd2obn3" fileName="Component/UIMaka/ComMakaAnalysisCircle.xml" xy="0,0" touchable="false"/>
+    <component id="n95_jbd2" name="content" src="jbd2obn2" fileName="Component/UIMaka/ComMakaAnalysisContent.xml" xy="0,0"/>
+    <text id="n31_jbd2" name="n31" xy="1385,296" pivot="0,0.5" size="108,36" fontSize="26" color="#8895a8" vAlign="middle" singleLine="true" text="分析次数"/>
+    <text id="n32_jbd2" name="count" xy="1513,292" pivot="0,0.5" size="40,42" fontSize="30" color="#ffffff" vAlign="middle" leading="0" singleLine="true" text="10"/>
+  </displayList>
+</component>

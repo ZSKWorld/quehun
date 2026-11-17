@@ -77,6 +77,9 @@ import { ComItem1View } from "../core/ui/view/PkgCommon/view/coms/ComItem1View";
 import { ComLevelView } from "../core/ui/view/PkgCommon/view/coms/ComLevelView";
 import { ComLevel1View } from "../core/ui/view/PkgCommon/view/coms/ComLevel1View";
 import { ComLevel2View } from "../core/ui/view/PkgCommon/view/coms/ComLevel2View";
+import { ComMakaAnalysisView } from "../core/ui/view/PkgCommon/view/coms/ComMakaAnalysisView";
+import { ComMakaAnalysisCircleView } from "../core/ui/view/PkgCommon/view/coms/ComMakaAnalysisCircleView";
+import { ComMakaAnalysisContentView } from "../core/ui/view/PkgCommon/view/coms/ComMakaAnalysisContentView";
 import { ComMJItemView } from "../core/ui/view/PkgCommon/view/coms/ComMJItemView";
 import { ComRechargeItemView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeItemView";
 import { ComRechargeVIPView } from "../core/ui/view/PkgCommon/view/coms/ComRechargeVIPView";
@@ -131,6 +134,8 @@ import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView"
 import { UILoadingMediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoadingMediator";
 import { UILoading2View } from "../core/ui/view/PkgCommon/view/uis/UILoading2View";
 import { UILoading2Mediator } from "../core/ui/view/PkgCommon/mediator/uis/UILoading2Mediator";
+import { UIMakaAnalysisView } from "../core/ui/view/PkgCommon/view/uis/UIMakaAnalysisView";
+import { UIMakaAnalysisMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIMakaAnalysisMediator";
 import { UIPaymentView } from "../core/ui/view/PkgCommon/view/uis/UIPaymentView";
 import { UIPaymentMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIPaymentMediator";
 import { UIRechargeView } from "../core/ui/view/PkgCommon/view/uis/UIRechargeView";
@@ -292,6 +297,9 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComLevelView, EViewType.Component, ComLevelView);
 		register(EViewID.ComLevel1View, EViewType.Component, ComLevel1View);
 		register(EViewID.ComLevel2View, EViewType.Component, ComLevel2View);
+		register(EViewID.ComMakaAnalysisView, EViewType.Component, ComMakaAnalysisView);
+		register(EViewID.ComMakaAnalysisCircleView, EViewType.Component, ComMakaAnalysisCircleView);
+		register(EViewID.ComMakaAnalysisContentView, EViewType.Component, ComMakaAnalysisContentView);
 		register(EViewID.ComMJItemView, EViewType.Component, ComMJItemView);
 		register(EViewID.ComRechargeItemView, EViewType.Component, ComRechargeItemView);
 		register(EViewID.ComRechargeVIPView, EViewType.Component, ComRechargeVIPView);
@@ -333,6 +341,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIItemDetailView, EViewType.UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, EViewType.UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UILoading2View, EViewType.UI, UILoading2View, UILoading2Mediator);
+		register(EViewID.UIMakaAnalysisView, EViewType.UI, UIMakaAnalysisView, UIMakaAnalysisMediator);
 		register(EViewID.UIPaymentView, EViewType.UI, UIPaymentView, UIPaymentMediator);
 		register(EViewID.UIRechargeView, EViewType.UI, UIRechargeView, UIRechargeMediator);
 		register(EViewID.UIRecordRemarksView, EViewType.UI, UIRecordRemarksView, UIRecordRemarksMediator);

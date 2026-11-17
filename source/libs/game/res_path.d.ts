@@ -975,6 +975,7 @@ declare namespace ResPath {
 
 	enum ETexturePath {
 		PNG_Img_4140 = "res/texture/img_4140.png",
+		PNG_Img_4141 = "res/texture/img_4141.png",
 		PNG_Img_4188 = "res/texture/img_4188.png",
 		PNG_Img_4209 = "res/texture/img_4209.png",
 		PNG_Img_4293 = "res/texture/img_4293.png",

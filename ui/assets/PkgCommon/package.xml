@@ -411,6 +411,19 @@
     <image id="ftegobmj" name="img_333.png" path="/Texture/" exported="true"/>
     <component id="ftegobml" name="ComLevel2.xml" path="/Component/Component/段位/" exported="true"/>
     <component id="itojobmm" name="UIRecordRemarks.xml" path="/" exported="true"/>
+    <component id="jbd2obmn" name="UIMakaAnalysis.xml" path="/" exported="true"/>
+    <image id="jbd2obmo" name="img_902.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obmp" name="img_2362.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obmq" name="img_1256.png" path="/Texture/" exported="true" scale="9grid" scale9grid="30,0,16,42"/>
+    <image id="jbd2obmr" name="img_3441.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obms" name="img_2829.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obmt" name="img_3278.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obmx" name="img_1198.png" path="/Texture/" exported="true"/>
+    <image id="ftegobjg" name="img_3930.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obn0" name="img_1842.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,0,129,46"/>
+    <component id="jbd2obn1" name="ComMakaAnalysis.xml" path="/Component/UIMaka/" exported="true"/>
+    <component id="jbd2obn2" name="ComMakaAnalysisContent.xml" path="/Component/UIMaka/" exported="true"/>
+    <component id="jbd2obn3" name="ComMakaAnalysisCircle.xml" path="/Component/UIMaka/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

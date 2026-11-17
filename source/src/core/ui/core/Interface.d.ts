@@ -187,7 +187,7 @@ declare interface IUIUtil {
 	getWordsLen(str: string): number;
 	popAlphaIn(panel: fgui.GObject): Promise<void>;
 	popAlphaOut(panel: fgui.GObject): Promise<void>;
-	playTrans(trans: fgui.Transition, reverse?: boolean): Promise<void>;
+	playTrans(trans: fgui.Transition, reverse?: boolean, startTime?: number): Promise<void>;
 	refreshLevel(comp: {
 		ctrl_ht?: fgui.Controller,
 		ctrl_star?: fgui.Controller,

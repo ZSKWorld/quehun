@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
+  <controller name="self" pages="0,,1,,2,,3," selected="0"/>
+  <displayList>
+    <component id="n26_itoj" name="mask" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" xy="0,0" size="1920,1080" aspect="true" alpha="0.5">
+      <Button icon="ui://vx9zwserieavob7l"/>
+    </component>
+    <component id="n92_jbd2" name="content" src="jbd2obn1" fileName="Component/UIMaka/ComMakaAnalysis.xml" xy="0,0"/>
+    <component id="n93_jbd2" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1589,270" size="80,80">
+      <Button icon="ui://vx9zwserjbd2obmo"/>
+    </component>
+    <image id="n34_jbd2" name="n34" src="jbd2obmt" fileName="Texture/img_3278.png" xy="1394,689" pivot="0.5,0.5"/>
+    <image id="n35_jbd2" name="n35" src="jbd2obms" fileName="Texture/img_2829.png" xy="1530,705" pivot="0.5,0.5"/>
+  </displayList>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" target="n26_itoj" tween="true" startValue="0" endValue="0.5" duration="10" ease="Linear"/>
+    <item time="0" type="Alpha" target="n34_jbd2" value="0"/>
+    <item time="0" type="Alpha" target="n35_jbd2" value="0"/>
+    <item time="0" type="Alpha" target="n92_jbd2" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
+    <item time="0" type="Alpha" target="n93_jbd2" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
+    <item time="0" type="Rotation" target="n34_jbd2" value="5.97"/>
+    <item time="0" type="Rotation" target="n35_jbd2" value="9.171"/>
+    <item time="0" type="Scale" target="n35_jbd2" value="0.624,0.546"/>
+    <item time="0" type="Scale" target="n92_jbd2" tween="true" startValue="1,0.7" endValue="1,1" duration="10" ease="Quad.InOut"/>
+    <item time="0" type="XY" target="n34_jbd2" value="1394,581"/>
+    <item time="0" type="XY" target="n35_jbd2" value="1681,752"/>
+    <item time="0" type="XY" target="n93_jbd2" tween="true" startValue="1589,343" endValue="1589,270" duration="10" ease="Quad.InOut"/>
+    <item time="5" type="Alpha" target="n34_jbd2" tween="true" startValue="0" endValue="1" duration="5" ease="Linear"/>
+    <item time="5" type="Alpha" target="n35_jbd2" tween="true" startValue="0" endValue="1" duration="5" ease="Quad.InOut"/>
+    <item time="5" type="Rotation" target="n34_jbd2" tween="true" startValue="5.972" endValue="-1.929" duration="10" ease="Quad.InOut"/>
+    <item time="5" type="XY" target="n34_jbd2" tween="true" startValue="1394,581" endValue="1394,689" duration="5" ease="Quad.InOut"/>
+    <item time="7" type="Rotation" target="n35_jbd2" tween="true" startValue="9.17" endValue="-2.091" duration="12" ease="Quad.InOut"/>
+    <item time="7" type="Scale" target="n35_jbd2" tween="true" startValue="0.62,0.54" endValue="1,1.148" duration="5" ease="Quad.InOut"/>
+    <item time="7" type="XY" target="n35_jbd2" tween="true" startValue="1681,752" endValue="1557,622" duration="5" ease="Quad.InOut"/>
+    <item time="12" type="Scale" target="n35_jbd2" tween="true" startValue="1,1.148" endValue="1,0.813" duration="7" ease="Quad.InOut"/>
+    <item time="12" type="XY" target="n35_jbd2" tween="true" startValue="1557,622" endValue="1530,714" duration="7" ease="Quad.InOut"/>
+    <item time="15" type="Rotation" target="n34_jbd2" tween="true" startValue="-1.929" endValue="0" duration="5" ease="Quad.InOut"/>
+    <item time="19" type="Rotation" target="n35_jbd2" tween="true" startValue="-2.091" endValue="0" duration="10" ease="Quad.InOut"/>
+    <item time="19" type="Scale" target="n35_jbd2" tween="true" startValue="1,0.813" endValue="1,1" duration="10" ease="Quad.InOut"/>
+    <item time="19" type="XY" target="n35_jbd2" tween="true" startValue="1530,714" endValue="1530,705" duration="10" ease="Quad.InOut"/>
+  </transition>
+</component>

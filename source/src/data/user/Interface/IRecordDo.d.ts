@@ -14,7 +14,7 @@ declare namespace DO {
 		/** 是否是可maka分析的牌谱 */
 		canAnalysis(record: IRecordListEntry): boolean;
 		/** 分析牌谱 */
-		analysisRecord(uuid: string): void;
+		analysisRecord(uuid: string): boolean;
 		/** 获取牌谱分析数据 */
 		getAnalysisData(uuid: string): IMakaDataD0;
 	}

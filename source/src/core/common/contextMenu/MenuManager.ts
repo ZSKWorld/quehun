@@ -18,7 +18,7 @@ export class MenuManager {
 		root.name = "context_menu_root";
 		root.opaque = false;
 		root.touchable = true;
-		$uiMgr.addToLayer(root, ELayer.UIMiddle);
+		$uiMgr.addToLayer(root, ELayer.Popup);
 		root.makeFullScreen();
 		Laya.stage.on(Laya.Event.MOUSE_DOWN, this, this.onStageMouseDown);
 		Laya.stage.on(Laya.Event.RIGHT_MOUSE_DOWN, this, this.onStageMouseDown);

@@ -102,28 +102,44 @@ export class UIUtil implements IUIUtil {
 		return len;
 	}
 
-
-	popAlphaIn(panel: fgui.GObject) {
+	alphaIn(object: fgui.GObject, duration: number = 150, ease = Laya.Ease.backOut) {
 		return new Promise<void>(resolve => {
-			panel.alpha = 0;
-			panel.setScale(0.6, 0.6);
+			object.alpha = 0;
 			Laya.Tween.create()
-				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("alpha", 1)
-				.parallel(panel).duration(150).ease(Laya.Ease.backOut).to("scaleX", 1).to("scaleY", 1)
+				.duration(duration).ease(ease).to("alpha", 1)
 				.then(v => (v.owner.recover(), resolve()));
 		});
 	}
 
-	popAlphaOut(panel: fgui.GObject) {
+	alphaOut(object: fgui.GObject, duration: number = 100, ease = Laya.Ease.sineOut) {
 		return new Promise<void>(resolve => {
 			Laya.Tween.create()
-				.parallel(panel).duration(100).ease(Laya.Ease.sineOut).to("alpha", 0)
-				.parallel(panel).duration(100).ease(Laya.Ease.sineOut).to("scaleX", 0.6).to("scaleY", 0.6)
+				.parallel(object).duration(duration).ease(ease).to("alpha", 0)
 				.then(v => (v.owner.recover(), resolve()));
 		});
 	}
 
-	playTrans(trans: fgui.Transition, reverse?: boolean, startTime?:number) {
+	popAlphaIn(object: fgui.GObject) {
+		return new Promise<void>(resolve => {
+			object.alpha = 0;
+			object.setScale(0.6, 0.6);
+			Laya.Tween.create()
+				.parallel(object).duration(150).ease(Laya.Ease.backOut).to("alpha", 1)
+				.parallel(object).duration(150).ease(Laya.Ease.backOut).to("scaleX", 1).to("scaleY", 1)
+				.then(v => (v.owner.recover(), resolve()));
+		});
+	}
+
+	popAlphaOut(object: fgui.GObject) {
+		return new Promise<void>(resolve => {
+			Laya.Tween.create()
+				.parallel(object).duration(100).ease(Laya.Ease.sineOut).to("alpha", 0)
+				.parallel(object).duration(100).ease(Laya.Ease.sineOut).to("scaleX", 0.6).to("scaleY", 0.6)
+				.then(v => (v.owner.recover(), resolve()));
+		});
+	}
+
+	playTrans(trans: fgui.Transition, reverse?: boolean, startTime?: number) {
 		return new Promise<void>(resolve => {
 			if (!trans) return resolve();
 			if (reverse) trans.playReverse(resolve, 1, 0, startTime);

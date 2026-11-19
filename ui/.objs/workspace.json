@@ -1,11 +1,17 @@
 {
   "libview.firstColumnWidth": 214,
-  "snapToGrid": true,
-  "libview.iconScale": 0,
+  "auxline1": true,
+  "libview.iconScale": 1,
   "doc.openedDocs": [
     "ui://vith2b66itojobjl",
+    "ui://vx9zwserjbd2obmn",
+    "ui://vx9zwserjbd2obn1",
+    "ui://vx9zwserjbd2obn3",
+    "ui://vx9zwserjbd2obn2",
     "ui://vx9zwserq4bcobfi",
     "ui://vith2b66qke2ob9o",
+    "ui://vith2b66ftegobjf",
+    "ui://vith2b66ftegobjk",
     "ui://vith2b66qke2ob9n"
   ],
   "packageGroup.mine": [
@@ -18,7 +24,7 @@
   "test.device": "iPhone 8 Plus",
   "canvasColor": 10066329,
   "auxline2": true,
-  "doc.activeDoc": "ui://vith2b66itojobjl",
+  "doc.activeDoc": "ui://vx9zwserjbd2obn3",
   "libview.twoColumn": true,
   "libview.expandedNodes": [
     "iooyyksi",
@@ -27,20 +33,26 @@
     "/",
     "vx9zwser",
     "/Component/",
+    "vx9zwser",
+    "/Component/Button/",
+    "vx9zwser",
+    "/Component/UIMaka/",
+    "vx9zwser",
+    "/Texture/",
     "vith2b66",
     "/",
     "vith2b66",
-    "/Component/",
+    "/Texture/",
     "ca43vz0e",
     "/",
     "ca43vz0e",
     "/11/"
   ],
   "showGrid": false,
-  "gridSize": 10,
+  "snapToGrid": true,
   "test.orientation": "landscape",
   "backgroundColor": 6710886,
   "libview.currentGroup": "",
-  "auxline1": true,
+  "gridSize": 10,
   "gridColor": 42
 }

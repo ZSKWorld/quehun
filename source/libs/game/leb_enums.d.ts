@@ -472,36 +472,50 @@ declare enum EMouseEvent {
 /** 页面打开对当前页面操作的类型 */
 declare enum EViewOpenType {
 	/** 无操作 */
-	None = "None",
+	None = "EViewOpenType_None",
 	/** 隐藏当前页面 */
-	Hide = "Hide",
+	Hide = "EViewOpenType_Hide",
 	/** 关闭当前页面 */
-	Close = "Close",
+	Close = "EViewOpenType_Close",
 }
 
 /** 页面种类 */
 declare enum EViewCategory {
 	/** 全屏页面 */
-	FullScreen = "FullScreen",
+	FullScreen = "EViewCategory_FullScreen",
 	/** 弹窗页面 */
-	Popup = "Popup",
+	Popup = "EViewCategory_Popup",
 }
 
 /** 页面类型 */
 declare enum EViewType {
-	UI = "UI",
-	Component = "Component",
-	Label = "Label",
-	Render = "Render",
-	Button = "Button",
+	UI = "EViewType_UI",
+	Component = "EViewType_Component",
+	Label = "EViewType_Label",
+	Render = "EViewType_Render",
+	Button = "EViewType_Button",
 }
 
 /** UI层级 */
 declare enum ELayer {
-	Scene = "Scene",
-	UIBottom = "UIBottom",
-	UIMiddle = "UIMiddle",
-	UITop = "UITop",
+	/** 场景层 */
+	Scene = "ELayer_Scene",
+	/** UI底层 */
+	UIBottom = "ELayer_UIBottom",
+	/** UI中层 */
+	UIMiddle = "ELayer_UIMiddle",
+	/** UI上层 */
+	UITop = "ELayer_UITop",
+	/** 弹窗层 */
+	Popup = "ELayer_Popup",
+	/** 浮动层 */
+	Float = "ELayer_Float",
+	/** 提示层 */
+	Toast = "ELayer_Toast",
+	/** 遮罩层 */
+	Mask = "ELayer_Mask",
+	/** 加载层 */
+	Loading = "ELayer_Loading",
 }
 
 //#endregion--------------------------------------------------------------------

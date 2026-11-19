@@ -185,6 +185,8 @@ declare interface IUIUtil {
 
 	/** 获取字符串字节长度，一个亚洲字占两个字符，一个英文字符占1个字符 */
 	getWordsLen(str: string): number;
+	alphaIn(object: fgui.GObject, duration?: number, ease?: Laya.EaseFunction): void;
+	alphaIn(object: fgui.GObject, duration?: number, ease?: Laya.EaseFunction): void;
 	popAlphaIn(panel: fgui.GObject): Promise<void>;
 	popAlphaOut(panel: fgui.GObject): Promise<void>;
 	playTrans(trans: fgui.Transition, reverse?: boolean, startTime?: number): Promise<void>;

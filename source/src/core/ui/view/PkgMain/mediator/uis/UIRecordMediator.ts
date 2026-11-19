@@ -27,6 +27,7 @@ export class UIRecordMediator extends MediatorBase<UIRecordView, IUIRecordData> 
 			$user.record.loadRecord(this._curTag);
 	}
 
+	@InjectUserEvent(EUserEvent.OnRecordMakaChanged)
 	@InjectUserEvent(EUserEvent.OnRecordChanged)
 	private tryToRefreshView(resetPos: boolean = false) {
 		const ids = $user.record.getRecordIds(this._curTag);

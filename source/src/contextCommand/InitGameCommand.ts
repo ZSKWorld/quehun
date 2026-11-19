@@ -60,7 +60,7 @@ export class InitGameCommand extends Command {
 		btn.titleFontSize = 25;
 		btn.setSize(80, 50);
 		btn.setXY(1840, 1030);
-		$uiMgr.addToLayer(btn, ELayer.UITop);
+		$uiMgr.addToLayer(btn, ELayer.Float);
 		btn.onClick(this, () => {
 			$uiMgr.openView(EViewID.UITestMainView);
 		});
@@ -103,7 +103,7 @@ export class InitGameCommand extends Command {
 		versionTxt.color = EColorString._999999;
 
 		versionTxt.setXY(5, 1060);
-		$uiMgr.addToLayer(versionTxt, ELayer.UITop);
+		$uiMgr.addToLayer(versionTxt, ELayer.Float);
 	}
 
 	private test() {

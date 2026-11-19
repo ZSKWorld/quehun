@@ -103,7 +103,7 @@ export class UIManager extends Notifier implements IUIManager {
 		mask.visible = false;
 		mask.sortingOrder = 9999;
 		mask.name = "UIManager_Mask";
-		this.addToLayer(mask, ELayer.UITop);
+		this.addToLayer(mask, ELayer.Mask);
 		mask.drawRect(0, "", EColorString._00000000);
 		mask.makeFullScreen();
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
@@ -137,7 +137,7 @@ export class UIManager extends Notifier implements IUIManager {
 			const nextViewId = this._openedStack.peek();
 			if (nextViewId && nextViewId != this.topViewId) {
 				const mediator = this._openedViews.find(v => v.viewId == nextViewId) || this._cache.find(nextViewId);
-				await this.openView(this._openedStack.pop(), mediator?.data);
+				await this.openView(this._openedStack.pop(), mediator?.data, EViewOpenType.Close);
 			}
 		}
 		this.lockMark--;

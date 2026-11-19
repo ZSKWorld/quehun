@@ -40,12 +40,8 @@ class MakaDO extends BaseDO implements DO.IMakaDO {
 	private _dateLimit: number = 0;
 	private _expireTime: number = 0;
 	private _makaDataMap: KeyMap<MakaDataDO> = {};
-	private _analysisingId: string;
 
-	get remainCount() {
-		return this._remainCount;
-	}
-	get analysisingId() { return this._analysisingId; }
+	get remainCount() { return this._remainCount; }
 
 	init() {
 		this.fetchInfo();
@@ -53,6 +49,7 @@ class MakaDO extends BaseDO implements DO.IMakaDO {
 	}
 
 	canAnalysis(record: IRecordListEntry) {
+		if (!record) return false;
 		//TODO 判断维护模式
 		const { uuid, players, tag, subtag, standard_rule } = record;
 		const time = uuid.length == 43 ? +uuid.substring(0, 6) : 0;
@@ -76,32 +73,35 @@ class MakaDO extends BaseDO implements DO.IMakaDO {
 	}
 
 	getAnalysisData(uuid: string) {
-		this.clearExpiredData();
 		return this._makaDataMap[uuid];
 	}
 
 	analysisRecord(uuid: string) {
-		this.clearExpiredData();
-		if (this._makaDataMap[uuid]) return;
-		this._analysisingId = uuid;
-		$netMgr.requests.createSeerReport({ uuid }).then(res => {
-			if (res.error || (res.seer_report.state == EMakaState.Analysised && res.seer_report.uuid == this._analysisingId))
-				this._analysisingId = null;
+		const record = $user.record.getRecordDetail(uuid);
+		if (!this.canAnalysis(record))
+			return false;
+
+		const oldData = this.getAnalysisData(uuid);
+		if (oldData?.state == EMakaState.Analysising || oldData?.state == EMakaState.Analysised)
+			return false;
+		
+		const data = new MakaDataDO({
+			uuid: uuid,
+			player_scores: [{ seat: 0, rating: 56 }, { seat: 1, rating: 56 }, { seat: 2, rating: 56 }, { seat: 3, rating: 56 }],
+			state: EMakaState.Analysising,
+			create_time: $timeUtil.second,
+			expire_time: $timeUtil.second + $timeUtil.DaySec * 7,
 		});
+		this._makaDataMap[uuid] = data;
+		$netMgr.requests.createSeerReport({ uuid }).then(res => {
+			if (res.error) this._makaDataMap[uuid] = null;
+		});
+		return true;
 	}
 
 	@InjectGlobalEvent(EGlobalEvent.OnPassDay)
 	private fetchInfo() {
 		$netMgr.requests.fetchSeerInfo();
-	}
-
-	private clearExpiredData() {
-		const dataMap = this._makaDataMap;
-		for (const key in dataMap) {
-			const data = dataMap[key];
-			if (data.state == EMakaState.Expired)
-				delete dataMap[key];
-		}
 	}
 
 	@InjectNetEvent(ENetMessage.fetchSeerInfo)
@@ -114,9 +114,8 @@ class MakaDO extends BaseDO implements DO.IMakaDO {
 
 	@InjectNetEvent(ENetMessage.fetchSeerReportList)
 	private onFetchSeerReportList(res: IResFetchSeerReportList) {
-		const list = $decodeProtoData(res.seer_report_list);
 		const dataMap = this._makaDataMap;
-		for (const v of list) {
+		for (const v of res.seer_report_list) {
 			dataMap[v.uuid] = new MakaDataDO(v);
 		}
 		this.dispatch(EUserEvent.OnRecordMakaChanged);
@@ -124,23 +123,24 @@ class MakaDO extends BaseDO implements DO.IMakaDO {
 
 	@InjectNetEvent(ENetMessage.createSeerReport)
 	private onCreateSeerReport(res: IResCreateSeerReport, req: IReqCreateSeerReport) {
-		const report = $decodeProtoData(res.seer_report);
-		this._makaDataMap[report.uuid] = new MakaDataDO(report);
+		const report = res.seer_report;
 		if (report.state == EMakaState.Analysised) {
+			const data = this.getAnalysisData(req.uuid);
+			data.setBrief(report);
 			this._remainCount--;
-			if (this._analysisingId == report.uuid)
-				this._analysisingId = null;
+			this.dispatch(EUserEvent.OnRecordMakaChanged);
 		}
-		this.dispatch(EUserEvent.OnRecordMakaChanged);
 	}
 
 	@InjectNetEvent(ENetNotify.NotifySeerReport)
 	private onNotifySeerReport(res: INotifySeerReport) {
-		const report = $decodeProtoData(res.report);
-		this._makaDataMap[report.uuid] = new MakaDataDO(report);
+		const report = res.report;
+		const data = this.getAnalysisData(report.uuid);
+		if (data)
+			data.setBrief(report);
+		else
+			this._makaDataMap[report.uuid] = new MakaDataDO(report);
 		this._remainCount--;
-		if (report.uuid == this._analysisingId)
-			this._analysisingId = null;
 		this.dispatch(EUserEvent.OnRecordMakaChanged);
 	}
 }

@@ -25,7 +25,8 @@ export class RenderRecordItem2View extends RenderRecordItem2 {
 		txt_point.text = (pt > 0 ? "+" : "") + pt;
 		txt_score.text = point.toString();
 
-		loader_maka.icon = $uiUtil.getMakaLevelTile(makaData ? makaData.player_scores.find(v => v.seat == data.seat).rating : EMakaLevel.None);
+		const makaLevel = makaData && makaData.state == EMakaState.Analysised ? makaData.player_scores.find(v => v.seat == data.seat).rating : EMakaLevel.None;
+		loader_maka.icon = $uiUtil.getMakaLevelTile(makaLevel);
 		loader_beilv.icon = $uiUtil.getBigHuTile(max_hu_type < 3 ? EBigHuType.E_Dadian_Title_none : max_hu_type);
 
 		txt_lizhi.text = action_liqi.toString();

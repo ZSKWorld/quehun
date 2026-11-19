@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="240,240" pivot="0.5,0.5" opaque="false" designImage="ui://ca43vz0eitoj7plon2" designImageAlpha="0">
+  <displayList>
+    <image id="n95_jbd2" name="n95" src="jbd2obnl" fileName="Texture/img_603.png" xy="200,107"/>
+    <image id="n103_eexs" name="n103" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="30"/>
+    <image id="n104_eexs" name="n104" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="60"/>
+    <image id="n105_eexs" name="n105" src="jbd2obnl" fileName="Texture/img_603.png" xy="133,200" rotation="90"/>
+    <image id="n106_eexs" name="n106" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="120"/>
+    <image id="n107_eexs" name="n107" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="150"/>
+    <image id="n108_eexs" name="n108" src="jbd2obnl" fileName="Texture/img_603.png" xy="0,107"/>
+    <image id="n109_eexs" name="n109" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="210"/>
+    <image id="n110_eexs" name="n110" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="240"/>
+    <image id="n111_eexs" name="n111" src="jbd2obnl" fileName="Texture/img_603.png" xy="107,40" rotation="270"/>
+    <image id="n112_eexs" name="n112" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="300"/>
+    <image id="n113_eexs" name="n113" src="jbd2obnl" fileName="Texture/img_603.png" xy="120,120" pivot="-2,0.5" anchor="true" rotation="330"/>
+    <text id="n129_eexs" name="n129" xy="58,93" pivot="0.5,0.5" size="124,54" fontSize="40" color="#00f2ff" vAlign="middle" leading="0" singleLine="true" text="分析中"/>
+  </displayList>
+  <transition name="rotate" frameRate="60">
+    <item time="0" type="Alpha" value="1"/>
+    <item time="0" type="Alpha" target="n103_eexs" tween="true" startValue="0.738" endValue="0.3" duration="9" ease="Linear"/>
+    <item time="0" type="Alpha" target="n104_eexs" tween="true" startValue="0.939" endValue="0.3" duration="14" ease="Linear"/>
+    <item time="0" type="Alpha" target="n105_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="0" type="Alpha" target="n106_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n107_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n108_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n109_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n110_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n111_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n112_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n113_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n129_eexs" tween="true" startValue="0.7" endValue="1" duration="30" ease="Linear"/>
+    <item time="0" type="Alpha" target="n95_jbd2" tween="true" startValue="0.482" endValue="0.3" duration="4" ease="Linear"/>
+    <item time="0" type="Scale" value="1,1"/>
+    <item time="0" type="Text" target="n129_eexs" value="分析中"/>
+    <item time="5" type="Alpha" target="n106_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="10" type="Alpha" target="n107_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="15" type="Alpha" target="n108_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="20" type="Alpha" target="n109_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="25" type="Alpha" target="n110_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="30" type="Alpha" target="n111_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="30" type="Alpha" target="n129_eexs" tween="true" startValue="1" endValue="0.7" duration="30" ease="Linear"/>
+    <item time="35" type="Alpha" target="n112_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="40" type="Alpha" target="n113_eexs" tween="true" startValue="1" endValue="0.3" duration="19" ease="Quad.In"/>
+    <item time="45" type="Alpha" target="n95_jbd2" tween="true" startValue="1" endValue="0.482" duration="15" ease="Quad.In"/>
+    <item time="50" type="Alpha" target="n103_eexs" tween="true" startValue="1" endValue="0.738" duration="10" ease="Quad.In"/>
+    <item time="55" type="Alpha" target="n104_eexs" tween="true" startValue="1" endValue="0.939" duration="5" ease="Quad.In"/>
+    <item time="60" type="Alpha" target="n105_eexs" value="1"/>
+  </transition>
+  <transition name="show" frameRate="60">
+    <item time="0" type="Alpha" value="0"/>
+    <item time="0" type="Alpha" target="n103_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n104_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n105_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n106_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n107_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n108_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n109_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n110_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n111_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n112_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n113_eexs" value="0.3"/>
+    <item time="0" type="Alpha" target="n129_eexs" value="0.7"/>
+    <item time="0" type="Alpha" target="n95_jbd2" value="0.3"/>
+    <item time="0" type="Scale" value="0.5,0.5"/>
+    <item time="0" type="Text" target="n129_eexs" value="分析中"/>
+    <item time="5" type="Alpha" tween="true" startValue="0" endValue="1" duration="20" ease="Linear"/>
+    <item time="5" type="Scale" tween="true" startValue="0.5,0.5" endValue="1.1,1.1" duration="10" ease="Linear"/>
+    <item time="15" type="Scale" tween="true" startValue="1.1,1.1" endValue="1,1" duration="10" ease="Quad.InOut"/>
+  </transition>
+  <transition name="finish" frameRate="60">
+    <item time="0" type="Alpha" value="1"/>
+    <item time="0" type="Alpha" target="n103_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n104_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n105_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n106_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n107_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n108_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n109_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n110_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n111_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n112_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n113_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n129_eexs" value="1"/>
+    <item time="0" type="Alpha" target="n95_jbd2" value="1"/>
+    <item time="0" type="Scale" value="1,1"/>
+    <item time="0" type="Scale" target="n129_eexs" tween="true" startValue="2.2,2.2" endValue="0.849,0.849" duration="10" ease="Linear"/>
+    <item time="0" type="Text" target="n129_eexs" value="完成"/>
+    <item time="10" type="Scale" target="n129_eexs" tween="true" startValue="0.849,0.849" endValue="1,1" duration="5" ease="Quad.InOut"/>
+    <item time="35" type="Alpha" tween="true" startValue="1" endValue="0" duration="5" ease="Linear"/>
+  </transition>
+</component>

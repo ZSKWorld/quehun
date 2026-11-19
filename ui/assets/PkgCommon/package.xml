@@ -423,7 +423,13 @@
     <image id="jbd2obn0" name="img_1842.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,0,129,46"/>
     <component id="jbd2obn1" name="ComMakaAnalysis.xml" path="/Component/UIMaka/" exported="true"/>
     <component id="jbd2obn2" name="ComMakaAnalysisContent.xml" path="/Component/UIMaka/" exported="true"/>
-    <component id="jbd2obn3" name="ComMakaAnalysisCircle.xml" path="/Component/UIMaka/" exported="true"/>
+    <component id="jbd2obn3" name="ComMakaAnalysising.xml" path="/Component/UIMaka/" exported="true"/>
+    <image id="jbd2obnd" name="img_2467.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obnh" name="img_3812.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obni" name="img_3815.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obnj" name="img_3854.png" path="/Texture/" exported="true"/>
+    <image id="jbd2obnl" name="img_603.png" path="/Texture/" exported="true"/>
+    <component id="eexsobnm" name="ComMakaAnalysisingRot.xml" path="/Component/UIMaka/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -16,7 +16,7 @@ export class SceneManager implements ISceneManager {
 			mask.visible = false;
 			mask.sortingOrder = 99999;
 			mask.name = "SceneManager_Mask";
-			$uiMgr.addToLayer(mask, ELayer.UITop);
+			$uiMgr.addToLayer(mask, ELayer.Mask);
 			mask.drawRect(0, "", EColorString._00000000);
 			mask.makeFullScreen();
 			mask.addRelation(mask.parent, fgui.RelationType.Size);

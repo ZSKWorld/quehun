@@ -385,29 +385,34 @@ EMouseEvent = {
 }
 
 EViewOpenType = {
-	None: "None",
-	Hide: "Hide",
-	Close: "Close",
+	None: "EViewOpenType_None",
+	Hide: "EViewOpenType_Hide",
+	Close: "EViewOpenType_Close",
 }
 
 EViewCategory = {
-	FullScreen: "FullScreen",
-	Popup: "Popup",
+	FullScreen: "EViewCategory_FullScreen",
+	Popup: "EViewCategory_Popup",
 }
 
 EViewType = {
-	UI: "UI",
-	Component: "Component",
-	Label: "Label",
-	Render: "Render",
-	Button: "Button",
+	UI: "EViewType_UI",
+	Component: "EViewType_Component",
+	Label: "EViewType_Label",
+	Render: "EViewType_Render",
+	Button: "EViewType_Button",
 }
 
 ELayer = {
-	Scene: "Scene",
-	UIBottom: "UIBottom",
-	UIMiddle: "UIMiddle",
-	UITop: "UITop",
+	Scene: "ELayer_Scene",
+	UIBottom: "ELayer_UIBottom",
+	UIMiddle: "ELayer_UIMiddle",
+	UITop: "ELayer_UITop",
+	Popup: "ELayer_Popup",
+	Float: "ELayer_Float",
+	Toast: "ELayer_Toast",
+	Mask: "ELayer_Mask",
+	Loading: "ELayer_Loading",
 }
 
 EItemType = {

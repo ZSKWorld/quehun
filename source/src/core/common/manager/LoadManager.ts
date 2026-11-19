@@ -27,7 +27,7 @@ export class LoadManager implements ILoadManager {
 			return Promise.resolve([]);
 		}
 		return new Promise<any>((resolve) => {
-			fgui.UIPackage.loadPackage(resKey, Laya.Handler.create(null, resolve), progressHandler);
+			fgui.UIPackage.loadPackage(resKey, resolve, progressHandler);
 		});
 	}
 

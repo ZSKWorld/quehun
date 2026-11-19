@@ -1,12 +1,22 @@
 /** FGUI修复 */
 export class FGUIRepair {
 	static repair() {
+		this.fixGObjectOnStage();
 		this.fixGTextField();
 		this.fixGImage();
 		this.fixGComponent();
 		this.fixUIPackageUnload();
 		this.fixLoadPackage();
 		this.fixGTextInputOverflow();
+	}
+
+	private static fixGObjectOnStage() {
+		const prototype = fgui.GObject.prototype;
+		Object.defineProperty(prototype, "onStage", {
+			get() {
+				return this._displayObject != null && this._displayObject.displayedInStage;
+			},
+		});
 	}
 
 	private static fixGTextField() {

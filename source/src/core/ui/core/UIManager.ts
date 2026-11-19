@@ -1,33 +1,52 @@
 import { Notifier } from "../../mvc/provider/Notifier";
 
+interface IStackData {
+	id: EUIViewID;
+	view: IMediator;
+}
+
 class UIStack {
-	private _data: EUIViewID[] = [];
+	private _data: IStackData[] = [];
 	get count() { return this._data.length; }
 
-	push(item: EUIViewID) {
-		const index = this._data.indexOf(item);
-		if (index > -1)
-			this._data.splice(index, 1);
-		this._data.unshift(item);
-	}
-
-	pop() {
-		return this._data.shift();
+	push(id: EUIViewID, view: IMediator) {
+		this._data.unshift({ id, view });
 	}
 
 	peek() {
 		return this._data.first;
 	}
 
-	remove(item: EUIViewID) {
-		const index = this._data.indexOf(item);
+	get(id: EUIViewID) {
+		return this._data.find(v => v.id == id);
+	}
+
+	pop() {
+		return this._data.shift();
+	}
+
+	has(id: EUIViewID) {
+		return this._data.findIndex(v => v.id == id) >= 0;
+	}
+
+	remove(id: EUIViewID) {
+		const index = this._data.findIndex(v => v.id == id);
 		if (index > -1) {
-			this._data.splice(index, 1);
+			return this._data.splice(index, 1)[0];
 		}
+		return null;
 	}
 
 	clear() {
 		this._data.clear();
+	}
+
+	*[Symbol.iterator]() {
+		const data = this._data.slice();
+		const cnt = data.length;
+		for (let i = 0; i < cnt; i++) {
+			yield data[i];
+		}
 	}
 }
 /** 页面缓存 */
@@ -70,8 +89,6 @@ export class UIManager extends Notifier implements IUIManager {
 	private _lockMark: number = 0;
 	/** 锁屏遮罩 */
 	private _lockMask: fgui.GGraph;
-	/** 已打开页面 */
-	private _openedViews: IMediator[] = [];
 	private _openedStack = new UIStack();
 
 	private get lockMark() { return this._lockMark; }
@@ -80,8 +97,13 @@ export class UIManager extends Notifier implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
-	private get topView() { return this._openedViews.first; }
-	private get topViewId() { return this.topView?.viewId as EUIViewID; }
+	private get topStackViewId() {
+		for (const data of this._openedStack) {
+			if (this.isStackView(data.id))
+				return data.id;
+		}
+		return null;
+	}
 
 	constructor() {
 		super();
@@ -109,6 +131,8 @@ export class UIManager extends Notifier implements IUIManager {
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
 	}
 
+	isTopView(viewId: EViewID) { return this._openedStack.peek()?.id == viewId; }
+
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number) {
 		const targetLayer = this._layerMap[layer];
 		if (!obj || obj.isDisposed || !targetLayer) return;
@@ -116,49 +140,54 @@ export class UIManager extends Notifier implements IUIManager {
 		targetLayer.addChildAt(obj, targetIndex);
 	}
 
-	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
-
 	async openView<T = any>(viewId: EUIViewID, data?: T, openType = EViewOpenType.None) {
-		if (!viewId) return;
 		if (!$facade.hasMediator(viewId)) return;
 
 		this.lockMark++;
-		const success = await this.dealTopView(viewId, data, openType);
-		success && await this.addView(viewId, data);
+
+		const topStackViewId = this.topStackViewId;
+		switch (openType) {
+			case EViewOpenType.Hide:
+				this.closeAllTopNotStackView();
+				topStackViewId != viewId && await this.removeView(topStackViewId, false);
+				break;
+			case EViewOpenType.Close:
+				this.closeAllTopNotStackView();
+				topStackViewId != viewId && await this.removeView(topStackViewId, true);
+				break;
+		}
+
+		await this.addView(viewId, data);
 		this.lockMark--;
 	}
 
 	async closeView(viewId: EUIViewID) {
-		if (!viewId) return;
+		if (!this._openedStack.has(viewId)) return;
 
 		this.lockMark++;
+		if (this.topStackViewId == viewId)
+			this.closeAllTopNotStackView();
+
 		await this.removeView(viewId, true);
+
 		if (this.isStackView(viewId)) {
-			const nextViewId = this._openedStack.peek();
-			if (nextViewId && nextViewId != this.topViewId) {
-				const mediator = this._openedViews.find(v => v.viewId == nextViewId) || this._cache.find(nextViewId);
-				await this.openView(this._openedStack.pop(), mediator?.data, EViewOpenType.Close);
-			}
+			const nextData = this._openedStack.peek();
+			await this.openView(nextData.id, nextData.view?.data);
 		}
 		this.lockMark--;
 	}
 
 	closeAllView() {
-		this._openedViews.forEach(v => {
-			v.view.parent && v.view.removeFromParent();
-			this._cache.cache(v);
-		});
-		this._openedViews.clear();
+		for (const data of this._openedStack) {
+			this.removeView(data.id, true);
+		}
 		this._openedStack.clear();
 	}
 
 	destroyView(viewId: EUIViewID) {
 		this._cache.destroy(viewId);
-		const index = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (index == -1) return;
-		const mediator = this._openedViews[index];
-		this._openedViews.splice(index, 1);
-		mediator.view.dispose();
+		const data = this._openedStack.remove(viewId);
+		data?.view.view.dispose();
 	}
 
 	private isStackView(viewId: EUIViewID) {
@@ -166,71 +195,42 @@ export class UIManager extends Notifier implements IUIManager {
 		return category == EViewCategory.FullScreen;
 	}
 
-	private async dealTopView(viewId: EUIViewID, data: any, openType: EViewOpenType) {
-		if (openType != EViewOpenType.Hide && openType != EViewOpenType.Close) return true;
-
-		const topId = this.topViewId;
-		if (!topId) return true;
-
-		if (this.isTopView(viewId)) {
-			this.topView.data = data;
-			return false;
-		}
-
-		if (!this.isStackView(topId)) {
-			this.closeView(topId);
-			return this.dealTopView(viewId, data, openType);
-		}
-
-		switch (openType) {
-			case EViewOpenType.Hide:
-				await this.removeView(topId, false);
-				break;
-			case EViewOpenType.Close:
-				await this.removeView(topId, true);
-				break;
-			default: return false;
-		}
-		return true;
-	}
-
-	private getOrCreateMediator(viewId: EUIViewID) {
-		let mediator: IMediator;
-		const openIndex = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (openIndex == -1) {
-			mediator = this._cache.get(viewId);
-			if (!mediator){
-				mediator = $facade.createMediator(viewId, true);
+	private closeAllTopNotStackView() {
+		for (const data of this._openedStack) {
+			if (!this.isStackView(data.id)) {
+				this.removeView(data.id, true);
 			}
-		} else {
-			mediator = this._openedViews[openIndex];
-			this._openedViews.splice(openIndex, 1);
+			else break;
 		}
-		return mediator;
 	}
 
 	private async addView(viewId: EUIViewID, data?: any) {
-		const mediator = this.getOrCreateMediator(viewId);
+		let mediator = this._openedStack.remove(viewId)?.view;
+		if (!mediator) {
+			mediator = this._cache.get(viewId);
+			if (!mediator)
+				mediator = $facade.createMediator(viewId, true);
+		}
 		if (!mediator) return;
+
+		this._openedStack.push(viewId, mediator);
 		this.dispatch(EGlobalEvent.OnViewOpenBegin, viewId);
-		if (this.isStackView(viewId))
-			this._openedStack.push(viewId);
-		this._openedViews.unshift(mediator);
 		mediator.data = data;
+		const onStage = mediator.view.onStage;
 		this.addToLayer(mediator.view, mediator.view.viewLayer || ELayer.UIBottom);
-		await mediator.view.onOpenAni();
+		!onStage && await mediator.view.onOpenAni();
 		this.dispatch(EGlobalEvent.OnViewOpenEnd, viewId);
 	}
 
 	private async removeView(viewId: EUIViewID, removeStack: boolean) {
-		const index = this._openedViews.findIndex(v => v.viewId == viewId);
-		if (index <= -1) return;
+		const mediator = this._openedStack.get(viewId)?.view;
+		if (!mediator) return;
+		if (removeStack) {
+			this._cache.cache(mediator);
+			this._openedStack.remove(viewId);
+		}
 		this.dispatch(EGlobalEvent.OnViewCloseBegin, viewId);
-		const mediator = this._openedViews[index];
-		this._openedViews.splice(index, 1);
-		removeStack && this._openedStack.remove(viewId);
 		await mediator.view.onCloseAni();
-		this._cache.cache(mediator);
 		mediator.view.removeFromParent();
 		this.dispatch(EGlobalEvent.OnViewCloseEnd, viewId);
 	}

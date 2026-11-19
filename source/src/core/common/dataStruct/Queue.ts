@@ -19,7 +19,7 @@ export class Queue<T = any> {
 	}
 
 	contains(item: T) {
-		return this._data.findIndex(v => v === item) > -1;
+		return this._data.includes(item);
 	}
 
 	*[Symbol.iterator]() {

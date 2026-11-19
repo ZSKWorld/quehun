@@ -28,9 +28,7 @@ export class Controller {
 
 		if (cls) {
 			const commandClses = this._commandMap[notifyName];
-			const index = commandClses.findIndex(v => v == cls);
-			if (index >= 0)
-				commandClses.splice(index, 1);
+			commandClses.remove(cls);
 		} else {
 			delete this._commandMap[notifyName];
 		}

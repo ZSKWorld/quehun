@@ -3,13 +3,13 @@ import { Base_RDChecker } from "./Base_RDChecker";
 export class UISevenDay_RDChecker extends Base_RDChecker {
 	override get rdInfos(): IRDCheckInfo[] {
 		return [
-			[ERDName.SevenDay_Day0, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day0", [ERDTriggerType.SevenDay0HaveReward]],
-			[ERDName.SevenDay_Day1, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day1", [ERDTriggerType.SevenDay1HaveReward]],
-			[ERDName.SevenDay_Day2, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day2", [ERDTriggerType.SevenDay2HaveReward]],
-			[ERDName.SevenDay_Day3, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day3", [ERDTriggerType.SevenDay3HaveReward]],
-			[ERDName.SevenDay_Day4, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day4", [ERDTriggerType.SevenDay4HaveReward]],
-			[ERDName.SevenDay_Day5, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day5", [ERDTriggerType.SevenDay5HaveReward]],
-			[ERDName.SevenDay_Day6, ERDName.Main_SevenDay, "UIBottom.UISevenDayView.day6", [ERDTriggerType.SevenDay6HaveReward]],
+			[ERDName.SevenDay_Day0, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day0", [ERDTriggerType.SevenDay0HaveReward]],
+			[ERDName.SevenDay_Day1, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day1", [ERDTriggerType.SevenDay1HaveReward]],
+			[ERDName.SevenDay_Day2, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day2", [ERDTriggerType.SevenDay2HaveReward]],
+			[ERDName.SevenDay_Day3, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day3", [ERDTriggerType.SevenDay3HaveReward]],
+			[ERDName.SevenDay_Day4, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day4", [ERDTriggerType.SevenDay4HaveReward]],
+			[ERDName.SevenDay_Day5, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day5", [ERDTriggerType.SevenDay5HaveReward]],
+			[ERDName.SevenDay_Day6, ERDName.Main_SevenDay, "ELayer_UIMiddle.UISevenDayView.day6", [ERDTriggerType.SevenDay6HaveReward]],
 		];
 	}
 

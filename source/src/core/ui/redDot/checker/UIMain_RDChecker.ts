@@ -3,9 +3,9 @@ import { Base_RDChecker } from "./Base_RDChecker";
 export class UIMain_RDChecker extends Base_RDChecker {
 	override get rdInfos(): IRDCheckInfo[] {
 		return [
-			[ERDName.Main_SevenDay, ERDName.Root, "UIBottom.UIMainView.qiri"],
-			[ERDName.Main_Mail, ERDName.Root, "UIBottom.UIMainView.mail", [ERDTriggerType.MailNotRead, ERDTriggerType.MailHaveReward]],
-			[ERDName.Main_Announcement, ERDName.Root, "UIBottom.UIMainView.announcement", [ERDTriggerType.AnnouncementHaveNotRead]],
+			[ERDName.Main_SevenDay, ERDName.Root, "ELayer_UIBottom.UIMainView.qiri"],
+			[ERDName.Main_Mail, ERDName.Root, "ELayer_UIBottom.UIMainView.mail", [ERDTriggerType.MailNotRead, ERDTriggerType.MailHaveReward]],
+			[ERDName.Main_Announcement, ERDName.Root, "ELayer_UIBottom.UIMainView.announcement", [ERDTriggerType.AnnouncementHaveNotRead]],
 		];
 	}
 

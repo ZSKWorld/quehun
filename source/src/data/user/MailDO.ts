@@ -5,6 +5,24 @@ export class MailDO extends BaseDO implements DO.IMailDO {
 
 	get mails() { return this._mails; }
 
+	get haveNotRead() {
+		const mails = this._mails;
+		for (let i = 0, n = mails.length; i < n; i++) {
+			if (mails[i].state == 0)
+				return true;
+		}
+		return false;
+	}
+
+	get haveNotReward() {
+		const mails = this._mails;
+		for (let i = 0, n = mails.length; i < n; i++) {
+			if (mails[i].attachments.length && !mails[i].take_attachment)
+				return true;
+		}
+		return false;
+	}
+
 	@InjectNetEvent(ENetMessage.fetchMailInfo)
 	private onFetchMailInfo(res: IResMailInfo) {
 		this._mails = res.mails.map($decodeProtoData);

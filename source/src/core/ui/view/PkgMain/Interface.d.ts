@@ -3,7 +3,14 @@ declare interface IComMatchItemData {
 }
 
 declare interface IComMatchModeData {
-
+	/** 0-段位场背景类型，1-赛事场，2-友人房 */
+	type: 0 | 1 | 2;
+	icon: string;
+	infoLangId: number;
+	refreshTime: number;
+	descLangId: number;
+	delete: boolean;
+	open: boolean;
 }
 
 declare interface IUIAchievementData {

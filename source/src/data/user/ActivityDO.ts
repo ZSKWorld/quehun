@@ -128,6 +128,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	getTaskInfo(taskId: number) {
 		return this._activityData.task_progress_list[taskId];
 	}
+
 	getTaskList(activityId: number) {
 		const list: ITaskProgress[] = [];
 		const taskList = this._activityData.task_progress_list;
@@ -144,6 +145,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	getPeriodTaskInfo(taskId: number) {
 		return this._activityData.period_task_progress_list[taskId];
 	}
+
 	getPeriodTaskList(activity_id: number) {
 		const list: ITaskProgress[] = [];
 		const taskList = this._activityData.period_task_progress_list;

@@ -103,12 +103,8 @@ import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView
 import { ComLiaoSheCharView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheCharView";
 import { ComLiaoSheDecorateView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComMainPlayerInfoView } from "../core/ui/view/PkgMain/view/coms/ComMainPlayerInfoView";
-import { ComMatchContentView } from "../core/ui/view/PkgMain/view/coms/ComMatchContentView";
-import { ComMatchContentMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchContentMediator";
 import { ComMatchItemView } from "../core/ui/view/PkgMain/view/coms/ComMatchItemView";
-import { ComMatchItemMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchItemMediator";
 import { ComMatchModeView } from "../core/ui/view/PkgMain/view/coms/ComMatchModeView";
-import { ComMatchModeMediator } from "../core/ui/view/PkgMain/mediator/coms/ComMatchModeMediator";
 import { ComPreviewView } from "../core/ui/view/PkgMain/view/coms/ComPreviewView";
 import { ComSevenDayItem1View } from "../core/ui/view/PkgMain/view/coms/ComSevenDayItem1View";
 import { ComVisitCharInfoView } from "../core/ui/view/PkgMain/view/coms/ComVisitCharInfoView";
@@ -167,6 +163,8 @@ import { UIChangeSkinView } from "../core/ui/view/PkgMain/view/uis/UIChangeSkinV
 import { UIChangeSkinMediator } from "../core/ui/view/PkgMain/mediator/uis/UIChangeSkinMediator";
 import { UICheckCurrencyView } from "../core/ui/view/PkgMain/view/uis/UICheckCurrencyView";
 import { UICheckCurrencyMediator } from "../core/ui/view/PkgMain/mediator/uis/UICheckCurrencyMediator";
+import { UICreateRoomView } from "../core/ui/view/PkgMain/view/uis/UICreateRoomView";
+import { UICreateRoomMediator } from "../core/ui/view/PkgMain/mediator/uis/UICreateRoomMediator";
 import { UIFriendView } from "../core/ui/view/PkgMain/view/uis/UIFriendView";
 import { UIFriendMediator } from "../core/ui/view/PkgMain/mediator/uis/UIFriendMediator";
 import { UIGuideView } from "../core/ui/view/PkgMain/view/uis/UIGuideView";
@@ -324,9 +322,8 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComLiaoSheCharView, Component, ComLiaoSheCharView);
 		register(EViewID.ComLiaoSheDecorateView, Component, ComLiaoSheDecorateView);
 		register(EViewID.ComMainPlayerInfoView, Component, ComMainPlayerInfoView);
-		register(EViewID.ComMatchContentView, Component, ComMatchContentView, ComMatchContentMediator);
-		register(EViewID.ComMatchItemView, Component, ComMatchItemView, ComMatchItemMediator);
-		register(EViewID.ComMatchModeView, Component, ComMatchModeView, ComMatchModeMediator);
+		register(EViewID.ComMatchItemView, Component, ComMatchItemView);
+		register(EViewID.ComMatchModeView, Component, ComMatchModeView);
 		register(EViewID.ComPreviewView, Component, ComPreviewView);
 		register(EViewID.ComSevenDayItem1View, Component, ComSevenDayItem1View);
 		register(EViewID.ComVisitCharInfoView, Component, ComVisitCharInfoView);
@@ -360,6 +357,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UICameraView, UI, UICameraView, UICameraMediator);
 		register(EViewID.UIChangeSkinView, UI, UIChangeSkinView, UIChangeSkinMediator);
 		register(EViewID.UICheckCurrencyView, UI, UICheckCurrencyView, UICheckCurrencyMediator);
+		register(EViewID.UICreateRoomView, UI, UICreateRoomView, UICreateRoomMediator);
 		register(EViewID.UIFriendView, UI, UIFriendView, UIFriendMediator);
 		register(EViewID.UIGuideView, UI, UIGuideView, UIGuideMediator);
 		register(EViewID.UIHelpView, UI, UIHelpView, UIHelpMediator);

@@ -61,7 +61,7 @@
     </component>
     <group id="n26_exjc" name="leftTop" xy="11,13" size="497,492" advanced="true" layout="vt" excludeInvisibles="true"/>
   </displayList>
-  <transition name="in" frameRate="30">
+  <transition name="show" frameRate="30">
     <item time="0" type="Alpha" target="n18_vwgm" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
     <item time="0" type="Alpha" target="n26_exjc" tween="true" startValue="0" endValue="1" duration="10" ease="Linear"/>
     <item time="0" type="XY" target="n0_vwgm" tween="true" startValue="-,1103" endValue="-,953" duration="6" ease="Circ.Out"/>
@@ -80,7 +80,7 @@
     <item time="6" type="XY" target="n5_vwgm" tween="true" startValue="-,1102" endValue="-,952" duration="6" ease="Circ.Out"/>
     <item time="7" type="XY" target="n6_vwgm" tween="true" startValue="-,1085" endValue="-,859" duration="6" ease="Circ.Out"/>
   </transition>
-  <transition name="out" frameRate="30">
+  <transition name="hide" frameRate="30">
     <item time="0" type="Alpha" target="n18_vwgm" value="1"/>
     <item time="0" type="Alpha" target="n26_exjc" value="1"/>
     <item time="0" type="XY" target="n0_vwgm" value="-,953"/>

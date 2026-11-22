@@ -34,8 +34,8 @@ export default class UIMain extends GComponentView {
 	protected btn_qiri: BtnSevenDayView;
 	protected btn_report: fgui.GButton;
 	protected group_leftTop: fgui.GGroup;
-	protected trans_in: fgui.Transition;
-	protected trans_out: fgui.Transition;
+	protected trans_show: fgui.Transition;
+	protected trans_hide: fgui.Transition;
 	public static url: string = "ui://vith2b66vwgm0";
 
 	public static createInstance(): UIMain {
@@ -67,7 +67,7 @@ export default class UIMain extends GComponentView {
 		this.btn_qiri = <BtnSevenDayView>(this.getChildAt(21));
 		this.btn_report = <fgui.GButton>(this.getChildAt(22));
 		this.group_leftTop = <fgui.GGroup>(this.getChildAt(23));
-		this.trans_in = this.getTransitionAt(0);
-		this.trans_out = this.getTransitionAt(1);
+		this.trans_show = this.getTransitionAt(0);
+		this.trans_hide = this.getTransitionAt(1);
 	}
 }

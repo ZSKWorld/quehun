@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plne1" designImageAlpha="0">
+  <displayList>
+    <component id="n0_9c0b" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
+      <property target="title" propertyId="0" value="创建房间"/>
+    </component>
+    <image id="n12_z3vj" name="n12" src="z3vjobjn" fileName="Texture/img_3490.png" xy="0,189" size="1920,692" group="n14_z3vj"/>
+    <component id="n11_z3vj" name="rule" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1745,30" size="121,119" group="n14_z3vj">
+      <Button icon="ui://vith2b66vwgmc"/>
+    </component>
+    <component id="n13_z3vj" name="create" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="813,898" size="296,106" group="n14_z3vj">
+      <Button title="创建" titleColor="#3a3030" titleFontSize="50" icon="ui://vx9zwserz3vjobjo"/>
+    </component>
+    <group id="n14_z3vj" name="n14" xy="0,30" size="1920,974" advanced="true"/>
+  </displayList>
+  <transition name="show" options="6" frameRate="60">
+    <item time="0" type="Alpha" target="n14_z3vj" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n14_z3vj" tween="true" startValue="-,80" endValue="-,30" duration="12" ease="Linear"/>
+  </transition>
+</component>

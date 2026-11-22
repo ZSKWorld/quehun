@@ -8,6 +8,14 @@ export class AnnouncementDO extends BaseDO implements DO.IAnnouncementDO {
 		return $gameMgr.clientType == EClientType.EN && $gameMgr.language == ELanguage.KR ? 'us-kr' : $gameMgr.language.toString();
 	}
 	get announcements() { return this._announcements; }
+	get haveNotRead() {
+		const announcements = this._announcements;
+		for (let i = 0, n = announcements.length; i < n; i++) {
+			if (!this.isRead(announcements[i].id))
+				return true;
+		}
+		return false;
+	}
 
 	isRead(id: number) { return this._readList.indexOf(id) != -1; }
 

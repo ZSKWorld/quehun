@@ -70,7 +70,7 @@ import BtnXunMi from "./BtnXunMi";
 import BtnDengLong from "./BtnDengLong";
 import ComMatchMode from "./ComMatchMode";
 import ComAnnounceContent from "./ComAnnounceContent";
-import ComMatchContent from "./ComMatchContent";
+import UICreateRoom from "./UICreateRoom";
 import { UIChangeSkinView } from "../../view/PkgMain/view/uis/UIChangeSkinView";
 import { UIVisitView } from "../../view/PkgMain/view/uis/UIVisitView";
 import { BtnVisitHeartView } from "../../view/PkgMain/view/btns/BtnVisitHeartView";
@@ -141,7 +141,7 @@ import { BtnXunMiView } from "../../view/PkgMain/view/btns/BtnXunMiView";
 import { BtnDengLongView } from "../../view/PkgMain/view/btns/BtnDengLongView";
 import { ComMatchModeView } from "../../view/PkgMain/view/coms/ComMatchModeView";
 import { ComAnnounceContentView } from "../../view/PkgMain/view/coms/ComAnnounceContentView";
-import { ComMatchContentView } from "../../view/PkgMain/view/coms/ComMatchContentView";
+import { UICreateRoomView } from "../../view/PkgMain/view/uis/UICreateRoomView";
 
 export default class PkgMainBinder {
 	public static bindAll(): void {
@@ -215,6 +215,6 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(BtnDengLong.url, BtnDengLongView);
 		fgui.UIObjectFactory.setExtension(ComMatchMode.url, ComMatchModeView);
 		fgui.UIObjectFactory.setExtension(ComAnnounceContent.url, ComAnnounceContentView);
-		fgui.UIObjectFactory.setExtension(ComMatchContent.url, ComMatchContentView);
+		fgui.UIObjectFactory.setExtension(UICreateRoom.url, UICreateRoomView);
 	}
 }

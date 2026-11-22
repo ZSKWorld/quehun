@@ -1,6 +1,7 @@
 declare namespace DO {
 	interface IAnnouncementDO {
-		announcements: ProtoObject<IAnnouncement>[];
+		get announcements(): ProtoObject<IAnnouncement>[];
+		get haveNotRead(): boolean;
 		isRead(id: number): boolean;
 		fetchAnnouncement(): Promise<IResAnnouncement>;
 	}

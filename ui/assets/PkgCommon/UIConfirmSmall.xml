@@ -26,8 +26,8 @@
     <text id="n12_j0dd" name="title" xy="966,350" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobex" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="举报昵称">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
-    <text id="n13_j0dd" name="content" xy="611,403" size="704,206" fontSize="35" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="bbbbb">
+    <component id="n13_j0dd" name="content" src="j0ddob7i" fileName="Component/Component/LabelConfirm.xml" xy="611,403" size="704,206">
       <gearXY controller="format" pages="6,7,8,9" values="611,424|611,437|611,403|611,403"/>
-    </text>
+    </component>
   </displayList>
 </component>

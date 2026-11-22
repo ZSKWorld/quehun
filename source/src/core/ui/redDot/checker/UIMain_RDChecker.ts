@@ -11,14 +11,12 @@ export class UIMain_RDChecker extends Base_RDChecker {
 
 	@InjectUserEvent(EUserEvent.OnMailChanged)
 	private checkMail() {
-		const mails = $user.mail.mails;
-		this.setRDCheck(ERDTriggerType.MailNotRead, mails.some(v => v.state == 0));
-		this.setRDCheck(ERDTriggerType.MailHaveReward, mails.some(v => v.attachments.length && !v.take_attachment));
+		this.setRDCheck(ERDTriggerType.MailNotRead, $user.mail.haveNotRead);
+		this.setRDCheck(ERDTriggerType.MailHaveReward, $user.mail.haveNotReward);
 	}
 
 	@InjectUserEvent(EUserEvent.OnAnnouncementChanged)
 	private checkAnnouncement() {
-		const announcement = $user.announcement;
-		this.setRDCheck(ERDTriggerType.AnnouncementHaveNotRead, announcement.announcements.some(v => !announcement.isRead(v.id)));
+		this.setRDCheck(ERDTriggerType.AnnouncementHaveNotRead, $user.announcement.haveNotRead);
 	}
 }

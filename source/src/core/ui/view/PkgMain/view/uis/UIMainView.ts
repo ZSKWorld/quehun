@@ -36,24 +36,16 @@ export class UIMainView extends UIMain {
 		this.btn_qiri.visible = visible;
 	}
 
-	override onOpenAni() {
-		return Promise.all([
-			$uiUtil.playTrans(this.trans_in),
-			$uiUtil.playTrans(this.com_matchMode.transModeIn),
-		]) as unknown as Promise<void>;
+	override async onOpenAni() {
+		$uiUtil.playTrans(this.trans_show);
+		await $timeUtil.wait(200);
+		this.com_matchMode.onOpenAni();
 	}
 
 	override onCloseAni() {
 		return Promise.all([
-			$uiUtil.playTrans(this.trans_out),
-			$uiUtil.playTrans(this.com_matchMode.transModeOut),
+			$uiUtil.playTrans(this.trans_hide),
+			this.com_matchMode.onCloseAni(),
 		]) as unknown as Promise<void>;
-	}
-
-	override onDisable() {
-		const anis = [this.trans_in, this.com_matchMode.transModeIn];
-		anis.forEach(v => {
-			v.playing && v.stop(true, true);
-		});
 	}
 }

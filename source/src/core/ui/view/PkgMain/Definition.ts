@@ -1,19 +1,19 @@
 export const enum EUIMainEvent {
 }
 
-export const enum EComMatchModeShowType {
+export const enum EComMatchModeType {
 	/** 主页 */
 	Mode,
 	/** 段位场 */
-	RankMode1,
+	RankMode,
 	/** 比赛场 */
-	MatchMode1,
+	MatchMode,
 	/** 友人场 */
 	FriendMode,
-	/** 段位场2 */
-	RankMode2,
-	/** 比赛场2 */
-	MatchMode2,
+	/** 段位场1 */
+	RankMode1,
+	/** 比赛场1 */
+	MatchMode1,
 }
 
 export const enum EUIRankType {

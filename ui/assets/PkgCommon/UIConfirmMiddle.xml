@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjt" designImageAlpha="0" designImageLayer="1">
-  <controller name="format" pages="4,,5," selected="1"/>
+  <controller name="format" pages="4,,5," selected="0"/>
   <displayList>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="1144,720"/>
     <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="461,296" size="461,4" group="n18_j0dd"/>
@@ -15,10 +15,10 @@
     <text id="n12_j0dd" name="title" xy="964,247" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobex" fontSize="48" color="#edb26f" align="center" vAlign="middle" leading="0" singleLine="true" text="弹窗标题">
       <gearDisplay controller="format" pages="0,1,4,6"/>
     </text>
-    <component id="n13_j0dd" name="content" src="j0ddob7i" fileName="Component/Component/LabelConfirm.xml" xy="470,279" size="1009,460">
+    <text id="n13_j0dd" name="content" xy="470,318" size="1009,418" fontSize="35" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="撒旦飞洒发生">
       <gearXY controller="format" pages="4,5" values="470,318|470,279"/>
       <gearSize controller="format" pages="4,5" values="1009,418,1,1|1009,460,1,1"/>
-    </component>
+    </text>
     <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="804,748" size="312,92" group="n16_j0dd">
       <gearDisplay controller="format" pages="0,2,3,4,5,6"/>
       <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>

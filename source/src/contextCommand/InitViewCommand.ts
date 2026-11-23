@@ -125,6 +125,8 @@ import { UIConfirmSmallView } from "../core/ui/view/PkgCommon/view/uis/UIConfirm
 import { UIConfirmSmallMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIConfirmSmallMediator";
 import { UIGetRewardView } from "../core/ui/view/PkgCommon/view/uis/UIGetRewardView";
 import { UIGetRewardMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIGetRewardMediator";
+import { UIInfoView } from "../core/ui/view/PkgCommon/view/uis/UIInfoView";
+import { UIInfoMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIInfoMediator";
 import { UIItemDetailView } from "../core/ui/view/PkgCommon/view/uis/UIItemDetailView";
 import { UIItemDetailMediator } from "../core/ui/view/PkgCommon/mediator/uis/UIItemDetailMediator";
 import { UILoadingView } from "../core/ui/view/PkgCommon/view/uis/UILoadingView";
@@ -185,6 +187,8 @@ import { UIRecordView } from "../core/ui/view/PkgMain/view/uis/UIRecordView";
 import { UIRecordMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRecordMediator";
 import { UIRecordShareView } from "../core/ui/view/PkgMain/view/uis/UIRecordShareView";
 import { UIRecordShareMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRecordShareMediator";
+import { UIRoomRuleView } from "../core/ui/view/PkgMain/view/uis/UIRoomRuleView";
+import { UIRoomRuleMediator } from "../core/ui/view/PkgMain/mediator/uis/UIRoomRuleMediator";
 import { UISevenDayView } from "../core/ui/view/PkgMain/view/uis/UISevenDayView";
 import { UISevenDayMediator } from "../core/ui/view/PkgMain/mediator/uis/UISevenDayMediator";
 import { UIShopView } from "../core/ui/view/PkgMain/view/uis/UIShopView";
@@ -338,6 +342,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIConfirmMiddleView, UI, UIConfirmMiddleView, UIConfirmMiddleMediator);
 		register(EViewID.UIConfirmSmallView, UI, UIConfirmSmallView, UIConfirmSmallMediator);
 		register(EViewID.UIGetRewardView, UI, UIGetRewardView, UIGetRewardMediator);
+		register(EViewID.UIInfoView, UI, UIInfoView, UIInfoMediator);
 		register(EViewID.UIItemDetailView, UI, UIItemDetailView, UIItemDetailMediator);
 		register(EViewID.UILoadingView, UI, UILoadingView, UILoadingMediator);
 		register(EViewID.UILoading2View, UI, UILoading2View, UILoading2Mediator);
@@ -368,6 +373,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.UIRankView, UI, UIRankView, UIRankMediator);
 		register(EViewID.UIRecordView, UI, UIRecordView, UIRecordMediator);
 		register(EViewID.UIRecordShareView, UI, UIRecordShareView, UIRecordShareMediator);
+		register(EViewID.UIRoomRuleView, UI, UIRoomRuleView, UIRoomRuleMediator);
 		register(EViewID.UISevenDayView, UI, UISevenDayView, UISevenDayMediator);
 		register(EViewID.UIShopView, UI, UIShopView, UIShopMediator);
 		register(EViewID.UITreasureView, UI, UITreasureView, UITreasureMediator);

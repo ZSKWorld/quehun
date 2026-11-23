@@ -1,5 +1,7 @@
 declare namespace DO {
 	interface IBagDO {
+		/** 铜币 */
+		get gold(): number;
 		/** 无偿辉玉 */
 		get freeDiamonds(): number;
 		/** 有偿辉玉 */

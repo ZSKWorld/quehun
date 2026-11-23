@@ -14,6 +14,7 @@ export class BagDO extends BaseDO implements DO.IBagDO {
 	private _loadingImage: number[] = [];
 
 	get items() { return this._items; }
+	get gold() { return this.getItemCount(ECurrencyType.Gold); }
 	get freeDiamonds() {
 		let diamond = 0;
 		const { _items, _freeDiamondIds } = this;

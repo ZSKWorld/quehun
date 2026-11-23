@@ -10,6 +10,8 @@ export default class ComMatchItem extends GComponentView {
 	protected btn_info: fgui.GButton;
 	protected img_delete: fgui.GImage;
 	protected img_rest: fgui.GImage;
+	protected img_unmet1: fgui.GImage;
+	protected img_unmet2: fgui.GImage;
 	protected txt_time: fgui.GTextField;
 	protected txt_name: fgui.GTextField;
 	public static url: string = "ui://vith2b66gnjqob9j";
@@ -25,7 +27,9 @@ export default class ComMatchItem extends GComponentView {
 		this.btn_info = <fgui.GButton>(this.getChildAt(2));
 		this.img_delete = <fgui.GImage>(this.getChildAt(3));
 		this.img_rest = <fgui.GImage>(this.getChildAt(4));
-		this.txt_time = <fgui.GTextField>(this.getChildAt(5));
-		this.txt_name = <fgui.GTextField>(this.getChildAt(6));
+		this.img_unmet1 = <fgui.GImage>(this.getChildAt(5));
+		this.img_unmet2 = <fgui.GImage>(this.getChildAt(6));
+		this.txt_time = <fgui.GTextField>(this.getChildAt(7));
+		this.txt_name = <fgui.GTextField>(this.getChildAt(8));
 	}
 }

@@ -34,7 +34,7 @@ export class ComMakaAnalysisView extends ComMakaAnalysis {
 	}
 
 	private onBtnInfoClick() {
-		$confirmMid(1, $lang(20354));
+		this.openView(EViewID.UIInfoView, $lang(20354));
 	}
 
 	private onBtnConfirmClick() {

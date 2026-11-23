@@ -250,6 +250,9 @@
     <component id="z3vjobjm" name="UICreateRoom.xml" path="/" exported="true"/>
     <image id="z3vjobjn" name="img_3490.png" path="/Texture/" scale9grid="19,144,38,288"/>
     <image id="z3vjobjp" name="img_2838.png" path="/Texture/"/>
+    <component id="9r5pobjq" name="UIRoomRule.xml" path="/" exported="true"/>
+    <image id="9r5pobjr" name="img_1675.png" path="/Texture/"/>
+    <image id="9r5pobjs" name="img_1746.png" path="/Texture/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

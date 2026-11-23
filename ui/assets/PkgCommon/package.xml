@@ -434,6 +434,7 @@
     <component id="l80oobno" name="ComEmptyScrollV.xml" path="/Component/Component/" exported="true"/>
     <image id="z3vjobjo" name="img_3254.png" path="/Texture/" exported="true"/>
     <image id="z3vjobnp" name="img_3255.png" path="/Texture/" exported="true"/>
+    <component id="z3vjobns" name="UIInfo.xml" path="/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

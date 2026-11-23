@@ -288,6 +288,12 @@ declare interface IGameUtil {
 	 * @param tip 是否弹复制成功或失败提示，默认 true
 	 */
 	copyText(text: string, tip?: boolean): Promise<boolean>;
+	/**
+	 * 是否能进入某个模式
+	 * @param modeId 
+	 * @param roomType 
+	 */
+	canEnterMode(modeId: number, roomType?: number): 0 | 1306 | 103 | 101 | 102;
 }
 
 declare interface ITimeUtil {
@@ -324,7 +330,7 @@ declare interface ITimeUtil {
 	/** 将秒数转换成 `1小时2分3秒` 的格式 */
 	timeFormat3(second: number): string;
 	/** 将秒数转换成 `x天` 或 `x小时` 或 `x分` 或 `x秒` 的格式 */
-	timeFormat4(second: number): string;
+	timeFormat4(second: number, keepSec?: boolean): string;
 	/** 将秒数转换成 `刚刚`、`10分钟前`、`x小时前`、`x天前`、`x周前`、`x月前` 的格式 */
 	timeFormat5(second: number): string;
 

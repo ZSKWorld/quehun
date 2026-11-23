@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" designImage="ui://ca43vz0ew29k7plofb" designImageAlpha="39">
-  <controller name="type" pages="0,入口,1,段位,2,比赛,3,友人,4,模式" selected="4"/>
+<component size="1920,1080" designImage="ui://ca43vz0ew29k7plofb" designImageAlpha="0">
+  <controller name="type" pages="0,入口,1,段位,2,比赛,3,友人,4,模式" selected="2"/>
   <displayList>
     <component id="n0_w29k" name="rankMode" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="1183,368" pivot="0.167,0.731" anchor="true" size="619,241" group="n3_w29k">
       <Button icon="ui://vith2b66vwgmf"/>
@@ -19,7 +19,6 @@
       <Button icon="ui://vith2b66w29kob8g"/>
     </component>
     <component id="n7_w29k" name="rule" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1569,221" size="97,95" group="n8_w29k">
-      <gearDisplay controller="type" pages="2"/>
       <Button icon="ui://vith2b66vwgmc"/>
     </component>
     <text id="n6_w29k" name="title" xy="1306,237" pivot="0.5,0.5" size="254,73" group="n8_w29k" font="ui://vx9zwserrpakobev" fontSize="55" color="#e4b582" align="center" vAlign="middle" autoSize="shrink" singleLine="true" text="比赛场"/>

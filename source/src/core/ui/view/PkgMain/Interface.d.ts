@@ -8,9 +8,10 @@ declare interface IComMatchModeData {
 	icon: string;
 	infoLangId: number;
 	refreshTime: number;
-	descLangId: number;
+	desc: string;
 	delete: boolean;
 	open: boolean;
+	unmet?: boolean;
 }
 
 declare interface IUIAchievementData {

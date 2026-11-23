@@ -4,7 +4,7 @@
     <image id="n14_q5yi" name="n14" src="q5yiobc1" fileName="Texture/img_125.png" xy="4,4" size="172,172">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <component id="n10_hk7r" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="4,4" size="172,172">
+    <component id="n10_hk7r" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" xy="4,4" size="172,172" touchable="false">
       <relation target="" sidePair="width-width,height-height"/>
     </component>
     <image id="n9_hk7r" name="n9" src="hk7robaz" fileName="Texture/img_3266.png" xy="0,0" size="180,180">

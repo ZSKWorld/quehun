@@ -6,6 +6,7 @@ import BtnVisitHeart from "./BtnVisitHeart";
 import ComVisitCharInfo from "./ComVisitCharInfo";
 import RenderVisitEmo from "./RenderVisitEmo";
 import ComVisitIntro from "./ComVisitIntro";
+import UIRoomRule from "./UIRoomRule";
 import UISevenDay from "./UISevenDay";
 import BtnSevenDayTab from "./BtnSevenDayTab";
 import RenderSevenDayItem from "./RenderSevenDayItem";
@@ -77,6 +78,7 @@ import { BtnVisitHeartView } from "../../view/PkgMain/view/btns/BtnVisitHeartVie
 import { ComVisitCharInfoView } from "../../view/PkgMain/view/coms/ComVisitCharInfoView";
 import { RenderVisitEmoView } from "../../view/PkgMain/view/renders/RenderVisitEmoView";
 import { ComVisitIntroView } from "../../view/PkgMain/view/coms/ComVisitIntroView";
+import { UIRoomRuleView } from "../../view/PkgMain/view/uis/UIRoomRuleView";
 import { UISevenDayView } from "../../view/PkgMain/view/uis/UISevenDayView";
 import { BtnSevenDayTabView } from "../../view/PkgMain/view/btns/BtnSevenDayTabView";
 import { RenderSevenDayItemView } from "../../view/PkgMain/view/renders/RenderSevenDayItemView";
@@ -151,6 +153,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(ComVisitCharInfo.url, ComVisitCharInfoView);
 		fgui.UIObjectFactory.setExtension(RenderVisitEmo.url, RenderVisitEmoView);
 		fgui.UIObjectFactory.setExtension(ComVisitIntro.url, ComVisitIntroView);
+		fgui.UIObjectFactory.setExtension(UIRoomRule.url, UIRoomRuleView);
 		fgui.UIObjectFactory.setExtension(UISevenDay.url, UISevenDayView);
 		fgui.UIObjectFactory.setExtension(BtnSevenDayTab.url, BtnSevenDayTabView);
 		fgui.UIObjectFactory.setExtension(RenderSevenDayItem.url, RenderSevenDayItemView);

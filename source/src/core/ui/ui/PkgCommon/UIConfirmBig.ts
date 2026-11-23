@@ -9,7 +9,7 @@ export default class UIConfirmBig extends GComponentView {
 	protected btn_confirm: fgui.GButton;
 	protected btn_cancel: fgui.GButton;
 	protected txt_title: fgui.GTextField;
-	protected label_content: fgui.GLabel;
+	protected txt_content: fgui.GTextField;
 	public static url: string = "ui://vx9zwserj0ddob7e";
 
 	public static createInstance(): UIConfirmBig {
@@ -22,6 +22,6 @@ export default class UIConfirmBig extends GComponentView {
 		this.btn_confirm = <fgui.GButton>(this.getChildAt(10));
 		this.btn_cancel = <fgui.GButton>(this.getChildAt(11));
 		this.txt_title = <fgui.GTextField>(this.getChildAt(13));
-		this.label_content = <fgui.GLabel>(this.getChildAt(14));
+		this.txt_content = <fgui.GTextField>(this.getChildAt(14));
 	}
 }

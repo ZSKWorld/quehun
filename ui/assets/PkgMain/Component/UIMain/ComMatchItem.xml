@@ -12,6 +12,8 @@
     </component>
     <image id="n15_z63p" name="delete" src="gnjqob99" fileName="Texture/img_887.png" xy="198,144"/>
     <image id="n16_z3vj" name="rest" src="z3vjobjp" fileName="Texture/img_2838.png" xy="371,29" size="196,147"/>
+    <image id="n19_9r5p" name="unmet1" src="9r5pobjs" fileName="Texture/img_1746.png" xy="22,62" size="502,62"/>
+    <image id="n20_9r5p" name="unmet2" src="9r5pobjr" fileName="Texture/img_1675.png" xy="208,72"/>
     <text id="n12_gnjq" name="time" xy="169,26" pivot="0.5,0.5" size="213,32" fontSize="22" color="#b68a8b" align="center" vAlign="middle" leading="0" singleLine="true" text="距离刷新还剩:15小时"/>
     <text id="n14_z63p" name="name" xy="196,135" pivot="0.5,0.5" size="140,46" font="ui://vx9zwserrpakobeu" fontSize="34" color="#ded4d4" align="center" vAlign="middle" leading="0" singleLine="true" text="每周轮换"/>
   </displayList>

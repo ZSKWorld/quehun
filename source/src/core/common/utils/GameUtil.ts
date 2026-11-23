@@ -333,5 +333,43 @@ export class GameUtil implements IGameUtil {
 
 		return success;
 	}
+
+	canEnterMode(modeId: number, roomType?: number) {
+		const cfgMode = $cfgMgr.desktop.matchmode[modeId];
+		if (!cfgMode.is_open)
+			return 1306;
+
+		roomType = roomType ?? cfgMode.room;
+
+		let goldTooLess = true, goldTooMore = true;
+		let levelTooLess = true, levelTooMore = true, level3TooLess = true, level3TooMore = true;
+
+		const level_id = $user.account.level.id;
+		const level3_id = $user.account.level3.id;
+		const gold = $user.bag.gold;
+
+		$cfgMgr.desktop.matchmode.forEach(x => {
+			if (x.room != roomType) return;
+
+			if (!x.glimit_floor || gold >= x.glimit_floor) goldTooLess = false;
+			if (x.glimit_ceil == -1 || gold <= x.glimit_ceil) goldTooMore = false;
+
+			if (x.mode < 10) { // 四麻
+				if (!x.level_limit || level_id >= x.level_limit) levelTooLess = false;
+				if (!x.level_limit_ceil || level_id <= x.level_limit_ceil) levelTooMore = false;
+			} else { // 三麻
+				if (!x.level_limit || level3_id >= x.level_limit) level3TooLess = false;
+				if (!x.level_limit_ceil || level3_id <= x.level_limit_ceil) level3TooMore = false;
+			}
+		});
+
+		if ((levelTooLess || levelTooMore) && (level3TooLess || level3TooMore))
+			return 103;
+		else if (goldTooLess)
+			return 101;
+		else if (goldTooMore)
+			return 102;
+		return 0;
+	}
 }
 

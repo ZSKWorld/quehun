@@ -96,11 +96,15 @@ export class TimeUtil implements ITimeUtil {
 		return str;
 	}
 
-	timeFormat4(second: number) {
+	timeFormat4(second: number, keepSec: boolean = true) {
 		if (second >= DaySec) return ~~(second / DaySec) + $lang(2022);
 		if (second >= HourSec) return ~~(second / HourSec) + $lang(2021);
-		if (second >= MinSec) return ~~(second / MinSec) + $lang(2020);
-		return ~~(second) + $lang(2019);
+		if (keepSec) {
+			if (second >= MinSec) return ~~(second / MinSec) + $lang(2020);
+			return ~~(second) + $lang(2019);
+		} else {
+			return Math.max(~~(second / MinSec), 1) + $lang(2020);
+		}
 	}
 
 	timeFormat5(second: number) {

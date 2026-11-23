@@ -31,12 +31,6 @@ export abstract class ConfirmBaseMediator<V extends IView, D extends IUIConfirmD
 		txt_title.text = data.title || "";
 		txt_content && (txt_content.text = data.content || "");
 		label_content && (label_content.text = data.content || "");
-		if (label_content) {
-			label_content.scrollPane.setPosY(0);
-			Laya.timer.callLater(this, () => {
-				label_content.scrollPane.bouncebackEffect = label_content.scrollPane.vtScrollBar.displayObject.visible;
-			});
-		}
 	}
 
 	protected onBtnConfirmClick() {

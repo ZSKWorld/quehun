@@ -8,7 +8,11 @@ declare namespace DO {
 	}
 
 	interface IActivityDO {
-		readonly sevenDay: ISevenDayDO;
+		get sevenDay(): ISevenDayDO;
+		/** 轮换模式活动id */
+		get intervalActivityId(): number;
+		/** 轮换模式id */
+		get intervalId(): number;
 		isRunning(activityId: number): boolean;
 		getTaskInfo(taskId: number): ITaskProgress;
 		getTaskList(activityId: number): ITaskProgress[];

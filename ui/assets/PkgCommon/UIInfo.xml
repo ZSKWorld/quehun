@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjt" designImageAlpha="0" designImageLayer="1">
+  <displayList>
+    <component id="n19_z3vj" name="mask" src="ziglobga" fileName="Component/Component/ComEmpty.xml" xy="0,0" size="1920,1080"/>
+    <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="960,540" pivot="0.5,0.5" anchor="true" size="1144,720"/>
+    <component id="n10_j0dd" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" xy="1429,213" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n13_j0dd" name="content" src="j0ddob7i" fileName="Component/Component/LabelConfirm.xml" xy="470,279" size="1009,460"/>
+    <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="804,762" size="312,92">
+      <relation target="" sidePair="center-center,bottom-bottom"/>
+      <Button title="确认" titleColor="#6d2e3a" titleFontSize="38" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+  </displayList>
+</component>

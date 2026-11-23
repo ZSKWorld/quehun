@@ -112,6 +112,14 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 
 	private _sevenDay = new SevenDayDO();
 	get sevenDay() { return this._sevenDay; }
+	get intervalActivityId() { return 230143; }
+	get intervalId() {
+		const intervalActivityId = this.intervalActivityId;
+		const data = this._activityInterval[intervalActivityId];
+		if (!data) return -1;
+		if (!this.isRunning(intervalActivityId)) return -1;
+		return data.interval;
+	}
 
 	isRunning(activityId: number) {
 		if ($gameMgr.regionLimited) {

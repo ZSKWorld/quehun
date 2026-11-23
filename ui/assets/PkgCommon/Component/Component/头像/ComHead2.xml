@@ -4,10 +4,10 @@
     <image id="n2_hdeo" name="n2" src="hdeoobbm" fileName="Texture/img_3821.png" pkg="vith2b66" xy="0,0" size="125,125">
       <relation target="" sidePair="width-width,height-height"/>
     </image>
-    <component id="n5_c6l6" name="head" src="q5yiobc3" fileName="Component/Component/头像/ComHead.xml" xy="20,20" size="85,85">
+    <component id="n5_c6l6" name="head" src="q5yiobc3" fileName="Component/Component/头像/ComHead.xml" xy="20,20" size="85,85" touchable="false">
       <relation target="" sidePair="width-width,height-height"/>
     </component>
-    <component id="n4_c6l6" name="frame" src="c6l6obf8" fileName="Component/Component/头像/ComHeadFrame.xml" xy="0,0">
+    <component id="n4_c6l6" name="frame" src="c6l6obf8" fileName="Component/Component/头像/ComHeadFrame.xml" xy="0,0" touchable="false">
       <relation target="" sidePair="width-width,height-height"/>
     </component>
   </displayList>

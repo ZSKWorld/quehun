@@ -93,7 +93,9 @@ export class UIManager extends Notifier implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
-	private get topStackViewId() {
+	get topViewId() { return this._openedStack.peek()?.viewId; }
+
+	get topStackViewId() {
 		for (const viewId of this._openedStack) {
 			if (this.isStackView(viewId))
 				return viewId;
@@ -127,7 +129,8 @@ export class UIManager extends Notifier implements IUIManager {
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
 	}
 
-	isTopView(viewId: EViewID) { return this._openedStack.peek()?.viewId == viewId; }
+	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
+	isTopStackView(viewId: EViewID) { return this.topStackViewId == viewId; }
 
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number) {
 		const targetLayer = this._layerMap[layer];

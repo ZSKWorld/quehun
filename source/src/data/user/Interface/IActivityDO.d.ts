@@ -13,6 +13,8 @@ declare namespace DO {
 		get intervalActivityId(): number;
 		/** 轮换模式id */
 		get intervalId(): number;
+		/** 轮换剩余刷新时间 */
+		get intervalRefreshTime(): number;
 		isRunning(activityId: number): boolean;
 		getTaskInfo(taskId: number): ITaskProgress;
 		getTaskList(activityId: number): ITaskProgress[];

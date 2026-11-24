@@ -1,4 +1,19 @@
 declare namespace DO {
+
+	interface IInviteInfo {
+		time: TimeStamp;
+		nickname: Name;
+		mode: { mode: ID; };
+		room_id: ID;
+		account_id: AccountID;
+	}
+
+	interface IFriendRoomDO {
+		bannedInvite(accountId: AccountID): void;
+		cancelInvite(accountId: AccountID): void;
+		joinInvite(accountId: AccountID): void;
+	}
+
 	interface IFriendDO {
 		/** 好友列表 */
 		get friends(): ProtoObject<IFriend>[];
@@ -8,6 +23,9 @@ declare namespace DO {
 		get applies(): ProtoObject<IResFriendApplyList.IFriendApply>[];
 		/** 已申请的id */
 		get applied(): Set<number>;
+
+		/** 好友邀请数据 */
+		get room(): IFriendRoomDO;
 
 		isFriend(id: number): boolean;
 	}

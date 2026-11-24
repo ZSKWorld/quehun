@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="850,200" designImage="ui://ca43vz0eil8e7plon6" designImageOffsetX="-861" designImageAlpha="0">
+  <displayList>
+    <image id="n0_il8e" name="n0" src="gsi2obe5" fileName="Texture/img_2147.png" xy="0,0" size="850,200"/>
+    <image id="n2_il8e" name="n2" src="gsi2obcw" fileName="Texture/img_764.png" xy="257,151" size="358,31"/>
+    <component id="n7_il8e" name="banned" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="29,68" size="420,66">
+      <Button title="5分钟内不提示此人" titleColor="#fe6959" titleFontSize="42" icon="ui://vx9zwsergsi2obee"/>
+    </component>
+    <component id="n8_il8e" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="475,68" size="161,66">
+      <Button title="取消" titleColor="#b8b5b6" titleFontSize="42" icon="ui://vx9zwsergsi2obee"/>
+    </component>
+    <component id="n9_il8e" name="join" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="661,68" size="161,66">
+      <Button title="加入" titleColor="#e8af71" titleFontSize="42" icon="ui://vx9zwsergsi2obee"/>
+    </component>
+    <text id="n3_il8e" name="name" xy="111,19" pivot="0.5,0.5" size="94,42" font="SimHei" fontSize="30" color="#54a46b" vAlign="middle" singleLine="true" text="Zsk123"/>
+    <text id="n4_il8e" name="n4" xy="325,22" pivot="0.5,0.5" size="228,39" font="SimHei" fontSize="28" color="#b1b2b4" vAlign="middle" singleLine="true" text="邀请你加入友人场"/>
+    <text id="n5_il8e" name="roomInfo" xy="633,20" pivot="0.5,0.5" size="184,42" font="SimHei" fontSize="30" color="#6cbad0" vAlign="middle" singleLine="true" text="四人南:44471"/>
+    <text id="n6_il8e" name="time" xy="344,150" pivot="0.5,0.5" size="184,34" font="SimHei" fontSize="24" color="#b1b2b4" vAlign="middle" singleLine="true" text="3分钟后自动取消"/>
+  </displayList>
+</component>

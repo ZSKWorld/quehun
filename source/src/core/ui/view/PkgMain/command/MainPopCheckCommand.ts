@@ -4,5 +4,6 @@ import { Command } from "../../../../mvc/controller/Command";
 export class MainPopCheckCommand extends Command {
 	override execute(notifyName: string, viewId: EUIViewID): void {
 		if (viewId != EViewID.UIMainView) return;
+
 	}
 }

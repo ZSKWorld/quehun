@@ -184,7 +184,7 @@
     <image id="gsi2obe2" name="img_2213.png" path="/Texture/" exported="true"/>
     <image id="gsi2obe3" name="img_2212.png" path="/Texture/" exported="true"/>
     <image id="gsi2obe4" name="img_2211.png" path="/Texture/" exported="true"/>
-    <image id="gsi2obe5" name="img_2147.png" path="/Texture/" exported="true"/>
+    <image id="gsi2obe5" name="img_2147.png" path="/Texture/" exported="true" scale="9grid" scale9grid="26,42,4,84"/>
     <image id="gsi2obe6" name="img_2146.png" path="/Texture/" exported="true"/>
     <image id="gsi2obe7" name="img_2145.png" path="/Texture/" exported="true"/>
     <image id="gsi2obe8" name="img_2086.png" path="/Texture/" exported="true"/>
@@ -435,6 +435,7 @@
     <image id="z3vjobjo" name="img_3254.png" path="/Texture/" exported="true"/>
     <image id="z3vjobnp" name="img_3255.png" path="/Texture/" exported="true"/>
     <component id="z3vjobns" name="UIInfo.xml" path="/" exported="true"/>
+    <component id="il8eobnt" name="ComFriendInvite.xml" path="/Component/UIFriendRoom/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

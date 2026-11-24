@@ -222,7 +222,7 @@ export class ComMatchModeView extends ComMatchMode {
 						});
 						break;
 					case MatchInfo.interval:
-						data.refreshTime = 6 * 24 * 60 * 60;
+						data.refreshTime = $user.activity.intervalRefreshTime;
 						com.onItemClick(this, this.changeShowType, [EComMatchModeType.MatchMode1, cfgMode.room]);
 						break;
 					case MatchInfo.xiuXianChang:

@@ -3199,7 +3199,7 @@ declare interface INotifyNewFriendApply extends INotify {
  */
 declare interface INotifyClientMessage extends INotify {
 	sender: IPlayerBaseView;
-	type: number;
+	type: EClientMessageType;
 	content: string;
 }
 

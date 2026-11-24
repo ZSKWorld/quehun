@@ -24,6 +24,8 @@ export class SceneManager implements ISceneManager {
 		this._switchLockMask.visible = v;
 	}
 
+	get curScene() { return this._currentType; }
+
 	registerScene(type: ESceneType, sceneCls: Class<IScene>) {
 		if (this._sceneMap.has(type))
 			$logger.error("重复注册scene:", sceneCls, type);

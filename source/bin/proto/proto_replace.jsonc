@@ -26,5 +26,8 @@
     },
     ".lq.SeerBrief": {
         "state": { "type": "EMakaState" }
+    },
+    ".lq.NotifyClientMessage": {
+        "type": { "type": "EClientMessageType" }
     }
 }

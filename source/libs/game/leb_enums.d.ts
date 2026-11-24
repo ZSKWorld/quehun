@@ -92,6 +92,11 @@ declare enum EClientValueType {
 	HF_Yindao_Checked = 3015, // 2404天之杯活动是否展示过新手引导
 
 }
+
+declare enum EClientMessageType {
+	/** 好友邀请 */
+	FriendInvite = 1,
+}
 //#endregion--------------------------------------------------------------------
 
 //#region 麻将牌相关
@@ -901,6 +906,8 @@ declare enum EUIPoolKey {
 	TipInfo = "EUIPoolKey_TipInfo",
 	/** 菜单 */
 	ContextMenu = "EUIPoolKey_ContextMenu",
+	/** 好友邀请 */
+	FriendInvite = "EUIPoolKey_FriendInvite",
 }
 /** 红点检测类型枚举 */
 declare enum ERDTriggerType {
@@ -1057,6 +1064,11 @@ declare enum EGlobalEvent {
 	BindPhoneCompleted = "EGlobalEvent_BindPhoneCompleted",
 	/** 登录成功 */
 	LoginSuccess = "EGlobalEvent_LoginSuccess",
+
+	/** 好友房邀请 */
+	OnFriendInvite = "EGlobalEvent_OnFriendInvite",
+	/** 加入好友房 */
+	OnJoinRoom = "EGlobalEvent_OnJoinRoom",
 
 	//#region logicScene相关
 	/** 场景开始加载 */

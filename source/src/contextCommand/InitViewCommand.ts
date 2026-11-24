@@ -67,6 +67,8 @@ import { ComBackView } from "../core/ui/view/PkgCommon/view/coms/ComBackView";
 import { ComContextMenuView } from "../core/ui/view/PkgCommon/view/coms/ComContextMenuView";
 import { ComCurrencyView } from "../core/ui/view/PkgCommon/view/coms/ComCurrencyView";
 import { ComFlowerLoadingView } from "../core/ui/view/PkgCommon/view/coms/ComFlowerLoadingView";
+import { ComFriendInviteView } from "../core/ui/view/PkgCommon/view/coms/ComFriendInviteView";
+import { ComFriendInviteMediator } from "../core/ui/view/PkgCommon/mediator/coms/ComFriendInviteMediator";
 import { ComGetRewardView } from "../core/ui/view/PkgCommon/view/coms/ComGetRewardView";
 import { ComHeadView } from "../core/ui/view/PkgCommon/view/coms/ComHeadView";
 import { ComHead1View } from "../core/ui/view/PkgCommon/view/coms/ComHead1View";
@@ -291,6 +293,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComContextMenuView, Component, ComContextMenuView);
 		register(EViewID.ComCurrencyView, Component, ComCurrencyView);
 		register(EViewID.ComFlowerLoadingView, Component, ComFlowerLoadingView);
+		register(EViewID.ComFriendInviteView, Component, ComFriendInviteView, ComFriendInviteMediator);
 		register(EViewID.ComGetRewardView, Component, ComGetRewardView);
 		register(EViewID.ComHeadView, Component, ComHeadView);
 		register(EViewID.ComHead1View, Component, ComHead1View);

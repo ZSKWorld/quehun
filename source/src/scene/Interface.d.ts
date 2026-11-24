@@ -16,6 +16,7 @@ declare interface IScene<T = any> extends IObserver {
 }
 
 declare interface ISceneManager {
+	get curScene(): ESceneType;
 	registerScene(type: ESceneType, scene: Class<IScene>): void;
 	registerView(type: ESceneType, view: EUIViewID): void;
 	enterScene(type: ESceneType, data?: any): Promise<void>;

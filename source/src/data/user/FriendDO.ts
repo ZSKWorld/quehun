@@ -1,17 +1,121 @@
 import { BaseDO } from "./BaseDO";
 
+
+class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
+	private _inviteInfos: DO.IInviteInfo[] = [];
+	private _inviteBanned: Record<AccountID, number> = {};
+	private _joinedRoomId: ID = 0;
+
+	private _room: IRoom;
+	private get inRoom() { return this._room != null; }
+
+	bannedInvite(accountId: AccountID) {
+		this._inviteBanned[accountId] = $timeUtil.second;
+		this.cancelInvite(accountId);
+	}
+
+	cancelInvite(accountId: AccountID) {
+		const index = this._inviteInfos.findIndex(v => v.account_id == accountId);
+		if (index == -1) return;
+		this._inviteInfos.splice(index, 1);
+	}
+
+	joinInvite(accountId: AccountID) {
+		const index = this._inviteInfos.findIndex(v => v.account_id == accountId);
+		if (index == -1) return;
+		const info = this._inviteInfos.splice(index, 1)[0];
+		this.joinRoom(info.room_id);
+	}
+
+	createRoom() {
+		if (this.inRoom) return;
+		$netMgr.requests.createRoom();
+	}
+
+	joinRoom(roomId: number) {
+		if (roomId == this._joinedRoomId) return;
+		if (this._room && roomId == this._room.room_id) return;
+		this._joinedRoomId = roomId;
+		$netMgr.requests.joinRoom({
+			room_id: roomId,
+			client_version_string: $gameMgr.clientVersionStr,
+		});
+	}
+
+	addRoomRobot() { }
+
+	roomKickPlayer() { }
+
+	readyPlay() { }
+
+	startRoom() { }
+
+	leaveRoom() {
+		if (!this.inRoom) return;
+		$netMgr.requests.leaveRoom();
+	}
+
+	@InjectNetEvent(ENetMessage.joinRoom)
+	private onJoinRoom(res: IResJoinRoom, req: IReqJoinRoom) {
+		this._joinedRoomId = 0;
+		this._room = $decodeProtoData(res.room);
+		this.dispatch(EGlobalEvent.OnJoinRoom);
+	}
+
+	@InjectNetEvent(ENetMessage.leaveRoom)
+	@InjectNetEvent(ENetNotify.NotifyRoomKickOut)
+	private onNotifyRoomKickOut() {
+		this._room = null;
+	}
+
+	@InjectNetEvent(ENetNotify.NotifyRoomPlayerReady)
+	private onNotifyRoomPlayerReady(res: INotifyRoomPlayerReady) {
+
+	}
+	@InjectNetEvent(ENetNotify.NotifyRoomPlayerUpdate)
+	private onNotifyRoomPlayerUpdate(res: INotifyRoomPlayerUpdate) {
+
+	}
+
+	@InjectNetEvent(ENetNotify.NotifyClientMessage)
+	private onNotifyClientMessage(res: INotifyClientMessage) {
+		if (res.type == EClientMessageType.FriendInvite) {
+			const info: DO.IInviteInfo = JSON.parse(res.content);
+			const bannedTime = this._inviteBanned[info.account_id];
+			if (bannedTime && ($timeUtil.second - bannedTime) < 300)
+				return;
+
+			if (info.room_id == this._joinedRoomId) return;
+			//TODO 匹配中不弹
+			//TODO 匹配成功不弹
+			//TODO 在大会室里不弹
+
+			info.time = $timeUtil.second;
+
+			const index = this._inviteInfos.findIndex(v => v.account_id == info.account_id);
+			if (index >= 0) this._inviteInfos.splice(index, 1);
+			this._inviteInfos.push(info);
+
+			this.dispatch(EGlobalEvent.OnFriendInvite, [info, res.sender]);
+		}
+	}
+}
+
 export class FriendDO extends BaseDO implements DO.IFriendDO {
 	private _friends: ProtoObject<IFriend>[] = [];
 	private _friendMaxCount: number = 0;
 	private _friendCount: number = 0;
 	private _applies: ProtoObject<IResFriendApplyList.IFriendApply>[] = [];
 	private _applied = new Set<number>();
+	private _room = new FriendRoomDO();
 
 	get friends() { return this._friends; }
 	get friendCount() { return this._friendCount; }
 	get friendMaxCount() { return this._friendMaxCount; }
 	get applies() { return this._applies; }
 	get applied() { return this._applied; }
+
+	get room() { return this._room; }
 
 	isFriend(id: number) {
 		return this._friends.find(v => v.base.account_id == id) != null;

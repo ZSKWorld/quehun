@@ -329,7 +329,11 @@ declare interface ITimeUtil {
 	timeFormat2(second: number): string;
 	/** 将秒数转换成 `1小时2分3秒` 的格式 */
 	timeFormat3(second: number): string;
-	/** 将秒数转换成 `x天` 或 `x小时` 或 `x分` 或 `x秒` 的格式 */
+	/**
+	 * 将秒数转换成 `x天` 或 `x小时` 或 `x分` 或 `x秒` 的格式
+	 * @param second 
+	 * @param keepSec 是否显示到`x秒`，默认`true`
+	 */
 	timeFormat4(second: number, keepSec?: boolean): string;
 	/** 将秒数转换成 `刚刚`、`10分钟前`、`x小时前`、`x天前`、`x周前`、`x月前` 的格式 */
 	timeFormat5(second: number): string;

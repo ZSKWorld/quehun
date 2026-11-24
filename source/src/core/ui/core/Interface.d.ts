@@ -107,6 +107,11 @@ declare interface IDynamicResManager {
 }
 
 declare interface IUIManager {
+	/** 顶层页面id */
+	get topViewId(): EUIViewID;
+	/** 顶层非弹窗页面id */
+	get topStackViewId(): EUIViewID;
+
 	/**
 	 * 添加对象
 	 * @param obj 要添加的对象
@@ -116,8 +121,11 @@ declare interface IUIManager {
 	 */
 	addToLayer(obj: fgui.GObject, layer: ELayer, index?: number): void;
 
-	/** 是否是最顶层ui */
+	/** 是否是最顶层页面 */
 	isTopView(viewId: EViewID): boolean;
+
+	/** 是否是顶层非弹窗页面 */
+	isTopStackView(viewId: EViewID): boolean;
 
 	/**
 	 * 打开页面

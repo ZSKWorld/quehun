@@ -108,6 +108,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		mmo_data: []
 	};
 	private _activityBuff: KeyMap<ProtoObject<IActivityBuffData>> = {};
+	private _intervalUpdateTime: number = 0;
 	private _activityInterval: KeyMap<ProtoObject<IResFetchActivityInterval.IActivityInterval>> = {};
 
 	private _sevenDay = new SevenDayDO();
@@ -119,6 +120,19 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		if (!data) return -1;
 		if (!this.isRunning(intervalActivityId)) return -1;
 		return data.interval;
+	}
+	get intervalRefreshTime() {
+		const time1 = 3 * 3600 + 3 * 24 * 3600;
+		const time2 = 7 * 24 * 3600;
+		let t = $timeUtil.second + time1;
+		let _update_time = this._intervalUpdateTime + time1;
+
+		if (Math.floor(_update_time / time2) != Math.floor(t / time2)) {
+			// 如果距离上次刷新跨周了，则直接
+			return 0;
+		}
+		t = time2 - t % time2;
+		return t;
 	}
 
 	isRunning(activityId: number) {
@@ -221,6 +235,7 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 		$decodeProtoData(res.result).forEach(v => {
 			activityInterval[v.activity_id] = v;
 		});
+		this._intervalUpdateTime = $timeUtil.second;
 		this.dispatch(EUserEvent.OnActivityIntervalChanged);
 	}
 

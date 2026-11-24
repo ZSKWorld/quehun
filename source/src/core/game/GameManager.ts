@@ -1,9 +1,5 @@
 import { Observer } from "../mvc/provider/Observer";
 
-const enum EClientMessageType {
-	RoomInvite = 1,
-}
-
 @Singleton
 export class GameManager extends Observer implements IGameManager {
 	private _inDmm = false;
@@ -163,13 +159,6 @@ export class GameManager extends Observer implements IGameManager {
 	@InjectNetEvent(ENetMessage.oauth2Login)
 	private onLogin() {
 		$netMgr.requests.loginBeat({ contract: this.p2 });
-	}
-
-	@InjectNetEvent(ENetNotify.NotifyClientMessage)
-	private onNotifyClientMessage(data: INotifyClientMessage) {
-		if (data.type == EClientMessageType.RoomInvite) {
-			$logger.error("有邀请", data);
-		}
 	}
 
 	@InjectNetEvent(ENetMessage.fetchServerTime)

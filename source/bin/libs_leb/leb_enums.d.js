@@ -85,6 +85,10 @@ EClientValueType = {
 	HF_Yindao_Checked: 3015,
 }
 
+EClientMessageType = {
+	FriendInvite: 1,
+}
+
 EMjpType = {
 	P: "p",
 	M: "m",
@@ -612,6 +616,7 @@ EVoiceType = {
 EUIPoolKey = {
 	TipInfo: "EUIPoolKey_TipInfo",
 	ContextMenu: "EUIPoolKey_ContextMenu",
+	FriendInvite: "EUIPoolKey_FriendInvite",
 }
 
 ERDTriggerType = {
@@ -715,6 +720,7 @@ EGlobalEvent = {
 	OnViewCloseEnd: "EGlobalEvent_OnViewCloseEnd",
 	BindPhoneCompleted: "EGlobalEvent_BindPhoneCompleted",
 	LoginSuccess: "EGlobalEvent_LoginSuccess",
+	OnFriendInvite: "EGlobalEvent_OnFriendInvite",
 	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
 	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
 	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",

@@ -69,6 +69,7 @@ declare enum EViewID {
 	ComContextMenuView = "ComContextMenuView",
 	ComCurrencyView = "ComCurrencyView",
 	ComFlowerLoadingView = "ComFlowerLoadingView",
+	ComFriendInviteView = "ComFriendInviteView",
 	ComGetRewardView = "ComGetRewardView",
 	ComHead1View = "ComHead1View",
 	ComHead2View = "ComHead2View",

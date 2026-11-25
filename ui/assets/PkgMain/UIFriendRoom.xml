@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" designImage="ui://ca43vz0ejdu67plne1" designImageAlpha="0">
+  <displayList>
+    <loader id="n15_il8e" name="n15" xy="0,0" size="1920,1080" visible="false" url="ui://ca43vz0eil8e7plon7" fill="scaleFree"/>
+    <component id="n0_9c0b" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
+      <property target="title" propertyId="0" value="友人场"/>
+    </component>
+    <image id="n23_il8e" name="n23" src="puubobf7" fileName="Texture/img_2845.png" xy="719,49" size="234,82" group="n25_il8e"/>
+    <image id="n24_il8e" name="n24" src="puubobf7" fileName="Texture/img_2845.png" xy="1187,49" group="n25_il8e" scale="-1,1"/>
+    <text id="n26_il8e" name="name" xy="751,61" pivot="0.5,0.5" size="320,64" group="n25_il8e" font="ui://vx9zwserrpakobex" fontSize="48" color="#e2bc92" vAlign="middle" leading="0" singleLine="true" text="房间号：29804"/>
+    <component id="n28_il8e" name="share" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1068,41" group="n25_il8e">
+      <Button icon="ui://vx9zwseril8eobnz"/>
+    </component>
+    <component id="n11_z3vj" name="rule" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1598,32" size="121,119" group="n25_il8e">
+      <Button icon="ui://vith2b66vwgmc"/>
+    </component>
+    <component id="n29_il8e" name="yizhong" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1756,31" size="124,120" group="n25_il8e">
+      <Button icon="ui://vith2b66il8eobjy"/>
+    </component>
+    <group id="n25_il8e" name="n25" xy="719,31" size="1161,120" advanced="true"/>
+    <component id="n13_z3vj" name="deco" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="630,949" size="296,106" group="n30_il8e">
+      <Button title="调整装扮" titleColor="#3a3030" titleFontSize="48" icon="ui://vx9zwserz3vjobnp"/>
+    </component>
+    <component id="n16_il8e" name="start" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="994,949" size="296,106" group="n30_il8e">
+      <Button title="开始" titleColor="#3a3030" titleFontSize="48" icon="ui://vx9zwserz3vjobjo"/>
+    </component>
+    <component id="n17_il8e" name="cancel" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="994,949" size="296,106" group="n30_il8e">
+      <Button title="取消" titleColor="#3a3030" titleFontSize="48" icon="ui://vx9zwseril8eobnu"/>
+    </component>
+    <component id="n18_il8e" name="ready" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="994,949" size="296,106" group="n30_il8e">
+      <Button title="准备" titleColor="#3a3030" titleFontSize="48" icon="ui://vx9zwseril8eobnv"/>
+    </component>
+    <group id="n30_il8e" name="n30" xy="630,949" size="660,106" advanced="true"/>
+    <component id="n19_il8e" name="player0" src="il8eobju" fileName="Component/UIFriendRoom/ComFriendRoomItem.xml" xy="70,143"/>
+    <component id="n20_il8e" name="player1" src="il8eobju" fileName="Component/UIFriendRoom/ComFriendRoomItem.xml" xy="457,143"/>
+    <component id="n21_il8e" name="player2" src="il8eobju" fileName="Component/UIFriendRoom/ComFriendRoomItem.xml" xy="838,143"/>
+    <component id="n22_il8e" name="player3" src="il8eobju" fileName="Component/UIFriendRoom/ComFriendRoomItem.xml" xy="1217,143"/>
+    <image id="n31_fewx" name="n31" src="fewxobo2" fileName="Texture/img_349.png" pkg="vx9zwser" xy="1607,171" size="268,752" group="n42_fewx"/>
+    <image id="n33_fewx" name="n33" src="fewxobo0" fileName="Texture/img_1268.png" pkg="vx9zwser" xy="1614,301" group="n42_fewx"/>
+    <image id="n34_fewx" name="n34" src="fewxobo0" fileName="Texture/img_1268.png" pkg="vx9zwser" xy="1614,903" pivot="0.5,0.5" group="n42_fewx" scale="1,-1"/>
+    <image id="n32_fewx" name="n32" src="fewxobjz" fileName="Texture/img_3304.png" xy="1611,176" size="258,124" group="n42_fewx"/>
+    <list id="n37_fewx" name="rules" xy="1612,322" size="255,571" group="n42_fewx" overflow="scroll" lineGap="4" defaultItem="ui://vith2b66fewxobk0">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <text id="n35_fewx" name="title" xy="1676,184" pivot="0.5,0.5" size="124,42" group="n42_fewx" fontSize="30" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="四人麻将"/>
+    <text id="n36_fewx" name="titleValue" xy="1683,220" pivot="0.5,0.5" size="106,75" group="n42_fewx" fontSize="30" color="#ced9ed" align="center" vAlign="middle" leading="-4" text="半庄&#xA;5+20秒"/>
+    <group id="n42_fewx" name="n42" xy="1607,171" size="268,752" advanced="true"/>
+  </displayList>
+  <transition name="show" options="6" frameRate="60">
+    <item time="0" type="Alpha" target="n19_il8e" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="0" type="Alpha" target="n20_il8e" value="0"/>
+    <item time="0" type="Alpha" target="n21_il8e" value="0"/>
+    <item time="0" type="Alpha" target="n22_il8e" value="0"/>
+    <item time="0" type="Alpha" target="n25_il8e" tween="true" startValue="0" endValue="1" duration="12" ease="Linear"/>
+    <item time="0" type="Alpha" target="n30_il8e" value="0"/>
+    <item time="0" type="Alpha" target="n42_fewx" value="0"/>
+    <item time="0" type="XY" target="n19_il8e" tween="true" startValue="120,-" endValue="70,-" duration="8" ease="Linear"/>
+    <item time="0" type="XY" target="n20_il8e" value="507,-"/>
+    <item time="0" type="XY" target="n21_il8e" value="888,-"/>
+    <item time="0" type="XY" target="n22_il8e" value="1267,-"/>
+    <item time="0" type="XY" target="n25_il8e" tween="true" startValue="-,-19" endValue="-,31" duration="12" ease="Linear"/>
+    <item time="0" type="XY" target="n30_il8e" value="-,999"/>
+    <item time="0" type="XY" target="n42_fewx" value="1607,171"/>
+    <item time="3" type="Alpha" target="n20_il8e" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="3" type="XY" target="n20_il8e" tween="true" startValue="507,-" endValue="457,-" duration="8" ease="Linear"/>
+    <item time="6" type="Alpha" target="n21_il8e" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="6" type="XY" target="n21_il8e" tween="true" startValue="888,-" endValue="838,-" duration="8" ease="Linear"/>
+    <item time="8" type="Alpha" target="n19_il8e" value="1"/>
+    <item time="8" type="XY" target="n19_il8e" value="70,-"/>
+    <item time="9" type="Alpha" target="n22_il8e" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="9" type="XY" target="n22_il8e" tween="true" startValue="1267,-" endValue="1217,-" duration="8" ease="Linear"/>
+    <item time="11" type="Alpha" target="n20_il8e" value="1"/>
+    <item time="11" type="XY" target="n20_il8e" value="457,-"/>
+    <item time="12" type="Alpha" target="n25_il8e" value="1"/>
+    <item time="12" type="Alpha" target="n42_fewx" tween="true" startValue="0" endValue="1" duration="8" ease="Linear"/>
+    <item time="12" type="XY" target="n25_il8e" value="-,31"/>
+    <item time="12" type="XY" target="n42_fewx" tween="true" startValue="1657,-" endValue="1607,-" duration="8" ease="Linear"/>
+    <item time="14" type="Alpha" target="n21_il8e" value="1"/>
+    <item time="14" type="XY" target="n21_il8e" value="838,-"/>
+    <item time="15" type="Alpha" target="n30_il8e" tween="true" startValue="0" endValue="1" duration="7" ease="Linear"/>
+    <item time="15" type="XY" target="n30_il8e" tween="true" startValue="-,999" endValue="-,949" duration="7" ease="Linear"/>
+    <item time="17" type="Alpha" target="n22_il8e" value="1"/>
+    <item time="17" type="XY" target="n22_il8e" value="1217,-"/>
+    <item time="20" type="Alpha" target="n42_fewx" value="1"/>
+    <item time="20" type="XY" target="n42_fewx" value="1607,-"/>
+    <item time="22" type="Alpha" target="n30_il8e" value="1"/>
+    <item time="22" type="XY" target="n30_il8e" value="-,949"/>
+  </transition>
+</component>

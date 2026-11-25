@@ -6,8 +6,29 @@ class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
 	private _inviteBanned: Record<AccountID, number> = {};
 	private _joinedRoomId: ID = 0;
 
-	private _room: IRoom;
-	private get inRoom() { return this._room != null; }
+	private _room: IRoom = null;
+	get room() { return this._room; }
+	get inRoom() { return this._room != null; }
+
+	get getOpeningFriendModes() {
+		const list: ISheetData_Desktop_FriendRoom[] = [];
+		const openingRoom: Record<number, number> = {};
+		$cfgMgr.activity.activity_room.forEach((value) => {
+			if ($user.activity.isRunning(value.activity_id)) {
+				openingRoom[value.friend_room_id] = 1;
+			}
+		});
+		$cfgMgr.desktop.friend_room.forEach((value) => {
+			if (!value.pre_rule) {
+				list.push(value);
+			} else if (openingRoom[value.id]) {
+				list.push(value);
+			}
+		});
+
+		list.sort((a, b) => a.sort - b.sort);
+		return list;
+	}
 
 	bannedInvite(accountId: AccountID) {
 		this._inviteBanned[accountId] = $timeUtil.second;
@@ -27,54 +48,70 @@ class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
 		this.joinRoom(info.room_id);
 	}
 
-	createRoom() {
-		if (this.inRoom) return;
-		$netMgr.requests.createRoom();
-	}
-
 	joinRoom(roomId: number) {
 		if (roomId == this._joinedRoomId) return;
 		if (this._room && roomId == this._room.room_id) return;
-		this._joinedRoomId = roomId;
-		$netMgr.requests.joinRoom({
-			room_id: roomId,
-			client_version_string: $gameMgr.clientVersionStr,
-		});
+
+		const reqJoinRoom = (res?: IResCommon) => {
+			if (res?.error) return;
+			this._joinedRoomId = roomId;
+			$netMgr.requests.joinRoom({
+				room_id: roomId,
+				client_version_string: $gameMgr.clientVersionStr,
+			}).then(() => (this._joinedRoomId = 0));
+		};
+
+		if (this._room) {
+			$netMgr.requests.leaveRoom().then(reqJoinRoom);
+		} else {
+			reqJoinRoom();
+		}
 	}
 
-	addRoomRobot() { }
-
-	roomKickPlayer() { }
-
-	readyPlay() { }
-
-	startRoom() { }
-
-	leaveRoom() {
-		if (!this.inRoom) return;
-		$netMgr.requests.leaveRoom();
+	@InjectNetEvent(ENetMessage.createRoom)
+	private onCreateRoom(res: IResCreateRoom, req: IReqCreateRoom) {
+		this._joinedRoomId = 0;
+		this._room = $decodeProtoData(res.room);
+		this.processRoomData();
 	}
 
 	@InjectNetEvent(ENetMessage.joinRoom)
 	private onJoinRoom(res: IResJoinRoom, req: IReqJoinRoom) {
 		this._joinedRoomId = 0;
 		this._room = $decodeProtoData(res.room);
+		this.processRoomData();
 		this.dispatch(EGlobalEvent.OnJoinRoom);
 	}
 
 	@InjectNetEvent(ENetMessage.leaveRoom)
-	@InjectNetEvent(ENetNotify.NotifyRoomKickOut)
-	private onNotifyRoomKickOut() {
+	private onLeaveRoom() {
 		this._room = null;
 	}
 
 	@InjectNetEvent(ENetNotify.NotifyRoomPlayerReady)
 	private onNotifyRoomPlayerReady(res: INotifyRoomPlayerReady) {
-
+		if (res.ready)
+			this._room.ready_list.pushUnique(res.account_id);
+		else
+			this._room.ready_list.remove(res.account_id);
 	}
+
 	@InjectNetEvent(ENetNotify.NotifyRoomPlayerUpdate)
 	private onNotifyRoomPlayerUpdate(res: INotifyRoomPlayerUpdate) {
+		res = $decodeProtoData(res);
 
+		const room = this._room;
+		room.owner_id = res.owner_id;
+		room.persons = res.player_list;
+		room.robots = res.robots;
+		room.positions = res.positions;
+
+		this.processRoomData();
+	}
+
+	@InjectNetEvent(ENetNotify.NotifyRoomKickOut)
+	private onNotifyRoomKickOut() {
+		this._room = null;
 	}
 
 	@InjectNetEvent(ENetNotify.NotifyClientMessage)
@@ -98,6 +135,23 @@ class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
 
 			this.dispatch(EGlobalEvent.OnFriendInvite, [info, res.sender]);
 		}
+	}
+
+	private processRoomData() {
+		if (!this._room) return;
+		const { owner_id, mode, robots, ready_list, persons } = this._room;
+		const oldReadyList = ready_list.slice();
+		ready_list.clear();
+		ready_list.pushUnique(owner_id);
+		oldReadyList.forEach(v => {
+			const p = persons.find(pv => pv.account_id == v);
+			if (!p) return;
+			ready_list.pushUnique(v);
+		});
+		robots.forEach(v => {
+			v.nickname = $lang(mode.detail_rule.ai_level == 2 ? 2004 : 2003);
+			ready_list.pushUnique(v.account_id);
+		});
 	}
 }
 

@@ -65,9 +65,9 @@ export class LobbyBgManager extends Observer {
 			case EViewID.UIRecordView:
 			case EViewID.UIRechargeView:
 			case EViewID.UIShopView:
-				newBg = this._indoor; break;
+			case EViewID.UIFriendRoomView: newBg = this._indoor; break;
+			default: return;
 		}
-		if (!newBg) return;
 		const curBg = this._curBg;
 		if (curBg && newBg == curBg) return;
 

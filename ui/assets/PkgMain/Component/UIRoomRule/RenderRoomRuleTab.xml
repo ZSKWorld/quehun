@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="306,97" pivot="0.5,0.5" extention="Button">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n0_fewx" name="icon" xy="0,0" size="306,97" url="ui://vith2b66fewxobk4" align="center" vAlign="middle">
+      <gearIcon controller="button" pages="0" values="ui://vith2b66fewxobk4" default="ui://vith2b66fewxobk3"/>
+    </loader>
+    <text id="n4_fewx" name="title" xy="72,27" pivot="0,0.5" size="148,49" font="ui://vx9zwserrpakobeu" fontSize="36" color="#ffffff" vAlign="middle" singleLine="true" text="宝牌双刃">
+      <gearColor controller="button" pages="1" values="#000000,#000000" default="#ffffff,#000000"/>
+    </text>
+  </displayList>
+  <Button mode="Check" downEffect="scale" downEffectValue="0.95"/>
+</component>

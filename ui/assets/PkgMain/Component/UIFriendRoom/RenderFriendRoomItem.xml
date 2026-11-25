@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="255,70">
+  <displayList>
+    <image id="n0_fewx" name="n0" src="fewxobo1" fileName="Texture/img_322.png" pkg="vx9zwser" xy="0,0" size="255,70"/>
+    <text id="n1_fewx" name="title" xy="74,7" pivot="0.5,0.5" size="108,36" fontSize="26" color="#ced9ed" align="center" vAlign="middle" singleLine="true" text="初始点数"/>
+    <text id="n2_fewx" name="value" xy="85,33" pivot="0.5,0.5" size="85,38" fontSize="27" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="25000"/>
+  </displayList>
+</component>

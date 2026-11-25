@@ -1,12 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="48">
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0eii8i7plol0" designImageAlpha="0">
+  <controller name="type" pages="0,,1," selected="0"/>
   <displayList>
-    <component id="n1_ii8i" name="bg" src="w29kob8e" fileName="Component/Button/BtnIconFitNoScale.xml" pkg="vx9zwser" xy="-1040,-585" size="4000,2250" aspect="true" alpha="0.5">
-      <Button icon="ui://vx9zwserieavob7l"/>
+    <component id="n9_fewx" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
+    <loader id="n13_fewx" name="n13" xy="0,60" size="1920,959" url="ui://vith2b66fewxobk2" fill="scaleFree"/>
+    <image id="n21_fewx" name="n21" src="fewxobk6" fileName="Texture/img_400.png" xy="386,132" size="680,85" group="n25_fewx"/>
+    <image id="n20_fewx" name="n20" src="fewxobk6" fileName="Texture/img_400.png" xy="1069,132" size="680,85" group="n25_fewx"/>
+    <image id="n22_fewx" name="n22" src="fewxobk5" fileName="Texture/img_3623.png" xy="1064,127" group="n25_fewx">
+      <gearDisplay controller="type" pages="1"/>
+    </image>
+    <image id="n18_fewx" name="n18" src="fewxobk5" fileName="Texture/img_3623.png" xy="381,127" group="n25_fewx">
+      <gearDisplay controller="type" pages="0"/>
+    </image>
+    <component id="n19_fewx" name="detail" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="386,132" size="680,81" group="n25_fewx"/>
+    <component id="n34_fewx" name="rule" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1069,132" size="680,81" group="n25_fewx"/>
+    <text id="n23_fewx" name="n23" xy="639,143" pivot="0.5,0.5" size="164,54" group="n25_fewx" font="ui://vx9zwserrpakobeu" fontSize="40" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="图文简介">
+      <gearXY controller="type" pages="1" values="639,147" default="639,143"/>
+      <gearColor controller="type" pages="1" values="#68717a,#000000" default="#ffffff,#000000"/>
+    </text>
+    <text id="n24_fewx" name="n24" xy="1326,147" pivot="0.5,0.5" size="164,54" group="n25_fewx" font="ui://vx9zwserrpakobeu" fontSize="40" color="#68717a" align="center" vAlign="middle" singleLine="true" text="详细规则">
+      <gearXY controller="type" pages="1" values="1326,143" default="1326,147"/>
+      <gearColor controller="type" pages="1" values="#ffffff,#000000" default="#68717a,#000000"/>
+    </text>
+    <group id="n25_fewx" name="n25" xy="381,127" size="1373,90"/>
+    <text id="n14_fewx" name="n14" xy="65,118" pivot="0,0.5" size="268,86" font="ui://vx9zwserrpakobeu" fontSize="66" color="#e2ba92" vAlign="middle" singleLine="true" text="规则说明"/>
+    <image id="n15_fewx" name="n15" src="fewxobk7" fileName="Texture/img_1490.png" xy="295,213" size="1546,781"/>
+    <loader id="n27_fewx" name="detailImg" xy="417,278" size="1300,645" group="n33_fewx" touchable="false" fill="scaleFree"/>
+    <component id="n31_fewx" name="left" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="336,542" size="80,120" group="n33_fewx" scale="-1,1">
+      <Button icon="ui://vith2b66fewxobk8"/>
     </component>
-    <component id="n2_ii8i" name="n2" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="452,171" size="1015,737"/>
-    <component id="n8_ii8i" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1354,214" size="70,70">
+    <component id="n29_fewx" name="right" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1721,542" size="80,120" group="n33_fewx">
+      <Button icon="ui://vith2b66fewxobk8"/>
+    </component>
+    <list id="n32_fewx" name="points" xy="471,941" pivot="0.5,0.5" size="1200,50" group="n33_fewx" layout="row" overflow="scroll" defaultItem="ui://vith2b66fewxobk9" align="center" autoClearItems="true">
+      <item/>
+      <item/>
+    </list>
+    <group id="n33_fewx" name="n33" xy="336,278" size="1465,713" advanced="true">
+      <gearDisplay controller="type" pages="0"/>
+    </group>
+    <component id="n8_ii8i" name="close" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="1788,102" size="70,70">
       <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <list id="n38_fewx" name="tab" xy="52,246" size="306,710" overflow="scroll" defaultItem="ui://vith2b66fewxobka" autoClearItems="true">
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+      <item/>
+    </list>
+    <component id="n39_fewx" name="ruleTxt" src="j0ddob7i" fileName="Component/Component/LabelConfirm.xml" pkg="vx9zwser" xy="385,262" size="1365,676">
+      <gearDisplay controller="type" pages="1"/>
+      <Label title="-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时&#xA;-打牌时"/>
     </component>
   </displayList>
 </component>

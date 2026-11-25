@@ -9,9 +9,13 @@ declare namespace DO {
 	}
 
 	interface IFriendRoomDO {
+		get room(): IRoom;
+		get inRoom(): boolean;
+		get getOpeningFriendModes(): ISheetData_Desktop_FriendRoom[];
 		bannedInvite(accountId: AccountID): void;
 		cancelInvite(accountId: AccountID): void;
 		joinInvite(accountId: AccountID): void;
+		joinRoom(roomId: number): void;
 	}
 
 	interface IFriendDO {

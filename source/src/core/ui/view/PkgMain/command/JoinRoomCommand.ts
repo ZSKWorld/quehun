@@ -1,16 +1,13 @@
 import { Command } from "../../../../mvc/controller/Command";
 
 export class JoinRoomCommand extends Command {
-	override execute(notifyName: string): void {
+	override async execute(notifyName: string) {
 		if ($sceneMgr.curScene != ESceneType.MainScene) {
 			$sceneMgr.enterScene(ESceneType.MainScene).then(() => {
-				// $uiMgr.openView(EViewID.)
+				$uiMgr.openView(EViewID.UIFriendRoomView, null, EViewOpenType.Hide);
 			});
 		} else {
-			while (!$uiMgr.isTopStackView(EViewID.UIMainView)) {
-				$uiMgr.closeView($uiMgr.topStackViewId);
-			}
-			// $uiMgr.openView();
+			$uiMgr.openView(EViewID.UIFriendRoomView, null, EViewOpenType.Hide);
 		}
 
 	}

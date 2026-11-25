@@ -96,3 +96,8 @@ declare interface IUIRecordShareData {
 	type: 0 | 1,
 	uuid?: string;
 }
+
+declare interface IUIRoomRuleData {
+	targetId?: number;
+	modeIds?: number[];
+}

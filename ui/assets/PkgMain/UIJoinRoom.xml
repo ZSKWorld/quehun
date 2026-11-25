@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0egiq17plom8" designImageAlpha="0">
+  <displayList>
+    <component id="n12_pwg4" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="0,0" size="1920,1080" aspect="true" alpha="0.5"/>
+    <component id="n5_hdeo" name="n5" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" pkg="vx9zwser" xy="576,166" size="768,747"/>
+    <component id="n6_hdeo" name="close" src="mj5kb6u" fileName="Component/Button/BtnIcon.xml" pkg="vx9zwser" xy="1233,200" size="70,70">
+      <Button icon="ui://vx9zwserj0ddob7b"/>
+    </component>
+    <component id="n14_giq1" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="861,788" size="200,82">
+      <Button title="确认" titleColor="#6d2e3a" titleFontSize="42" icon="ui://vx9zwserj0ddob73"/>
+    </component>
+    <image id="n25_fewx" name="n25" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="708,400" size="162,84" alpha="0.5"/>
+    <image id="n42_fewx" name="n42" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="875,400" size="162,84" alpha="0.5"/>
+    <image id="n45_fewx" name="n45" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="1042,400" size="162,84" alpha="0.5"/>
+    <image id="n48_fewx" name="n48" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="708,489" size="162,84" alpha="0.5"/>
+    <image id="n51_fewx" name="n51" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="875,489" size="162,84" alpha="0.5"/>
+    <image id="n54_fewx" name="n54" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="1042,489" size="162,84" alpha="0.5"/>
+    <image id="n57_fewx" name="n57" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="708,578" size="162,84" alpha="0.5"/>
+    <image id="n60_fewx" name="n60" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="875,578" size="162,84" alpha="0.5"/>
+    <image id="n63_fewx" name="n63" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="1042,578" size="162,84" alpha="0.5"/>
+    <image id="n66_fewx" name="n66" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="708,667" size="162,84" alpha="0.5"/>
+    <image id="n69_fewx" name="n69" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="875,667" size="162,84" alpha="0.5"/>
+    <image id="n72_fewx" name="n72" src="hraoobj2" fileName="Texture/img_2113.png" pkg="vx9zwser" xy="1042,667" size="162,84" alpha="0.5"/>
+    <image id="n26_fewx" name="n26" src="fewxobo3" fileName="Texture/img_2111.png" pkg="vx9zwser" xy="1054,672"/>
+    <image id="n75_fewx" name="n75" src="mde1b7g" fileName="Texture/img_716.png" pkg="vx9zwser" xy="727,296" size="456,80"/>
+    <text id="n11_hdeo" name="n11" xy="957,234" pivot="0.5,0.5" anchor="true" size="196,64" font="ui://vx9zwserrpakobeu" fontSize="48" color="#e8af71" align="center" vAlign="middle" leading="0" singleLine="true" text="加入房间"/>
+    <text id="n38_fewx" name="n38" xy="776,402" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="1"/>
+    <text id="n43_fewx" name="n43" xy="942,402" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="2"/>
+    <text id="n46_fewx" name="n46" xy="1109,402" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="3"/>
+    <text id="n49_fewx" name="n49" xy="775,491" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="4"/>
+    <text id="n52_fewx" name="n52" xy="942,491" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="5"/>
+    <text id="n55_fewx" name="n55" xy="1109,491" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="6"/>
+    <text id="n58_fewx" name="n58" xy="775,580" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="7"/>
+    <text id="n61_fewx" name="n61" xy="942,580" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="8"/>
+    <text id="n64_fewx" name="n64" xy="1109,580" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="9"/>
+    <text id="n40_fewx" name="n40" xy="741,674" pivot="0.5,0.5" size="94,60" font="SimHei" fontSize="45" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="清空"/>
+    <text id="n70_fewx" name="n70" xy="942,669" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="0"/>
+    <text id="n76_fewx" name="input" xy="733,302" pivot="0,0.5" size="444,70" font="SimHei" fontSize="50" color="#ffffff" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="输入房间号" maxLength="5" restrict="0-9"/>
+    <component id="n87_fewx" name="num0" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,667" size="162,84"/>
+    <component id="n78_fewx" name="num1" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="708,400" size="162,84"/>
+    <component id="n89_fewx" name="num2" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,400" size="162,84"/>
+    <component id="n79_fewx" name="num3" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1042,400" size="162,84"/>
+    <component id="n80_fewx" name="num4" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="708,489" size="162,84"/>
+    <component id="n81_fewx" name="num5" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,489" size="162,84"/>
+    <component id="n82_fewx" name="num6" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1042,489" size="162,84"/>
+    <component id="n83_fewx" name="num7" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="708,578" size="162,84"/>
+    <component id="n84_fewx" name="num8" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,578" size="162,84"/>
+    <component id="n85_fewx" name="num9" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1042,578" size="162,84"/>
+    <component id="n86_fewx" name="clear" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="708,667" size="162,84"/>
+    <component id="n88_fewx" name="delete" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="1042,667" size="162,84"/>
+  </displayList>
+</component>

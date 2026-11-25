@@ -974,6 +974,9 @@ ResPath = {
 	},
 
 	ETexturePath: {
+		PNG_Img_4032: "res/texture/img_4032.png",
+		PNG_Img_4034: "res/texture/img_4034.png",
+		PNG_Img_4035: "res/texture/img_4035.png",
 		PNG_Img_4140: "res/texture/img_4140.png",
 		PNG_Img_4141: "res/texture/img_4141.png",
 		PNG_Img_4188: "res/texture/img_4188.png",

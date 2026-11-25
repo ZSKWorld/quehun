@@ -17,7 +17,8 @@ export class UICreateRoomMediator extends MediatorBase<UICreateRoomView, IUICrea
 	}
 
 	private onBtnCreateClick() {
-
+		// $netMgr.requests.createRoom
+		this.openView(EViewID.UIFriendRoomView, null, EViewOpenType.Close);
 	}
 
 }

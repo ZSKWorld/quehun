@@ -73,7 +73,7 @@ export class ComMatchModeView extends ComMatchMode {
 			if (createRoom)
 				com.onItemClick(this, () => this.openView(EViewID.UICreateRoomView, this.data, EViewOpenType.Hide));
 			else
-				com.onItemClick(this, () => $confirmSma(2, "加入房间"));
+				com.onItemClick(this, () => this.openView(EViewID.UIJoinRoomView));
 			com_contentFriend.addChild(com);
 		}
 
@@ -111,7 +111,6 @@ export class ComMatchModeView extends ComMatchMode {
 			txt_title, ctrl_type, trans_in, trans_out, trans_titleIn, trans_titleOut, btn_rule,
 			com_contentRank, com_contentMatch, com_contentFriend, com_contentMode
 		} = this;
-		btn_rule.visible = type == EComMatchModeType.MatchMode;
 		switch (type) {
 			case EComMatchModeType.Mode:
 				$uiUtil.playTrans(trans_titleOut);
@@ -133,6 +132,7 @@ export class ComMatchModeView extends ComMatchMode {
 					await this.transOutContent(com_contentMode);
 				}
 				ctrl_type.selectedIndex = type;
+				btn_rule.visible = type == EComMatchModeType.MatchMode;
 				txt_title.langText(TitleLang[type]);
 				switch (type) {
 					case EComMatchModeType.RankMode: await this.transInContent(com_contentRank); break;
@@ -151,6 +151,7 @@ export class ComMatchModeView extends ComMatchMode {
 					case EComMatchModeType.MatchMode: await this.transOutContent(com_contentMatch); break;
 					case EComMatchModeType.FriendMode: await this.transOutContent(com_contentFriend); break;
 				}
+				btn_rule.visible = false;
 				ctrl_type.selectedIndex = 4;
 				this.refreshModeItems(mode);
 				await this.transInContent(com_contentMode);

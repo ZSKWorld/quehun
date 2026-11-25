@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="38,50" extention="Button">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n0_fewx" name="icon" xy="0,0" size="38,50" url="ui://vx9zwserfewxobo5" align="center" vAlign="middle">
+      <gearIcon controller="button" pages="0" values="ui://vx9zwserfewxobo5" default="ui://vx9zwserfewxobo4"/>
+    </loader>
+  </displayList>
+  <Button mode="Check"/>
+</component>

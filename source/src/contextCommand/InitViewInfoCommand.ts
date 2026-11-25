@@ -27,6 +27,7 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIChangeSkinView]: [],
 			[EViewID.UIVisitView]: [],
 			[EViewID.UICreateRoomView]: [],
+			[EViewID.UIFriendRoomView]: [],
 
 			[EViewID.UIGetRewardView]: [UIMiddle, CPopup],
 			[EViewID.UIItemDetailView]: [UIMiddle, CPopup],
@@ -46,6 +47,7 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIMakaAnalysisView]: [UIMiddle, CPopup],
 			[EViewID.UIRecordShareView]: [UIMiddle, CPopup],
 			[EViewID.UIRoomRuleView]: [UIMiddle, CPopup],
+			[EViewID.UIJoinRoomView]: [UIMiddle, CPopup],
 
 			[EViewID.UITestBezierView]: [UITop],
 			[EViewID.UITestMainView]: [UITop],

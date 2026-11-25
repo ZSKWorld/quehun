@@ -1,7 +1,25 @@
 import { Notifier } from "../../mvc/provider/Notifier";
 
+
+
+const isStackView = (viewId: EViewID) => {
+	const category = $facade.getViewCategory(viewId);
+	return category == EViewCategory.FullScreen;
+};
+
 class UIStack {
 	private _mediators: IMediator[] = [];
+
+	get viewCount() { return this._mediators.length; }
+	get stackViewCount() {
+		let count = 0;
+		const views = this._mediators;
+		for (let i = 0, n = views.length; i < n; i++) {
+			if (isStackView(views[i].viewId))
+				count++;
+		}
+		return count;
+	}
 
 	push(view: IMediator) {
 		this._mediators.unshift(view);
@@ -93,11 +111,11 @@ export class UIManager extends Notifier implements IUIManager {
 		this._lockMask.visible = value != 0;
 	}
 
-	get topViewId() { return this._openedStack.peek()?.viewId; }
+	get topViewId() { return this._openedStack.peek()?.viewId as EUIViewID; }
 
 	get topStackViewId() {
 		for (const viewId of this._openedStack) {
-			if (this.isStackView(viewId))
+			if (isStackView(viewId))
 				return viewId;
 		}
 		return null;
@@ -127,6 +145,14 @@ export class UIManager extends Notifier implements IUIManager {
 		mask.drawRect(0, "", EColorString._00000000);
 		mask.makeFullScreen();
 		mask.addRelation(mask.parent, fgui.RelationType.Size);
+
+		const ignoreBackView = {
+			[EViewID.UIFriendRoomView]: true,
+		};
+		Laya.stage.on(EMouseEvent.BackMouseClick, this, () => {
+			if (this._openedStack.stackViewCount > 1 && !ignoreBackView[this.topStackViewId])
+				this.closeView(this.topStackViewId);
+		});
 	}
 
 	isTopView(viewId: EViewID) { return this.topViewId == viewId; }
@@ -169,9 +195,10 @@ export class UIManager extends Notifier implements IUIManager {
 
 		await this.removeView(viewId, true);
 
-		if (this.isStackView(viewId)) {
+		if (isStackView(viewId)) {
 			const mediator = this._openedStack.peek();
-			await this.openView(mediator.viewId as EUIViewID, mediator?.view?.data);
+			if (mediator)
+				await this.openView(mediator.viewId as EUIViewID, mediator.data);
 		}
 		this.lockMark--;
 	}
@@ -189,14 +216,9 @@ export class UIManager extends Notifier implements IUIManager {
 		mediator?.view.dispose();
 	}
 
-	private isStackView(viewId: EUIViewID) {
-		const category = $facade.getViewCategory(viewId);
-		return category == EViewCategory.FullScreen;
-	}
-
 	private async closeAllTopNotStackView() {
 		for (const viewId of this._openedStack) {
-			if (!this.isStackView(viewId)) {
+			if (!isStackView(viewId)) {
 				this.removeView(viewId, true);
 				await $timeUtil.wait(100);
 			}

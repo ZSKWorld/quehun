@@ -436,6 +436,18 @@
     <image id="z3vjobnp" name="img_3255.png" path="/Texture/" exported="true"/>
     <component id="z3vjobns" name="UIInfo.xml" path="/" exported="true"/>
     <component id="il8eobnt" name="ComFriendInvite.xml" path="/Component/UIFriendRoom/" exported="true"/>
+    <image id="il8eobnu" name="img_3251.png" path="/Texture/" exported="true"/>
+    <image id="il8eobnv" name="img_3252.png" path="/Texture/" exported="true"/>
+    <image id="il8eobnw" name="img_3253.png" path="/Texture/" exported="true"/>
+    <image id="il8eobnx" name="img_1235.png" path="/Texture/" exported="true"/>
+    <image id="il8eobny" name="img_2339.png" path="/Texture/" exported="true"/>
+    <image id="il8eobnz" name="img_1622.png" path="/Texture/" exported="true"/>
+    <image id="fewxobo0" name="img_1268.png" path="/Texture/" exported="true"/>
+    <image id="fewxobo1" name="img_322.png" path="/Texture/" exported="true" scale="9grid" scale9grid="8,8,4,4"/>
+    <image id="fewxobo2" name="img_349.png" path="/Texture/" exported="true" scale="9grid" scale9grid="8,8,6,6"/>
+    <image id="fewxobo3" name="img_2111.png" path="/Texture/" exported="true"/>
+    <image id="fewxobo4" name="img_253.png" path="/Texture/" exported="true"/>
+    <image id="fewxobo5" name="img_254.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

@@ -1804,6 +1804,14 @@
     <image id="gnjqob8n" name="img_3475.png" path="/11/"/>
     <image id="gnjqob8m" name="img_3476.png" path="/11/"/>
     <image id="il8e7plon6" name="1.jpg" path="/11/好友房/"/>
+    <image id="il8e7plon7" name="2.jpg" path="/11/好友房/"/>
+    <image id="il8e7plon8" name="img_4034.png" path="/11/好友房/"/>
+    <image id="il8e7plon9" name="img_4035.png" path="/11/好友房/"/>
+    <image id="il8e7plona" name="img_4032.png" path="/11/好友房/"/>
+    <image id="fewx7plonb" name="3.jpg" path="/11/好友房/"/>
+    <image id="fewx7plonc" name="4.jpg" path="/11/好友房/"/>
+    <image id="fewx7plond" name="5.jpg" path="/11/好友房/"/>
+    <image id="fewx7plone" name="6.jpg" path="/11/好友房/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

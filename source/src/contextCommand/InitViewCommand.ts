@@ -36,6 +36,7 @@ import { RenderBagSkinItem2View } from "../core/ui/view/PkgMain/view/renders/Ren
 import { RenderFriendApplyView } from "../core/ui/view/PkgMain/view/renders/RenderFriendApplyView";
 import { RenderFriendFriendView } from "../core/ui/view/PkgMain/view/renders/RenderFriendFriendView";
 import { RenderFriendRecentView } from "../core/ui/view/PkgMain/view/renders/RenderFriendRecentView";
+import { RenderFriendRoomItemView } from "../core/ui/view/PkgMain/view/renders/RenderFriendRoomItemView";
 import { RenderHelpItem1View } from "../core/ui/view/PkgMain/view/renders/RenderHelpItem1View";
 import { RenderLiaoSheCharView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheCharView";
 import { RenderLiaoSheDecoItemView } from "../core/ui/view/PkgMain/view/renders/RenderLiaoSheDecoItemView";
@@ -102,6 +103,7 @@ import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView
 import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
 import { ComBagItemView } from "../core/ui/view/PkgMain/view/coms/ComBagItemView";
 import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView";
+import { ComFriendRoomItemView } from "../core/ui/view/PkgMain/view/coms/ComFriendRoomItemView";
 import { ComLiaoSheCharView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheCharView";
 import { ComLiaoSheDecorateView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheDecorateView";
 import { ComMainPlayerInfoView } from "../core/ui/view/PkgMain/view/coms/ComMainPlayerInfoView";
@@ -171,10 +173,14 @@ import { UICreateRoomView } from "../core/ui/view/PkgMain/view/uis/UICreateRoomV
 import { UICreateRoomMediator } from "../core/ui/view/PkgMain/mediator/uis/UICreateRoomMediator";
 import { UIFriendView } from "../core/ui/view/PkgMain/view/uis/UIFriendView";
 import { UIFriendMediator } from "../core/ui/view/PkgMain/mediator/uis/UIFriendMediator";
+import { UIFriendRoomView } from "../core/ui/view/PkgMain/view/uis/UIFriendRoomView";
+import { UIFriendRoomMediator } from "../core/ui/view/PkgMain/mediator/uis/UIFriendRoomMediator";
 import { UIGuideView } from "../core/ui/view/PkgMain/view/uis/UIGuideView";
 import { UIGuideMediator } from "../core/ui/view/PkgMain/mediator/uis/UIGuideMediator";
 import { UIHelpView } from "../core/ui/view/PkgMain/view/uis/UIHelpView";
 import { UIHelpMediator } from "../core/ui/view/PkgMain/mediator/uis/UIHelpMediator";
+import { UIJoinRoomView } from "../core/ui/view/PkgMain/view/uis/UIJoinRoomView";
+import { UIJoinRoomMediator } from "../core/ui/view/PkgMain/mediator/uis/UIJoinRoomMediator";
 import { UILiaoSheView } from "../core/ui/view/PkgMain/view/uis/UILiaoSheView";
 import { UILiaoSheMediator } from "../core/ui/view/PkgMain/mediator/uis/UILiaoSheMediator";
 import { UIMailView } from "../core/ui/view/PkgMain/view/uis/UIMailView";
@@ -260,6 +266,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.RenderFriendApplyView, Render, RenderFriendApplyView);
 		register(EViewID.RenderFriendFriendView, Render, RenderFriendFriendView);
 		register(EViewID.RenderFriendRecentView, Render, RenderFriendRecentView);
+		register(EViewID.RenderFriendRoomItemView, Render, RenderFriendRoomItemView);
 		register(EViewID.RenderHelpItem1View, Render, RenderHelpItem1View);
 		register(EViewID.RenderLiaoSheCharView, Render, RenderLiaoSheCharView);
 		register(EViewID.RenderLiaoSheDecoItemView, Render, RenderLiaoSheDecoItemView);
@@ -326,6 +333,7 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBagIllustView, Component, ComBagIllustView);
 		register(EViewID.ComBagItemView, Component, ComBagItemView);
 		register(EViewID.ComBagSkinView, Component, ComBagSkinView);
+		register(EViewID.ComFriendRoomItemView, Component, ComFriendRoomItemView);
 		register(EViewID.ComLiaoSheCharView, Component, ComLiaoSheCharView);
 		register(EViewID.ComLiaoSheDecorateView, Component, ComLiaoSheDecorateView);
 		register(EViewID.ComMainPlayerInfoView, Component, ComMainPlayerInfoView);
@@ -367,8 +375,10 @@ export class InitViewCommand extends Command {
 		register(EViewID.UICheckCurrencyView, UI, UICheckCurrencyView, UICheckCurrencyMediator);
 		register(EViewID.UICreateRoomView, UI, UICreateRoomView, UICreateRoomMediator);
 		register(EViewID.UIFriendView, UI, UIFriendView, UIFriendMediator);
+		register(EViewID.UIFriendRoomView, UI, UIFriendRoomView, UIFriendRoomMediator);
 		register(EViewID.UIGuideView, UI, UIGuideView, UIGuideMediator);
 		register(EViewID.UIHelpView, UI, UIHelpView, UIHelpMediator);
+		register(EViewID.UIJoinRoomView, UI, UIJoinRoomView, UIJoinRoomMediator);
 		register(EViewID.UILiaoSheView, UI, UILiaoSheView, UILiaoSheMediator);
 		register(EViewID.UIMailView, UI, UIMailView, UIMailMediator);
 		register(EViewID.UIMainView, UI, UIMainView, UIMainMediator);

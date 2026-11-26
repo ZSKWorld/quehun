@@ -17,7 +17,7 @@ declare interface Array<T> {
 	/** 添加唯一值 */
 	pushUnique(value: T): void;
 	/** 清除数组 */
-	clear(): void;
+	clear(): this;
 }
 
 declare interface String {

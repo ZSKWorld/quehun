@@ -261,7 +261,7 @@
     <image id="il8eobjy" name="img_2598.png" path="/Texture/"/>
     <image id="fewxobjz" name="img_3304.png" path="/Texture/"/>
     <component id="fewxobk0" name="RenderFriendRoomItem.xml" path="/Component/UIFriendRoom/"/>
-    <component id="fewxobk1" name="UIJoinRoom.xml" path="/" exported="true"/>
+    <component id="fewxobk1" name="UINumberInput.xml" path="/" exported="true"/>
     <image id="fewxobk2" name="img_1712.png" path="/Texture/" scale="9grid" scale9grid="19,19,38,38"/>
     <image id="fewxobk3" name="img_3427.png" path="/Texture/"/>
     <image id="fewxobk4" name="img_3428.png" path="/Texture/"/>
@@ -271,6 +271,7 @@
     <image id="fewxobk8" name="img_1688.png" path="/Texture/"/>
     <component id="fewxobk9" name="RenderRoomRule.xml" path="/Component/UIRoomRule/"/>
     <component id="fewxobka" name="RenderRoomRuleTab.xml" path="/Component/UIRoomRule/"/>
+    <component id="pbxcobkb" name="ComCreateRoomContent.xml" path="/Component/UICreateRoom/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

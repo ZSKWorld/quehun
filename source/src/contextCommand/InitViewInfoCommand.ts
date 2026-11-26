@@ -47,7 +47,7 @@ export class InitViewInfoCommand extends Command {
 			[EViewID.UIMakaAnalysisView]: [UIMiddle, CPopup],
 			[EViewID.UIRecordShareView]: [UIMiddle, CPopup],
 			[EViewID.UIRoomRuleView]: [UIMiddle, CPopup],
-			[EViewID.UIJoinRoomView]: [UIMiddle, CPopup],
+			[EViewID.UINumberInputView]: [UIMiddle, CPopup],
 
 			[EViewID.UITestBezierView]: [UITop],
 			[EViewID.UITestMainView]: [UITop],

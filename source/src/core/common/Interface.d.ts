@@ -279,7 +279,7 @@ declare interface IGameUtil {
 	/** 加载脚本 */
 	loadScript(url: string): Promise<boolean>;
 	/** 执行回调，Laya.Handler或Function */
-	safeCall(callback: SimpleHandler, ...args: any[]): any;
+	safeCall(callback: ICallback, ...args: any[]): any;
 	/** 循环确认加载 */
 	loopConfirmLoad<T extends readonly unknown[] | []>(promiseCreator: () => T, tip: string): Promise<[boolean, ...{ -readonly [P in keyof T]: Awaited<T[P]>; }]>;
 	/**

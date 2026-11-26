@@ -1,12 +1,12 @@
-import UIJoinRoom from "../../../../ui/PkgMain/UIJoinRoom";
+import UINumberInput from "../../../../ui/PkgMain/UINumberInput";
 
-export const enum EUIJoinRoomMsg {
-	OnBtnConfirmClick = "UIJoinRoom_OnBtnConfirmClick",
+export const enum EUINumberInputMsg {
+	OnBtnConfirmClick = "UINumberInput_OnBtnConfirmClick",
 }
 
-export class UIJoinRoomView extends UIJoinRoom {
+export class UINumberInputView extends UINumberInput {
 
-	get inputRoomId() { return +this.itxt_input.text; }
+	get inputNum() { return +this.itxt_input.text; }
 
 	override onCreate() {
 		const {
@@ -15,7 +15,7 @@ export class UIJoinRoomView extends UIJoinRoom {
 		} = this;
 		btn_mask.onClick(this, this.closeSelf);
 		btn_close.onClick(this, this.closeSelf);
-		btn_confirm.onClick(this, this.event, [EUIJoinRoomMsg.OnBtnConfirmClick]);
+		btn_confirm.onClick(this, this.event, [EUINumberInputMsg.OnBtnConfirmClick]);
 
 		(itxt_input.displayObject as Laya.Input).promptColor = "#999999";
 		const addNum = (num: number) => (itxt_input.text.length < itxt_input.maxLength && (itxt_input.text += num.toString()));
@@ -26,8 +26,9 @@ export class UIJoinRoomView extends UIJoinRoom {
 		btn_delete.onClick(this, () => itxt_input.text = itxt_input.text.substring(0, itxt_input.text.length - 1));
 	}
 
-	protected override onEnable() {
+	refresh(maxLen: number) {
 		this.itxt_input.text = "";
+		this.itxt_input.maxLength = maxLen ?? 5;
 	}
 
 	override onOpenAni() { return $uiUtil.popAlphaIn(this); }

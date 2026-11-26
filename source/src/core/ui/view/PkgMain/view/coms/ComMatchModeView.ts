@@ -27,16 +27,21 @@ export class ComMatchModeView extends ComMatchMode {
 	private _curType = EComMatchModeType.Mode;
 	private _changing = false;
 	private _fetchingMatchInfo = false;
+	private _ruleTargetId = 0;
+	private _ruleModeIds: number[] = [];
 
 	override onCreate() {
 		const {
-			btn_rankMode, btn_matchMode, btn_friendMode, btn_back,
+			btn_rankMode, btn_matchMode, btn_friendMode, btn_back, btn_rule,
 			com_contentRank, com_contentFriend, com_contentMode
 		} = this;
 		btn_back.onClick(this, this.onBtnBackClick);
 		btn_rankMode.onClick(this, this.changeShowType, [EComMatchModeType.RankMode]);
 		btn_matchMode.onClick(this, this.changeShowType, [EComMatchModeType.MatchMode]);
 		btn_friendMode.onClick(this, this.changeShowType, [EComMatchModeType.FriendMode]);
+		btn_rule.onClick(this, () => {
+			this.openView<IUIRoomRuleData>(EViewID.UIRoomRuleView, { targetId: this._ruleTargetId, modeIds: this._ruleModeIds });
+		});
 
 		const rankIcons = [3467, 3473, 3454, 3475, 3468];
 		for (let i = 0; i < 5; i++) {
@@ -71,9 +76,16 @@ export class ComMatchModeView extends ComMatchMode {
 				icon: $langRes(`myres/bothui/img_${ createRoom ? 3450 : 3455 }.png`),
 			});
 			if (createRoom)
-				com.onItemClick(this, () => this.openView(EViewID.UICreateRoomView, this.data, EViewOpenType.Hide));
-			else
-				com.onItemClick(this, () => this.openView(EViewID.UIJoinRoomView));
+				com.onItemClick(this, this.openView, [EViewID.UICreateRoomView, this.data, EViewOpenType.Hide]);
+			else {
+				const viewData = {
+					callback: (num: number) => {
+						if (num == null) return;
+						$user.friend.room.joinRoom(num);
+					}
+				};
+				com.onItemClick(this, this.openView, [EViewID.UINumberInputView, viewData, null]);
+			}
 			com_contentFriend.addChild(com);
 		}
 
@@ -136,7 +148,11 @@ export class ComMatchModeView extends ComMatchMode {
 				txt_title.langText(TitleLang[type]);
 				switch (type) {
 					case EComMatchModeType.RankMode: await this.transInContent(com_contentRank); break;
-					case EComMatchModeType.MatchMode: await this.transInContent(com_contentMatch); break;
+					case EComMatchModeType.MatchMode:
+						this._ruleTargetId = $user.activity.intervalModeId;
+						this._ruleModeIds.clear().push(this._ruleTargetId, 41, 40);
+						await this.transInContent(com_contentMatch);
+						break;
 					case EComMatchModeType.FriendMode: await this.transInContent(com_contentFriend); break;
 				}
 				break;
@@ -151,7 +167,6 @@ export class ComMatchModeView extends ComMatchMode {
 					case EComMatchModeType.MatchMode: await this.transOutContent(com_contentMatch); break;
 					case EComMatchModeType.FriendMode: await this.transOutContent(com_contentFriend); break;
 				}
-				btn_rule.visible = false;
 				ctrl_type.selectedIndex = 4;
 				this.refreshModeItems(mode);
 				await this.transInContent(com_contentMode);
@@ -166,7 +181,7 @@ export class ComMatchModeView extends ComMatchMode {
 		const infos: IMatchInfo[] = [MatchInfo.daHuiShi];
 
 		const { intervalActivityId, intervalId } = $user.activity;
-		if (intervalId >= 0) {
+		if (intervalId) {
 			const cfg = $cfgMgr.activity.activity_desktop[intervalActivityId];
 			const data = cfg.find(v => v.interval == intervalId);
 			MatchInfo.interval[0] = data.desktop_id;
@@ -276,6 +291,9 @@ export class ComMatchModeView extends ComMatchMode {
 				if (v.str_rule) modeId = v.id; // 如果存在规则文本则显示对应规则按钮
 			}
 		});
+		this._ruleTargetId = modeId;
+		this._ruleModeIds.clear().push($user.activity.intervalModeId, 41, 40);
+		this.btn_rule.visible = modeId != 0;
 		this.txt_title.text = title_name;
 
 		const modeInfos: { mode: number, id: number, met: boolean; }[] = [];

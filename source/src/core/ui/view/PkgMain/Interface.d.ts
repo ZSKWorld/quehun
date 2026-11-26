@@ -80,7 +80,7 @@ declare interface IUITreasureData {
 declare interface IUIVideoData {
 	skinId: number;
 	characterId?: number;
-	callback?: SimpleHandler;
+	callback?: ICallback;
 }
 
 declare interface IUIVisitData {
@@ -100,4 +100,10 @@ declare interface IUIRecordShareData {
 declare interface IUIRoomRuleData {
 	targetId?: number;
 	modeIds?: number[];
+}
+
+declare interface IUINumberInputData {
+	/** 默认9 */
+	maxLen?: number;
+	callback: ICallback;
 }

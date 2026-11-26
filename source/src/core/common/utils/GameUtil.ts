@@ -215,7 +215,7 @@ export class GameUtil implements IGameUtil {
 		return obj;
 	}
 
-	safeCall(callback: SimpleHandler, ...args: any[]) {
+	safeCall(callback: ICallback, ...args: any[]) {
 		if (!callback) return;
 		if (callback instanceof Laya.Handler)
 			return callback.runWith(args);

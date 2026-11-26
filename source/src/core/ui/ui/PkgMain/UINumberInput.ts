@@ -2,7 +2,7 @@
 
 import { GComponentView } from "../../core/viewBase/GComponentView";
 
-export default class UIJoinRoom extends GComponentView {
+export default class UINumberInput extends GComponentView {
 
 	protected btn_mask: fgui.GButton;
 	protected btn_close: fgui.GButton;
@@ -22,8 +22,8 @@ export default class UIJoinRoom extends GComponentView {
 	protected btn_delete: fgui.GButton;
 	public static url: string = "ui://vith2b66fewxobk1";
 
-	public static createInstance(): UIJoinRoom {
-		return <UIJoinRoom>(fgui.UIPackage.createObject("PkgMain", "UIJoinRoom"));
+	public static createInstance(): UINumberInput {
+		return <UINumberInput>(fgui.UIPackage.createObject("PkgMain", "UINumberInput"));
 	}
 
 	protected override onConstruct(): void {

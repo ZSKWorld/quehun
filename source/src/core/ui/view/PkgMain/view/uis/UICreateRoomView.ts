@@ -10,7 +10,7 @@ export class UICreateRoomView extends UICreateRoom {
 	override onCreate() {
 		const { com_back, btn_rule, btn_create } = this;
 		com_back.onBackClick(this, this.closeSelf);
-		btn_rule.onClick(this, this.event, [EUICreateRoomMsg.OnBtnRuleClick]);
+		btn_rule.onClick(this, this.openView, [EViewID.UIRoomRuleView]);
 		btn_create.onClick(this, this.event, [EUICreateRoomMsg.OnBtnCreateClick]);
 	}
 

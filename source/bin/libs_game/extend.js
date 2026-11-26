@@ -79,6 +79,7 @@ Object.defineProperties(Array.prototype, {
 	"clear": {
 		value: function (value) {
 			this.length = 0;
+			return this;
 		},
 		enumerable: false,
 		configurable: false,

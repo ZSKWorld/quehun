@@ -16,7 +16,7 @@ import RenderVisitVoiceInfo from "./RenderVisitVoiceInfo";
 import ComMainPlayerInfo from "./ComMainPlayerInfo";
 import UIGuide from "./UIGuide";
 import RenderFriendRoomItem from "./RenderFriendRoomItem";
-import UIJoinRoom from "./UIJoinRoom";
+import UINumberInput from "./UINumberInput";
 import BtnShopRefresh from "./BtnShopRefresh";
 import RenderShopItem from "./RenderShopItem";
 import RenderShopSkin from "./RenderShopSkin";
@@ -92,7 +92,7 @@ import { RenderVisitVoiceInfoView } from "../../view/PkgMain/view/renders/Render
 import { ComMainPlayerInfoView } from "../../view/PkgMain/view/coms/ComMainPlayerInfoView";
 import { UIGuideView } from "../../view/PkgMain/view/uis/UIGuideView";
 import { RenderFriendRoomItemView } from "../../view/PkgMain/view/renders/RenderFriendRoomItemView";
-import { UIJoinRoomView } from "../../view/PkgMain/view/uis/UIJoinRoomView";
+import { UINumberInputView } from "../../view/PkgMain/view/uis/UINumberInputView";
 import { BtnShopRefreshView } from "../../view/PkgMain/view/btns/BtnShopRefreshView";
 import { RenderShopItemView } from "../../view/PkgMain/view/renders/RenderShopItemView";
 import { RenderShopSkinView } from "../../view/PkgMain/view/renders/RenderShopSkinView";
@@ -171,7 +171,7 @@ export default class PkgMainBinder {
 		fgui.UIObjectFactory.setExtension(ComMainPlayerInfo.url, ComMainPlayerInfoView);
 		fgui.UIObjectFactory.setExtension(UIGuide.url, UIGuideView);
 		fgui.UIObjectFactory.setExtension(RenderFriendRoomItem.url, RenderFriendRoomItemView);
-		fgui.UIObjectFactory.setExtension(UIJoinRoom.url, UIJoinRoomView);
+		fgui.UIObjectFactory.setExtension(UINumberInput.url, UINumberInputView);
 		fgui.UIObjectFactory.setExtension(BtnShopRefresh.url, BtnShopRefreshView);
 		fgui.UIObjectFactory.setExtension(RenderShopItem.url, RenderShopItemView);
 		fgui.UIObjectFactory.setExtension(RenderShopSkin.url, RenderShopSkinView);

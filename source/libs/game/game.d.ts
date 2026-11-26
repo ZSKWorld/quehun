@@ -14,7 +14,7 @@ declare type OriginDataKeys<T> = NonReadonlyKeys<T> & NonMethodKeys<T>;
 /** 获取对象及其子对象的所有字段名路径 */
 declare type DeepPaths<T> = T extends Array<infer U> ? DeepPaths<U> : T extends object ? { [K in keyof T & string]: T[K] extends object ? K | `${ K }.${ DeepPaths<T[K]> }` : K }[keyof T & string] : never;
 
-declare type SimpleHandler = Laya.Handler | ((...args: any[]) => void);
+declare type ICallback = Laya.Handler | ((...args: any[]) => void);
 /** 设置对象上所有字段只读 */
 declare type ReadonlyAll<T> = { readonly [P in keyof T]: T[P] extends Function ? T[P] : ReadonlyAll<T[P]>; };
 /** 设置对象上所有字段可选 */

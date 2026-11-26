@@ -117,9 +117,15 @@ export class ActivityDO extends BaseDO implements DO.IActivityDO {
 	get intervalId() {
 		const intervalActivityId = this.intervalActivityId;
 		const data = this._activityInterval[intervalActivityId];
-		if (!data) return -1;
-		if (!this.isRunning(intervalActivityId)) return -1;
+		if (!data) return 0;
+		if (!this.isRunning(intervalActivityId)) return 0;
 		return data.interval;
+	}
+	get intervalModeId() {
+		if (this.intervalId <= 0) return 0;
+		const cfg = $cfgMgr.activity.activity_desktop[this.intervalActivityId];
+		const data = cfg.find(v => v.interval == this.intervalId);
+		return data.desktop_id;
 	}
 	get intervalRefreshTime() {
 		const time1 = 3 * 3600 + 3 * 24 * 3600;

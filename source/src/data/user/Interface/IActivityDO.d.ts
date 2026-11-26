@@ -13,6 +13,7 @@ declare namespace DO {
 		get intervalActivityId(): number;
 		/** 轮换模式id */
 		get intervalId(): number;
+		get intervalModeId(): number;
 		/** 轮换剩余刷新时间 */
 		get intervalRefreshTime(): number;
 		isRunning(activityId: number): boolean;

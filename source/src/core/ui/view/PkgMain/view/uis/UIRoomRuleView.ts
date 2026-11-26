@@ -1,7 +1,7 @@
 import UIRoomRule from "../../../../ui/PkgMain/UIRoomRule";
 
 export class UIRoomRuleView extends UIRoomRule {
-	private _tabData: (ISheetData_Desktop_Matchmode | ISheetData_Desktop_FriendRoom)[];
+	private _tabData: Partial<ISheetData_Desktop_Matchmode & ISheetData_Desktop_FriendRoom>[];
 	private _tabIndex = 0;
 	private _imgs: string[];
 	private _imgIndex: number = 0;
@@ -18,7 +18,7 @@ export class UIRoomRuleView extends UIRoomRule {
 		$uiUtil.initList<fgui.GButton>(
 			list_tab, false, this,
 			(index, item) => {
-				const data = this._tabData[index] as ISheetData_Desktop_Matchmode & ISheetData_Desktop_FriendRoom;
+				const data = this._tabData[index];
 				if (data.str_name) item.langText(+data.str_name);
 				else item.text = data.langField(ECfgLangField.room_name);
 			},

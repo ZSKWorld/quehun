@@ -35,7 +35,7 @@
     <text id="n64_fewx" name="n64" xy="1109,580" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="9"/>
     <text id="n40_fewx" name="n40" xy="741,674" pivot="0.5,0.5" size="94,60" font="SimHei" fontSize="45" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="清空"/>
     <text id="n70_fewx" name="n70" xy="942,669" pivot="0.5,0.5" size="32,73" font="SimHei" fontSize="55" color="#a0a2aa" align="center" vAlign="middle" singleLine="true" text="0"/>
-    <text id="n76_fewx" name="input" xy="733,302" pivot="0,0.5" size="444,70" font="SimHei" fontSize="50" color="#ffffff" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" prompt="输入房间号" maxLength="5" restrict="0-9"/>
+    <text id="n76_fewx" name="input" xy="733,302" pivot="0,0.5" size="444,70" font="SimHei" fontSize="50" color="#ffffff" align="center" vAlign="middle" leading="0" autoSize="none" singleLine="true" text="" input="true" maxLength="5" restrict="0-9"/>
     <component id="n87_fewx" name="num0" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,667" size="162,84"/>
     <component id="n78_fewx" name="num1" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="708,400" size="162,84"/>
     <component id="n89_fewx" name="num2" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" pkg="vx9zwser" xy="875,400" size="162,84"/>

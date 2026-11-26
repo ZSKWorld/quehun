@@ -157,7 +157,6 @@
     <image id="fpd2obgu" name="img_2921.png" path="/Texture/"/>
     <component id="fpd2obgv" name="RenderShopSkin.xml" path="/Component/UIShop/"/>
     <component id="fpd2obgw" name="RenderShopCG.xml" path="/Component/UIShop/"/>
-    <image id="fpd2obgx" name="img_4023.png" path="/Texture/" scale="9grid" scale9grid="0,70,620,40"/>
     <image id="fpd2obgy" name="img_2439.png" path="/Texture/"/>
     <image id="fpd2obgz" name="img_2566.png" path="/Texture/"/>
     <image id="ffpyobh0" name="img_3848.png" path="/Texture/" scale="9grid" scale9grid="0,46,328,17"/>
@@ -165,7 +164,6 @@
     <image id="ffpyobh2" name="img_1750.png" path="/Texture/"/>
     <component id="rmm9obh3" name="UIVideo.xml" path="/" exported="true"/>
     <image id="rmm9obh4" name="img_2487.png" path="/Texture/"/>
-    <image id="ziglobh5" name="img_4024.png" path="/Texture/"/>
     <image id="ojz4obh7" name="img_3493.png" path="/Texture/"/>
     <image id="ojz4obh8" name="img_3494.png" path="/Texture/"/>
     <image id="ojz4obh9" name="img_1355.png" path="/Texture/" scale="9grid" scale9grid="40,5,15,15"/>
@@ -240,11 +238,9 @@
     <image id="h3ufobjb" name="img_3807.png" path="/Texture/"/>
     <component id="h3ufobjc" name="ComObserverWait.xml" path="/Component/UIObserver/"/>
     <image id="ftegobjd" name="img_2007.png" path="/Texture/"/>
-    <image id="ftegobje" name="img_4100.png" path="/Texture/"/>
     <component id="ftegobjf" name="RenderRecordItem.xml" path="/Component/UIRecord/"/>
     <image id="ftegobjh" name="img_1198.png" path="/Texture/"/>
     <image id="ftegobji" name="img_1842.png" path="/Texture/" scale="9grid" scale9grid="20,0,129,46"/>
-    <image id="ftegobjj" name="img_4066.png" path="/Texture/"/>
     <component id="ftegobjk" name="RenderRecordItem2.xml" path="/Component/UIRecord/"/>
     <component id="itojobjl" name="UIRecordShare.xml" path="/" exported="true"/>
     <component id="z3vjobjm" name="UICreateRoom.xml" path="/" exported="true"/>
@@ -272,6 +268,21 @@
     <component id="fewxobk9" name="RenderRoomRule.xml" path="/Component/UIRoomRule/"/>
     <component id="fewxobka" name="RenderRoomRuleTab.xml" path="/Component/UIRoomRule/"/>
     <component id="pbxcobkb" name="ComCreateRoomContent.xml" path="/Component/UICreateRoom/"/>
+    <image id="pbxcobkc" name="img_2408.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkd" name="img_2502.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobke" name="img_2529.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkf" name="img_2531.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkg" name="img_2532.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkh" name="img_2533.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobki" name="img_2537.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkj" name="img_2538.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkk" name="img_2539.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkl" name="img_2544.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkm" name="img_2545.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkn" name="img_2546.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobko" name="img_2567.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkp" name="img_2571.png" path="/Texture/" exported="true"/>
+    <image id="pbxcobkq" name="img_2846.png" path="/Texture/" exported="true"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

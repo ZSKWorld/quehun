@@ -4,7 +4,7 @@
     <component id="n22_fpd2" name="item" src="rpakobf5" fileName="Component/Component/物品/ComItem.xml" pkg="vx9zwser" xy="10,31" size="600,338">
       <property target="icon" propertyId="1" value="ui://ca43vz0exmej7plojt"/>
     </component>
-    <image id="n21_fpd2" name="n21" src="fpd2obgx" fileName="Texture/img_4023.png" xy="0,0" size="620,531"/>
+    <loader id="n21_fpd2" name="bound" xy="0,0" size="620,531" touchable="false" url="ui://ca43vz0efpd2obgx" fill="scaleFree"/>
     <image id="n27_fpd2" name="n27" src="fpd2obgy" fileName="Texture/img_2439.png" xy="387,375" size="204,156"/>
     <image id="n28_fpd2" name="n28" src="rpakobf3" fileName="Texture/img_1073.png" xy="540,321"/>
     <image id="n29_fpd2" name="n29" src="fpd2obgz" fileName="Texture/img_2566.png" xy="-11,34"/>

@@ -3,7 +3,7 @@
   <controller name="self" pages="0,,1,,2,,3," selected="0"/>
   <controller name="siMa" pages="0,,1," selected="0"/>
   <displayList>
-    <image id="n93_jbd2" name="n93" src="ftegobjg" fileName="Texture/img_3930.png" xy="260,400" size="1399,212"/>
+    <loader id="n93_jbd2" name="bg" xy="260,400" size="1399,212" url="ui://ca43vz0eftegobjg" fill="scaleFree"/>
     <component id="n14_j0dd" name="confirm" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" xy="788,683" size="344,124">
       <Button title="开始分析" titleColor="#442334" titleFontSize="36" icon="ui://vx9zwserjbd2obmr"/>
     </component>
@@ -25,16 +25,16 @@
     <loader id="n85_jbd2" name="beilv3" xy="1484,550" size="140,47" group="n91_jbd2" aspect="true" touchable="false" url="ui://vx9zwserftegobm0" fill="scaleFree">
       <gearDisplay controller="siMa" pages="1"/>
     </loader>
-    <component id="n62_jbd2" name="name0" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,501" size="1248,36" group="n91_jbd2" touchable="false">
+    <component id="n62_jbd2" name="name0" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,501" size="1350,36" group="n91_jbd2" touchable="false">
       <Label title="hanser25505" titleColor="#fbfbfb"/>
     </component>
-    <component id="n70_jbd2" name="name1" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,501" size="1350,36" group="n91_jbd2" touchable="false">
+    <component id="n70_jbd2" name="name1" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,501" size="1452,36" group="n91_jbd2" touchable="false">
       <Label title="hanser25505" titleColor="#fbfbfb"/>
     </component>
-    <component id="n78_jbd2" name="name2" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,559" size="1350,36" group="n91_jbd2" touchable="false">
+    <component id="n78_jbd2" name="name2" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="368,559" size="1452,36" group="n91_jbd2" touchable="false">
       <Label title="hanser25505" titleColor="#fbfbfb"/>
     </component>
-    <component id="n86_jbd2" name="name3" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,559" size="1350,36" group="n91_jbd2" touchable="false">
+    <component id="n86_jbd2" name="name3" src="puubobfa" fileName="Component/Component/名字/LabelName.xml" xy="1063,559" size="1452,36" group="n91_jbd2" touchable="false">
       <gearDisplay controller="siMa" pages="1"/>
       <Label title="hanser25505" titleColor="#fbfbfb"/>
     </component>

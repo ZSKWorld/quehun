@@ -17,7 +17,12 @@ export class UIVideoView extends UIVideo {
 		return $uiUtil.playTrans(this.trans_show);
 	}
 
-	override onDisable() {
+	protected override onEnable() {
+		$dynamicResMgr.setLoader(this.loader_aniItem1, ResPath.ETexturePath.PNG_Img_4024);
+	}
+
+	protected override onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_aniItem1);
 		const anis = [this.trans_show];
 		anis.forEach(v => {
 			v.playing && v.stop(true, true);

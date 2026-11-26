@@ -58,4 +58,12 @@ export class ComMakaAnalysisContentView extends ComMakaAnalysisContent {
 		loader_beilv2.icon = $uiUtil.getBigHuTile(p2.max_hu_type < 3 ? EBigHuType.E_Dadian_Title_none : p2.max_hu_type);
 		p3 && (loader_beilv3.icon = $uiUtil.getBigHuTile(p3.max_hu_type < 3 ? EBigHuType.E_Dadian_Title_none : p3.max_hu_type));
 	}
+
+	protected override onEnable() {
+		$dynamicResMgr.setLoader(this.loader_bg, ResPath.ETexturePath.PNG_Img_3930);
+	}
+
+	protected override onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_bg);
+	}
 }

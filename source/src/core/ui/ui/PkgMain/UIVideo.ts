@@ -5,7 +5,7 @@ import { GComponentView } from "../../core/viewBase/GComponentView";
 export default class UIVideo extends GComponentView {
 
 	protected com_videoRoot: fgui.GComponent;
-	protected img_aniItem1: fgui.GImage;
+	protected loader_aniItem1: fgui.GLoader;
 	protected img_aniItem2: fgui.GImage;
 	protected btn_jump: fgui.GButton;
 	protected trans_show: fgui.Transition;
@@ -18,7 +18,7 @@ export default class UIVideo extends GComponentView {
 
 	protected override onConstruct(): void {
 		this.com_videoRoot = <fgui.GComponent>(this.getChildAt(0));
-		this.img_aniItem1 = <fgui.GImage>(this.getChildAt(1));
+		this.loader_aniItem1 = <fgui.GLoader>(this.getChildAt(1));
 		this.img_aniItem2 = <fgui.GImage>(this.getChildAt(2));
 		this.btn_jump = <fgui.GButton>(this.getChildAt(3));
 		this.trans_show = this.getTransitionAt(0);

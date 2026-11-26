@@ -6,6 +6,7 @@ import { ComItemView } from "../../view/PkgCommon/view/coms/ComItemView";
 export default class RenderShopCG extends GComponentView {
 
 	protected com_item: ComItemView;
+	protected loader_bound: fgui.GLoader;
 	protected txt_name: fgui.GTextField;
 	public static url: string = "ui://vith2b66fpd2obgw";
 
@@ -15,6 +16,7 @@ export default class RenderShopCG extends GComponentView {
 
 	protected override onConstruct(): void {
 		this.com_item = <ComItemView>(this.getChildAt(0));
+		this.loader_bound = <fgui.GLoader>(this.getChildAt(1));
 		this.txt_name = <fgui.GTextField>(this.getChildAt(8));
 	}
 }

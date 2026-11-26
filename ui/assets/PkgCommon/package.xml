@@ -38,7 +38,6 @@
     <image id="ieavob7l" name="img_112.png" path="/Texture/" exported="true" scale="9grid" scale9grid="4,4,2,2"/>
     <image id="ieavob7m" name="img_74.png" path="/Texture/" exported="true"/>
     <image id="ieavob7n" name="img_717.png" path="/Texture/" exported="true"/>
-    <image id="ieavob7o" name="img_4138.png" path="/Texture/" exported="true"/>
     <image id="ieavob7r" name="img_335.png" path="/Texture/" exported="true"/>
     <image id="ieavob7s" name="img_2840.png" path="/Texture/" exported="true"/>
     <image id="ieavob7t" name="img_2839.png" path="/Texture/" exported="true"/>
@@ -419,7 +418,6 @@
     <image id="jbd2obms" name="img_2829.png" path="/Texture/" exported="true"/>
     <image id="jbd2obmt" name="img_3278.png" path="/Texture/" exported="true"/>
     <image id="jbd2obmx" name="img_1198.png" path="/Texture/" exported="true"/>
-    <image id="ftegobjg" name="img_3930.png" path="/Texture/" exported="true"/>
     <image id="jbd2obn0" name="img_1842.png" path="/Texture/" exported="true" scale="9grid" scale9grid="20,0,129,46"/>
     <component id="jbd2obn1" name="ComMakaAnalysis.xml" path="/Component/UIMaka/" exported="true"/>
     <component id="jbd2obn2" name="ComMakaAnalysisContent.xml" path="/Component/UIMaka/" exported="true"/>

@@ -7,6 +7,7 @@ export default class RenderRecordItem extends GComponentView {
 
 	protected ctrl_fold: fgui.Controller;
 	protected ctrl_siMa: fgui.Controller;
+	protected loader_bg: fgui.GLoader;
 	protected btn_rename: fgui.GButton;
 	protected btn_collect: fgui.GButton;
 	protected btn_share: fgui.GButton;
@@ -31,6 +32,7 @@ export default class RenderRecordItem extends GComponentView {
 	protected override onConstruct(): void {
 		this.ctrl_fold = this.getControllerAt(0);
 		this.ctrl_siMa = this.getControllerAt(1);
+		this.loader_bg = <fgui.GLoader>(this.getChildAt(0));
 		this.btn_rename = <fgui.GButton>(this.getChildAt(1));
 		this.btn_collect = <fgui.GButton>(this.getChildAt(2));
 		this.btn_share = <fgui.GButton>(this.getChildAt(3));

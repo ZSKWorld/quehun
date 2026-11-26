@@ -11,6 +11,7 @@
     <component id="n13_z3vj" name="create" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="813,898" size="296,106" group="n14_z3vj">
       <Button title="创建" titleColor="#3a3030" titleFontSize="50" icon="ui://vx9zwserz3vjobjo"/>
     </component>
+    <component id="n15_pbxc" name="n15" src="pbxcobkb" fileName="Component/UICreateRoom/ComCreateRoomContent.xml" xy="426,233" group="n14_z3vj"/>
     <group id="n14_z3vj" name="n14" xy="0,30" size="1920,974" advanced="true"/>
   </displayList>
   <transition name="show" options="6" frameRate="60">

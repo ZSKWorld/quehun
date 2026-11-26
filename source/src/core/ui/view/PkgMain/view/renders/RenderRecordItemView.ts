@@ -43,6 +43,7 @@ export class RenderRecordItemView extends RenderRecordItem {
 
 		img_arrow.visible = btn_foldArea.visible = version == 202408; //2024年8月20日之前的牌谱不可展开
 		this.refreshTopBtnsLayout();
+		this.refreshLoaderBg();
 	}
 
 	private refreshTopBtnsLayout() {
@@ -122,6 +123,22 @@ export class RenderRecordItemView extends RenderRecordItem {
 		} else {
 			ctrl_fold.selectedIndex = 0;
 		}
+		this.refreshLoaderBg();
 		(<fgui.GList>this.parent).refreshVirtualList();
+	}
+
+	private refreshLoaderBg() {
+		let imgPath: string;
+		switch (this.ctrl_fold.selectedIndex) {
+			case 0: imgPath = ResPath.ETexturePath.PNG_Img_3930; break;
+			case 1: imgPath = ResPath.ETexturePath.PNG_Img_4066; break;
+			case 2: imgPath = ResPath.ETexturePath.PNG_Img_4100; break;
+			default: return;
+		}
+		$dynamicResMgr.setLoader(this.loader_bg, imgPath);
+	}
+
+	protected override onDisable() {
+		$dynamicResMgr.clearLoader(this.loader_bg);
 	}
 }

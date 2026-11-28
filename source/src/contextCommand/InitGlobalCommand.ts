@@ -120,19 +120,21 @@ export class InitGlobalCommand extends Command {
 	}
 
 	private registerConfirm(name: string, viewId: EUIViewID) {
-		$windowImmit(name, function (format: number, content: string, title = "") {
+		$windowImmit(name, function (format: number, content: string, title = "", maskClose = false, align = EAlignType.Center) {
 			if (!fgui.UIPackage.getByName(ResPath.EPkgName.PkgCommon))
 				return $gameMgr.showConfirm(content);
-			$windowImmit(name, (format: 0 | 1 | 2 | 3, content: string, title = "") => new Promise<boolean>(resolve => {
+			$windowImmit(name, (format: 0 | 1 | 2 | 3, content: string, title = "", maskClose = false, align = EAlignType.Center) => new Promise<boolean>(resolve => {
 				$uiMgr.openView<IUIConfirmData>(viewId, {
 					format,
 					title,
 					content,
 					onConfirm: Laya.Handler.create(null, resolve, [true]),
 					onCancel: Laya.Handler.create(null, resolve, [false]),
+					maskClose,
+					align,
 				});
 			}));
-			return window[name](format, content, title);
+			return window[name](format, content, title, maskClose, align);
 		});
 	}
 }

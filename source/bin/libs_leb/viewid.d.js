@@ -103,6 +103,8 @@ EViewID = {
 	ComBagIllustView: "ComBagIllustView",
 	ComBagItemView: "ComBagItemView",
 	ComBagSkinView: "ComBagSkinView",
+	ComCreateRoomContentView: "ComCreateRoomContentView",
+	ComCreateRoomSettingView: "ComCreateRoomSettingView",
 	ComFriendRoomItemView: "ComFriendRoomItemView",
 	ComLiaoSheCharView: "ComLiaoSheCharView",
 	ComLiaoSheDecorateView: "ComLiaoSheDecorateView",

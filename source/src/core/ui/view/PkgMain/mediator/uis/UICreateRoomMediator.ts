@@ -6,19 +6,19 @@ export interface IUICreateRoomData {
 }
 
 export class UICreateRoomMediator extends MediatorBase<UICreateRoomView, IUICreateRoomData> {
+	private _lockReq = false;
 
 	override onAwake() {
-		this.addEvent(EUICreateRoomMsg.OnBtnRuleClick, this.onBtnRuleClick);
 		this.addEvent(EUICreateRoomMsg.OnBtnCreateClick, this.onBtnCreateClick);
 	}
 
-	private onBtnRuleClick() {
-
-	}
-
 	private onBtnCreateClick() {
-		// $netMgr.requests.createRoom
-		this.openView(EViewID.UIFriendRoomView, null, EViewOpenType.Close);
+		if (this._lockReq) return;
+		this._lockReq = true;
+		$netMgr.requests.createRoom(this.view.createData).then(res => {
+			this._lockReq = false;
+			if (res.error) return;
+			this.openView(EViewID.UIFriendRoomView, null, EViewOpenType.Close);
+		});
 	}
-
 }

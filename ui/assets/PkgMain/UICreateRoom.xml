@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <component size="1920,1080" designImage="ui://ca43vz0ejdu67plne1" designImageAlpha="0">
   <displayList>
+    <loader id="n16_pbxc" name="n16" xy="0,0" size="1920,1080" url="ui://ca43vz0epbxc7plonf" fill="scaleFree"/>
     <component id="n0_9c0b" name="back" src="p5uzob8h" fileName="Component/Component/ComBack.xml" pkg="vx9zwser" xy="10,22">
       <property target="title" propertyId="0" value="创建房间"/>
     </component>
@@ -11,7 +12,7 @@
     <component id="n13_z3vj" name="create" src="mj5kb6r" fileName="Component/Button/BtnNormalFit.xml" pkg="vx9zwser" xy="813,898" size="296,106" group="n14_z3vj">
       <Button title="创建" titleColor="#3a3030" titleFontSize="50" icon="ui://vx9zwserz3vjobjo"/>
     </component>
-    <component id="n15_pbxc" name="n15" src="pbxcobkb" fileName="Component/UICreateRoom/ComCreateRoomContent.xml" xy="426,233" group="n14_z3vj"/>
+    <component id="n15_pbxc" name="content" src="pbxcobkb" fileName="Component/UICreateRoom/ComCreateRoomContent.xml" xy="0,215" group="n14_z3vj" controller="type,0"/>
     <group id="n14_z3vj" name="n14" xy="0,30" size="1920,974" advanced="true"/>
   </displayList>
   <transition name="show" options="6" frameRate="60">

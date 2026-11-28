@@ -5,6 +5,7 @@ import { GComponentView } from "../../core/viewBase/GComponentView";
 export default class UIConfirmBig extends GComponentView {
 
 	protected ctrl_format: fgui.Controller;
+	protected btn_mask: fgui.GButton;
 	protected btn_close: fgui.GButton;
 	protected btn_confirm: fgui.GButton;
 	protected btn_cancel: fgui.GButton;
@@ -18,10 +19,11 @@ export default class UIConfirmBig extends GComponentView {
 
 	protected override onConstruct(): void {
 		this.ctrl_format = this.getControllerAt(0);
-		this.btn_close = <fgui.GButton>(this.getChildAt(9));
-		this.btn_confirm = <fgui.GButton>(this.getChildAt(10));
-		this.btn_cancel = <fgui.GButton>(this.getChildAt(11));
-		this.txt_title = <fgui.GTextField>(this.getChildAt(13));
-		this.txt_content = <fgui.GTextField>(this.getChildAt(14));
+		this.btn_mask = <fgui.GButton>(this.getChildAt(0));
+		this.btn_close = <fgui.GButton>(this.getChildAt(10));
+		this.btn_confirm = <fgui.GButton>(this.getChildAt(11));
+		this.btn_cancel = <fgui.GButton>(this.getChildAt(12));
+		this.txt_title = <fgui.GTextField>(this.getChildAt(14));
+		this.txt_content = <fgui.GTextField>(this.getChildAt(15));
 	}
 }

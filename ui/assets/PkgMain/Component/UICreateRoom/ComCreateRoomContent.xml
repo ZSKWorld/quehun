@@ -1,2 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<component size="800,600"/>
+<component size="1860,638" overflow="scroll" scrollBarFlags="4" scrollBarMargin="30,30,0,60" scrollBarRes="ui://vx9zwserj0ddob7h,">
+  <controller name="type" exported="true" pages="0,四麻,1,三麻,2,特殊模式" selected="1">
+    <action type="change_page" fromPage="" toPage="" objectId="n31_pbxc" controller="type" targetPage="~1"/>
+  </controller>
+  <controller name="openSetting" pages="0,,1," selected="1">
+    <action type="change_page" fromPage="" toPage="" objectId="n31_pbxc" controller="openSetting" targetPage="~1"/>
+  </controller>
+  <displayList>
+    <graph id="n98_pbxc" name="n98" xy="621,0" size="100,20" type="rect" lineSize="0" fillColor="#00ffffff"/>
+    <image id="n91_pbxc" name="n91" src="pbxcobkw" fileName="Texture/img_1697.png" xy="140,45" group="n97_pbxc"/>
+    <image id="n92_pbxc" name="n92" src="pbxcobkh" fileName="Texture/img_2533.png" xy="219,53" group="n97_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n93_pbxc" name="siRen" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="408,37" group="n97_pbxc">
+      <Button title="四人麻将"/>
+    </component>
+    <component id="n94_pbxc" name="sanRen" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="673,37" group="n97_pbxc">
+      <Button title="三人麻将"/>
+    </component>
+    <group id="n97_pbxc" name="n97" xy="140,37" size="786,93" group="n105_pbxc" advanced="true"/>
+    <component id="n111_pbxc" name="special" src="pbxcobkt" fileName="Component/UICreateRoom/BtnCreateRoomSpecial.xml" xy="408,147" group="n112_pbxc">
+      <Button title="三人麻将"/>
+    </component>
+    <group id="n112_pbxc" name="n112" xy="408,147" size="253,93" group="n105_pbxc" advanced="true" layout="hz" colGap="12" excludeInvisibles="true"/>
+    <image id="n1_pbxc" name="n1" src="pbxcobkv" fileName="Texture/img_1696.png" xy="139,265" group="n7_pbxc"/>
+    <image id="n2_pbxc" name="n2" src="pbxcobkg" fileName="Texture/img_2532.png" xy="219,273" group="n7_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n3_pbxc" name="juShu0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="408,257" group="n7_pbxc">
+      <Button title="一局"/>
+    </component>
+    <component id="n4_pbxc" name="juShu1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="673,257" group="n7_pbxc"/>
+    <component id="n5_pbxc" name="juShu2" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="938,257" group="n7_pbxc">
+      <Button title="半庄"/>
+    </component>
+    <component id="n6_pbxc" name="juShu3" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="1203,257" group="n7_pbxc">
+      <Button title="人机"/>
+    </component>
+    <group id="n7_pbxc" name="jushu" xy="139,257" size="1316,93" group="n105_pbxc" advanced="true"/>
+    <image id="n9_pbxc" name="n9" src="pbxcobkx" fileName="Texture/img_1698.png" xy="139,375" group="n17_pbxc"/>
+    <image id="n10_pbxc" name="n10" src="pbxcobko" fileName="Texture/img_2567.png" xy="219,383" group="n17_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n11_pbxc" name="think0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="407,367" group="n17_pbxc">
+      <Button title="3+5秒"/>
+    </component>
+    <component id="n12_pbxc" name="think1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="672,367" group="n17_pbxc">
+      <Button title="5+10秒"/>
+    </component>
+    <component id="n13_pbxc" name="think2" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="937,367" group="n17_pbxc">
+      <Button title="5+20秒"/>
+    </component>
+    <component id="n14_pbxc" name="think3" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="1202,367" group="n17_pbxc">
+      <Button title="60+0秒"/>
+    </component>
+    <component id="n16_pbxc" name="think4" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="1467,367" group="n17_pbxc">
+      <Button title="300+0秒"/>
+    </component>
+    <group id="n17_pbxc" name="n17" xy="139,367" size="1580,93" group="n105_pbxc" advanced="true"/>
+    <image id="n18_pbxc" name="n18" src="pbxcobku" fileName="Texture/img_1695.png" xy="139,485" group="n24_pbxc"/>
+    <image id="n19_pbxc" name="n19" src="pbxcobkn" fileName="Texture/img_2546.png" xy="218,492" size="197,73" group="n24_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n20_pbxc" name="setting0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="407,477" group="n24_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n21_pbxc" name="setting1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="672,477" group="n24_pbxc">
+      <Button title="开启"/>
+    </component>
+    <group id="n24_pbxc" name="n24" xy="139,477" size="785,93" group="n105_pbxc" advanced="true">
+      <gearDisplay controller="type" pages="0,1"/>
+    </group>
+    <group id="n105_pbxc" name="n105" xy="139,37" size="1580,533" advanced="true" layout="vt" lineGap="17" excludeInvisibles="true"/>
+    <component id="n31_pbxc" name="setting" src="ejejobl4" fileName="Component/UICreateRoom/ComCreateRoomSetting.xml" xy="129,587" size="1630,1115">
+      <gearDisplay controller="openSetting" pages="1"/>
+      <gearDisplay2 controller="type" pages="0,1" condition="0"/>
+    </component>
+  </displayList>
+</component>

@@ -11,7 +11,7 @@ export class ComFriendRoomItemView extends ComFriendRoomItem {
 		btn_kick.onClick(this, this.onBntKickClick);
 	}
 
-	refresh(data: IPlayerGameView, ready: boolean, ownerId: AccountID) {
+	refresh(isSiMa: boolean, data: IPlayerGameView, ready: boolean, ownerId: AccountID) {
 
 		const isOwner = ownerId == data?.account_id;
 		const isSelf = data?.account_id == $user.account.accountId;
@@ -33,7 +33,7 @@ export class ComFriendRoomItemView extends ComFriendRoomItem {
 		btn_inviteFriend.visible = !havePlayer && isOwnerSelf;
 		btn_addRobot.visible = !havePlayer && isOwnerSelf;
 
-		com_level.visible && com_level.refresh(data.level);
+		com_level.visible && com_level.refresh(isSiMa ? data.level : data.level3);
 		label_name.visible && label_name.refresh(data);
 		com_title.visible && com_title.refreshIcon(data.title);
 

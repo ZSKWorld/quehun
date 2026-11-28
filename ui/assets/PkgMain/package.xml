@@ -283,6 +283,19 @@
     <image id="pbxcobko" name="img_2567.png" path="/Texture/" exported="true"/>
     <image id="pbxcobkp" name="img_2571.png" path="/Texture/" exported="true"/>
     <image id="pbxcobkq" name="img_2846.png" path="/Texture/" exported="true"/>
+    <component id="pbxcobkr" name="BtnCreateRoomNormal.xml" path="/Component/UICreateRoom/"/>
+    <component id="pbxcobkt" name="BtnCreateRoomSpecial.xml" path="/Component/UICreateRoom/" exported="true"/>
+    <image id="pbxcobku" name="img_1695.png" path="/Texture/"/>
+    <image id="pbxcobkv" name="img_1696.png" path="/Texture/"/>
+    <image id="pbxcobkw" name="img_1697.png" path="/Texture/"/>
+    <image id="pbxcobkx" name="img_1698.png" path="/Texture/"/>
+    <image id="pbxcobky" name="img_1882.png" path="/Texture/"/>
+    <image id="pbxcobkz" name="img_2995.png" path="/Texture/"/>
+    <image id="pbxcobl0" name="img_2996.png" path="/Texture/"/>
+    <component id="pbxcobl1" name="BtnCreateRoomNumber.xml" path="/Component/UICreateRoom/"/>
+    <image id="pbxcobl2" name="img_978.png" path="/Texture/" scale="9grid" scale9grid="7,17,16,18"/>
+    <image id="pbxcobl3" name="img_2867.png" path="/Texture/" scale="9grid" scale9grid="750,0,20,25"/>
+    <component id="ejejobl4" name="ComCreateRoomSetting.xml" path="/Component/UICreateRoom/"/>
   </resources>
   <publish name="" genCode="true"/>
 </packageDescription>

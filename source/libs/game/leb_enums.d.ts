@@ -1014,6 +1014,13 @@ declare enum EHideNameFlag {
 	/** 排行榜昵称 */
 	Rank = 1 << 5,
 }
+
+/** 文本水平对齐方式 */
+declare enum EAlignType {
+	Left = "left",
+	Center = "center",
+	Right = "right",
+}
 //#endregion--------------------------------------------------------------------
 
 //#region 事件相关

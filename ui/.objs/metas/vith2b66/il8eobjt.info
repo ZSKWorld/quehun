@@ -1,13 +1,10 @@
 {
   "objectStatus": {
-    "n15_il8e": {
-      "hidden": true
-    },
-    "n25_il8e": {
-      "collapsed": true
-    },
     "n42_fewx": {
       "collapsed": true
+    },
+    "n15_il8e": {
+      "hidden": true
     }
   }
 }

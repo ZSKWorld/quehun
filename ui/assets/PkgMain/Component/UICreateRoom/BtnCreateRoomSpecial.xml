@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="253,93" extention="Button">
+  <controller name="button" pages="0,up,1,down" selected="0"/>
+  <displayList>
+    <loader id="n1_pbxc" name="icon" xy="0,0" size="253,93" url="ui://vith2b66pbxcobl0" fill="scaleFree">
+      <gearIcon controller="button" pages="0,1" values="ui://vith2b66pbxcobl0|ui://vith2b66pbxcobkz"/>
+    </loader>
+    <image id="n3_pbxc" name="n3" src="pbxcobky" fileName="Texture/img_1882.png" xy="-10,-13" pivot="0.5,0.5" size="93,40" aspect="true" rotation="-15"/>
+    <text id="n2_pbxc" name="title" xy="89,17" pivot="0.5,0.5" size="76,49" fontSize="36" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="东风">
+      <gearColor controller="button" pages="0" values="#ffffff,#000000" default="#000000,#000000"/>
+    </text>
+  </displayList>
+  <Button mode="Check"/>
+</component>

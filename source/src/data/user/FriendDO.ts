@@ -10,7 +10,7 @@ class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
 	get room() { return this._room; }
 	get inRoom() { return this._room != null; }
 
-	get getOpeningFriendModes() {
+	get getOpenModes() {
 		const list: ISheetData_Desktop_FriendRoom[] = [];
 		const openingRoom: Record<number, number> = {};
 		$cfgMgr.activity.activity_room.forEach((value) => {
@@ -149,6 +149,8 @@ class FriendRoomDO extends BaseDO implements DO.IFriendRoomDO {
 			ready_list.pushUnique(v);
 		});
 		robots.forEach(v => {
+			v.level = v.level || { id: 10101, score: 0 };
+			v.level3 = v.level3 || { id: 20101, score: 0 };
 			v.nickname = $lang(mode.detail_rule.ai_level == 2 ? 2004 : 2003);
 			ready_list.pushUnique(v.account_id);
 		});

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="248,84" pivot="0.5,0.5" extention="Button">
+  <displayList>
+    <image id="n3_pbxc" name="n3" src="pbxcobl2" fileName="Texture/img_978.png" xy="0,0" size="248,84"/>
+    <text id="n2_pbxc" name="title" xy="45,13" pivot="0.5,0.5" size="154,66" fontSize="50" color="#ffffff" align="center" vAlign="middle" singleLine="true" text="25000"/>
+  </displayList>
+  <Button downEffect="scale" downEffectValue="0.95"/>
+</component>

@@ -6,16 +6,20 @@
  * @param format 3-内容、确认按钮、取消按钮
  * @param content 内容
  * @param title 标题
+ * @param maskClose 是否点击背景关闭
+ * @param align 内容水平对齐方式
  */
-declare function $confirmBig(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
+declare function $confirmBig(format: 0 | 1 | 2 | 3, content: string, title?: string, maskClose?: boolean, align?: fgui.AlignType): Promise<boolean>;
 /**
  * 中号弹窗
  * @param format 0-标题、内容、确认按钮
  * @param format 1-内容、确认按钮
  * @param content 内容
  * @param title 标题
+ * @param maskClose 是否点击背景关闭
+ * @param align 内容水平对齐方式
  */
-declare function $confirmMid(format: 0 | 1, content: string, title?: string): Promise<boolean>;
+declare function $confirmMid(format: 0 | 1, content: string, title?: string, maskClose?: boolean, align?: fgui.AlignType): Promise<boolean>;
 /**
  * 小号弹窗
  * @param format 0-标题、内容、确认按钮、取消按钮
@@ -24,8 +28,10 @@ declare function $confirmMid(format: 0 | 1, content: string, title?: string): Pr
  * @param format 3-内容、确认按钮、取消按钮
  * @param content 内容
  * @param title 标题
+ * @param maskClose 是否点击背景关闭
+ * @param align 内容水平对齐方式
  */
-declare function $confirmSma(format: 0 | 1 | 2 | 3, content: string, title?: string): Promise<boolean>;
+declare function $confirmSma(format: 0 | 1 | 2 | 3, content: string, title?: string, maskClose?: boolean, align?: fgui.AlignType): Promise<boolean>;
 
 /** 富文本 */
 declare function $richText(text?: string): IRichText;

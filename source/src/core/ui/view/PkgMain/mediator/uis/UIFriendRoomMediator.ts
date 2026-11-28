@@ -12,6 +12,7 @@ export class UIFriendRoomMediator extends MediatorBase<UIFriendRoomView, IUIFrie
 	override onAwake() {
 		this.addEvent(EUIFriendRoomMsg.OnComBackClick, this.onComBackClick);
 		this.addEvent(EUIFriendRoomMsg.OnBtnShareClick, this.onBtnShareClick);
+		this.addEvent(EUIFriendRoomMsg.OnBtnRuleClick, this.onBtnRuleClick);
 		this.addEvent(EUIFriendRoomMsg.OnBtnDecoClick, this.onBtnDecoClick);
 		this.addEvent(EUIFriendRoomMsg.OnBtnStartClick, this.onBtnStartClick);
 		this.addEvent(EUIFriendRoomMsg.OnBtnCancelClick, this.onBtnCancelClick);
@@ -47,6 +48,19 @@ export class UIFriendRoomMediator extends MediatorBase<UIFriendRoomView, IUIFrie
 
 	private onBtnStartClick() {
 
+	}
+
+	private onBtnRuleClick() {
+		let ruleId = 0;
+		const preRule = $user.friend.room.room.pre_rule;
+		if (preRule == "liqi") {
+			ruleId = $cfgMgr.desktop.friend_room[$user.friend.room.room.mode.mode < 10 ? 1 : 2].id;
+		} else {
+			const cfgMode = $user.friend.room.getOpenModes.find(v => v.pre_rule == preRule);
+			if (!cfgMode) return;
+			ruleId = cfgMode.id;
+		}
+		this.openView<IUIRoomRuleData>(EViewID.UIRoomRuleView, { targetId: ruleId });
 	}
 
 	private onBtnCancelClick() {

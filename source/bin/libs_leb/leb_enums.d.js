@@ -695,6 +695,12 @@ EHideNameFlag = {
 	Rank: 32,
 }
 
+EAlignType = {
+	Left: "left",
+	Center: "center",
+	Right: "right",
+}
+
 EGlobalEvent = {
 	OnGameShow: "EGlobalEvent_OnGameShow",
 	OnGameHide: "EGlobalEvent_OnGameHide",
@@ -721,6 +727,7 @@ EGlobalEvent = {
 	BindPhoneCompleted: "EGlobalEvent_BindPhoneCompleted",
 	LoginSuccess: "EGlobalEvent_LoginSuccess",
 	OnFriendInvite: "EGlobalEvent_OnFriendInvite",
+	OnJoinRoom: "EGlobalEvent_OnJoinRoom",
 	OnSceneLoadBegin: "EGlobalEvent_OnSceneLoadBegin",
 	OnSceneLoadProgress: "EGlobalEvent_OnSceneLoadProgress",
 	OnSceneLoadEnd: "EGlobalEvent_OnSceneLoadEnd",

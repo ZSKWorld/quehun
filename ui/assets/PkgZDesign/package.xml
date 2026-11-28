@@ -1817,6 +1817,10 @@
     <image id="ftegobjj" name="img_4066.png" path="/11/牌谱/"/>
     <image id="ftegobje" name="img_4100.png" path="/11/牌谱/"/>
     <image id="ziglobh5" name="img_4024.png" path="/11/"/>
+    <image id="pbxc7plonf" name="7.jpg" path="/11/好友房/"/>
+    <image id="pbxc7plong" name="8.jpg" path="/11/好友房/"/>
+    <image id="pbxc7plonh" name="9.jpg" path="/11/好友房/"/>
+    <image id="pbxc7ploni" name="10.jpg" path="/11/好友房/"/>
   </resources>
   <publish name=""/>
 </packageDescription>

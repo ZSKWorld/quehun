@@ -38,7 +38,7 @@ export class UIRoomRuleView extends UIRoomRule {
 
 	refresh(targetId: number, modeIds: number[]) {
 		if (modeIds) this._tabData = modeIds.map(v => $cfgMgr.desktop.matchmode[v]);
-		else this._tabData = $user.friend.room.getOpeningFriendModes;
+		else this._tabData = $user.friend.room.getOpenModes;
 
 		this.ctrl_type.selectedIndex = 0;
 

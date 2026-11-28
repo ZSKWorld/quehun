@@ -2,6 +2,7 @@
 <component size="1920,1080" pivot="0.5,0.5" designImage="ui://ca43vz0ejdu67plnjr" designImageAlpha="0">
   <controller name="format" pages="0,,1,,2,,3," selected="0"/>
   <displayList>
+    <component id="n19_ejej" name="mask" src="z63pob8g" fileName="Component/Button/BtnEmpty.xml" xy="0,0" size="1920,1080"/>
     <component id="n0_j0dd" name="n0" src="j0ddob7c" fileName="Component/Component/ComPopBg.xml" xy="959,540" pivot="0.5,0.5" anchor="true" size="1437,992"/>
     <image id="n2_j0dd" name="n2" src="j0ddob77" fileName="Texture/img_374.png" xy="313,160" size="607,4" group="n18_j0dd"/>
     <image id="n4_j0dd" name="n4" src="j0ddob77" fileName="Texture/img_374.png" xy="997,160" pivot="1,0" anchor="true" size="608,4" group="n18_j0dd" scale="-1,1"/>

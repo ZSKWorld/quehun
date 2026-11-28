@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="1630,1115">
+  <controller name="type" exported="true" pages="0,四麻,1,三麻,3," selected="0"/>
+  <controller name="openSetting" exported="true" pages="0,,1," selected="0"/>
+  <displayList>
+    <image id="n31_pbxc" name="n31" src="pbxcobl3" fileName="Texture/img_2867.png" xy="0,0" size="1630,25"/>
+    <image id="n34_pbxc" name="n34" src="pbxcobkp" fileName="Texture/img_2571.png" xy="89,57" size="197,73" group="n37_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n35_pbxc" name="startPoint" src="pbxcobl1" fileName="Component/UICreateRoom/BtnCreateRoomNumber.xml" xy="283,42" size="248,84" group="n37_pbxc">
+      <Button title="25000"/>
+    </component>
+    <text id="n38_pbxc" name="n38" xy="546,67" pivot="0,0.5" size="406,42" group="n37_pbxc" fontSize="30" color="#bdbbb8" vAlign="middle" singleLine="true" text="最小单位100，最大值200000"/>
+    <group id="n37_pbxc" name="n37" xy="89,42" size="863,88"/>
+    <image id="n39_pbxc" name="n39" src="pbxcobkq" fileName="Texture/img_2846.png" xy="31,162" size="263,73" group="n42_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n40_pbxc" name="oneMustPoint" src="pbxcobl1" fileName="Component/UICreateRoom/BtnCreateRoomNumber.xml" xy="283,147" size="248,84" group="n42_pbxc">
+      <Button title="30000"/>
+    </component>
+    <text id="n41_pbxc" name="n41" xy="546,156" pivot="0,0.5" size="736,74" group="n42_pbxc" fontSize="30" color="#bdbbb8" vAlign="middle" leading="-5" text="最小单位100，最大值200000，必须大于等于起始点数&#xA;AII LAST时1位不足该点数将南入/西入"/>
+    <group id="n42_pbxc" name="n42" xy="31,147" size="1251,88"/>
+    <image id="n44_pbxc" name="n44" src="pbxcobkj" fileName="Texture/img_2538.png" xy="90,267" size="195,73" group="n47_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n45_pbxc" name="jiFei0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,252" size="253,93" group="n47_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n46_pbxc" name="jiFei1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,252" size="253,93" group="n47_pbxc">
+      <Button title="开启"/>
+    </component>
+    <group id="n47_pbxc" name="n47" xy="90,252" size="707,93"/>
+    <image id="n48_pbxc" name="n48" src="pbxcobki" fileName="Texture/img_2537.png" xy="90,377" size="195,73" group="n51_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n49_pbxc" name="guYi0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,362" size="253,93" group="n51_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n50_pbxc" name="guYi1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,362" size="253,93" group="n51_pbxc">
+      <Button title="开启"/>
+    </component>
+    <group id="n51_pbxc" name="n51" xy="90,362" size="707,93" advanced="true">
+      <gearDisplay controller="type" pages="0"/>
+    </group>
+    <image id="n57_pbxc" name="n57" src="pbxcobkd" fileName="Texture/img_2502.png" xy="94,377" size="190,73" group="n60_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n58_pbxc" name="ziMo0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,362" size="253,93" group="n60_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n59_pbxc" name="ziMo1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,362" size="253,93" group="n60_pbxc">
+      <Button title="开启"/>
+    </component>
+    <component id="n64_pbxc" name="ziMoTip" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="34,384" size="40,40" group="n60_pbxc">
+      <Button icon="ui://vx9zwsergsi2obd0"/>
+    </component>
+    <group id="n60_pbxc" name="n60" xy="34,362" size="763,93" advanced="true">
+      <gearDisplay controller="type" pages="1"/>
+    </group>
+    <image id="n52_pbxc" name="n52" src="pbxcobke" fileName="Texture/img_2529.png" xy="90,487" size="192,73" group="n55_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n53_pbxc" name="chiBaoPai0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,472" size="253,93" group="n55_pbxc">
+      <Button title="无赤"/>
+    </component>
+    <component id="n61_pbxc" name="chiBaoPai1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,472" size="253,93" group="n55_pbxc">
+      <gearDisplay controller="type" pages="1"/>
+      <Button title="2赤"/>
+    </component>
+    <component id="n54_pbxc" name="chiBaoPai2" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,472" size="253,93" group="n55_pbxc">
+      <gearDisplay controller="type" pages="0"/>
+      <Button title="3赤"/>
+    </component>
+    <component id="n56_pbxc" name="chiBaoPai3" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="809,472" size="253,93" group="n55_pbxc">
+      <gearDisplay controller="type" pages="0"/>
+      <Button title="4赤"/>
+    </component>
+    <group id="n55_pbxc" name="n55" xy="90,472" size="972,93"/>
+    <image id="n65_pbxc" name="n65" src="pbxcobkk" fileName="Texture/img_2539.png" xy="88,597" size="195,73" group="n69_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n66_pbxc" name="shiDuan0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,582" size="253,93" group="n69_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n67_pbxc" name="shiDuan1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,582" size="253,93" group="n69_pbxc">
+      <Button title="开启"/>
+    </component>
+    <component id="n68_pbxc" name="shiDuanTip" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="34,604" size="40,40" group="n69_pbxc">
+      <Button icon="ui://vx9zwsergsi2obd0"/>
+    </component>
+    <group id="n69_pbxc" name="n69" xy="34,582" size="763,93"/>
+    <image id="n70_pbxc" name="n70" src="pbxcobkf" fileName="Texture/img_2531.png" xy="88,707" size="194,73" group="n74_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n71_pbxc" name="fanFu0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,692" size="253,93" group="n74_pbxc">
+      <Button title="一番缚"/>
+    </component>
+    <component id="n72_pbxc" name="fanFu1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,692" size="253,93" group="n74_pbxc">
+      <Button title="二番缚"/>
+    </component>
+    <component id="n75_pbxc" name="fanFu2" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="809,692" size="253,93" group="n74_pbxc">
+      <Button title="四番缚"/>
+    </component>
+    <group id="n74_pbxc" name="n74" xy="88,692" size="974,93"/>
+    <image id="n76_pbxc" name="n76" src="pbxcobkm" fileName="Texture/img_2545.png" xy="87,817" size="197,73" group="n80_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n77_pbxc" name="easy0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,802" size="253,93" group="n80_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n78_pbxc" name="easy1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,802" size="253,93" group="n80_pbxc">
+      <Button title="开启"/>
+    </component>
+    <component id="n79_pbxc" name="easyTip" src="mj5kb6v" fileName="Component/Button/BtnIconFit.xml" pkg="vx9zwser" xy="34,824" size="40,40" group="n80_pbxc">
+      <Button icon="ui://vx9zwsergsi2obd0"/>
+    </component>
+    <group id="n80_pbxc" name="n80" xy="34,802" size="763,93"/>
+    <image id="n81_pbxc" name="n81" src="pbxcobkl" fileName="Texture/img_2544.png" xy="91,927" size="196,73" group="n84_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n82_pbxc" name="ai0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,912" size="253,93" group="n84_pbxc">
+      <Button title="简单"/>
+    </component>
+    <component id="n83_pbxc" name="ai1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,912" size="253,93" group="n84_pbxc">
+      <Button title="普通"/>
+    </component>
+    <group id="n84_pbxc" name="n84" xy="91,912" size="706,93"/>
+    <image id="n85_pbxc" name="n85" src="pbxcobkc" fileName="Texture/img_2408.png" xy="89,1037" size="189,66" group="n88_pbxc" aspect="true" scale="0.9,0.9"/>
+    <component id="n86_pbxc" name="openHand0" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="279,1022" size="253,93" group="n88_pbxc">
+      <Button title="关闭"/>
+    </component>
+    <component id="n87_pbxc" name="openHand1" src="pbxcobkr" fileName="Component/UICreateRoom/BtnCreateRoomNormal.xml" xy="544,1022" size="253,93" group="n88_pbxc">
+      <Button title="开启"/>
+    </component>
+    <group id="n88_pbxc" name="n88" xy="89,1022" size="708,93"/>
+  </displayList>
+</component>

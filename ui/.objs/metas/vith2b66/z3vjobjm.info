@@ -1,4 +1,9 @@
 {
+  "objectStatus": {
+    "n16_pbxc": {
+      "hidden": true
+    }
+  },
   "designImages": [
     "ui://ca43vz0ejdu67plne1"
   ]

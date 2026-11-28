@@ -103,6 +103,8 @@ import { ComBagGiftView } from "../core/ui/view/PkgMain/view/coms/ComBagGiftView
 import { ComBagIllustView } from "../core/ui/view/PkgMain/view/coms/ComBagIllustView";
 import { ComBagItemView } from "../core/ui/view/PkgMain/view/coms/ComBagItemView";
 import { ComBagSkinView } from "../core/ui/view/PkgMain/view/coms/ComBagSkinView";
+import { ComCreateRoomContentView } from "../core/ui/view/PkgMain/view/coms/ComCreateRoomContentView";
+import { ComCreateRoomSettingView } from "../core/ui/view/PkgMain/view/coms/ComCreateRoomSettingView";
 import { ComFriendRoomItemView } from "../core/ui/view/PkgMain/view/coms/ComFriendRoomItemView";
 import { ComLiaoSheCharView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheCharView";
 import { ComLiaoSheDecorateView } from "../core/ui/view/PkgMain/view/coms/ComLiaoSheDecorateView";
@@ -333,6 +335,8 @@ export class InitViewCommand extends Command {
 		register(EViewID.ComBagIllustView, Component, ComBagIllustView);
 		register(EViewID.ComBagItemView, Component, ComBagItemView);
 		register(EViewID.ComBagSkinView, Component, ComBagSkinView);
+		register(EViewID.ComCreateRoomContentView, Component, ComCreateRoomContentView);
+		register(EViewID.ComCreateRoomSettingView, Component, ComCreateRoomSettingView);
 		register(EViewID.ComFriendRoomItemView, Component, ComFriendRoomItemView);
 		register(EViewID.ComLiaoSheCharView, Component, ComLiaoSheCharView);
 		register(EViewID.ComLiaoSheDecorateView, Component, ComLiaoSheDecorateView);
